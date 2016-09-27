@@ -5,7 +5,6 @@ var glob_projobj = null;
 var glob_level = "";
 var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 var default_proj_json = '{"list1":' + default_list_json + '}'
-
 var glob_objlabellength = 15;
 
 //Page Setup 
@@ -23,8 +22,8 @@ function load() {
 				setup();
 		}	
 	});
-	$.post( "proj/proj_visitor.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "visitor log"}, function( result ){;});
-	$.post( "proj/proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});
+	$.post( "proj_visitor.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "visitor log"}, function( result ){;});
+	$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});
 };
 function setup(){
 	glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
@@ -172,7 +171,7 @@ function add(inItem){
 	document.getElementById("thebody").insertBefore(newdiv, document.getElementById("controldiv").nextSibling);
 	$(newdiv).children("textarea").blur(updatefield);
 	$(newdiv).children("select").blur(updatefield);
-	if (typeof inItem === 'undefined') $.post( "proj/proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
+	if (typeof inItem === 'undefined') $.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
 };
 function togglemore(){
 	$("#morespan").toggle();
@@ -186,10 +185,10 @@ function hidemore(){
 };
 function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
-	$.post( "proj/proj_data.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "" + (JSON.stringify(glob_root) || 0)}, function( result ) {
+	$.post( "proj_data.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "" + (JSON.stringify(glob_root) || 0)}, function( result ) {
 		$("#savetime").html("saved at: " + result);
 		refresh(glob_level);
-		$.post( "proj/proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});
+		$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});
 	});
 	$("#savetime").html("saving...");
 };
@@ -199,7 +198,7 @@ function removeItem(caller){
 	var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
 	var logstring = JSON.stringify({'codename': localStorage.getItem("codename"), 'time': Date(),'action':'Deleted Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 	delete glob_projobj[glob_level][datavalue][id]
-	$.post( "proj/proj_logger.aspx", {data: logstring}, function( result ) {
+	$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
 		var parentDiv = caller.parentElement;
 		parentDiv.parentElement.removeChild(parentDiv);
 	});
@@ -209,7 +208,7 @@ function closeItem(caller) {
 	var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
 	var logstring = JSON.stringify({'codename': localStorage.getItem("codename"), 'time': Date(),'action':'Completed Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 	delete glob_projobj[glob_level][datavalue][id]
-	$.post( "proj/proj_logger.aspx", {data: logstring}, function( result ) {
+	$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
 		var parentDiv = caller.parentElement;
 		parentDiv.parentElement.removeChild(parentDiv);
 	});

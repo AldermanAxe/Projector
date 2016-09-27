@@ -1,0 +1,28 @@
+body {
+	font-size: 50px
+}
+div {
+	padding: 20px 40px 20px 40px; 
+	margin: 20px 20px 20px 20px; 
+	background-color: lightblue; 
+	text-align:center;
+}
+#controldiv {
+	white-space:wrap; 
+	border: 2px solid black;
+}
+input, button, textarea {
+	font-size: 120%;
+}
+option, select, input[type="button"] {
+	font-size: 140%;
+}
+input[type="text"] {
+	width: 95%;
+}
+textarea {
+	width: 98%;
+}
+a {
+	font-size: 200%;
+}

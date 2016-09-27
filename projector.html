@@ -1,0 +1,45 @@
+﻿<html>
+	<head>
+		<meta http-equiv="pragma" content="no-cache">
+		<link rel="icon" sizes="192x192" href="proj/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="proj/proj_style.css">
+		<script src="proj/libraries/jquery-1.12.0.js"></script>
+		<script src="proj/proj.js"></script>
+	</head>
+	<body id='thebody'>
+		<div id='controldiv'>
+			<span id="listbuttons"></span>
+			<div>
+				<input type="button"  class='buttonspan' id="addbutton" onclick="add()" value="add item"/>
+				<input type="button"  class='buttonspan' id="morebutton" onclick="togglemore()" value="less"/>
+				<input type="button"  class='buttonspan' id="savebutton" onclick="save()" type="button" value="save" />
+			</div>
+			<span id="morespan">
+				<div>
+					<input type="button" class='buttonspan' id="addlistbutton" onclick="setinput('list name:', '', addlist)" value="add list"/>
+					<input type="button" class='buttonspan' id="addvaluebutton" onclick="setinput('value name:', '', addvalue)" value="add value"/>
+					<input type="button" class='buttonspan' id="deletelistbutton" onclick="deletelist()" value="delete"/>
+					<input type="button" class='buttonspan' id="movedownbutton" onclick="move_down()" value="go down"/>
+					<input type="button" class='buttonspan' id="moveupbutton" onclick="move_up()" value="go up"/>
+					<input type="button" class='buttonspan' id="logoutbutton" onclick="logout()" value="logout"/>
+				</div>
+			</span>		
+			
+			<span id='listinputspan'>
+				<div id='listinputlabel'>Identity not found. Enter your code name:</div>
+				<div><input type='textarea' id = 'listinput' onkeypress="listInputChange()"></input><br/></div>
+				<input type="button" class='buttonspan' id='listinputbutton' value='Enter' />
+			</span>
+			<span id='valuespan'>
+				<div>Value:</div>
+				<textarea id='valueinput' onblur='updatevalue(this)'></textarea>
+			</span>
+
+			<div>
+				<span id="levelspan"></span>
+				<span id="itemcount"></span>
+				<span id="savetime">Not Yet Saved</span>
+			</div>
+		</div>
+	</body>
+</html>

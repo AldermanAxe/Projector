@@ -12,7 +12,7 @@ var glob_objlabellength = 15;
 function load() {
 	localStorage.setItem("codename", (getUrlParameter("codename") || localStorage.getItem("codename")) || "");
 	$.ajax({
-		url: "JsonFiles\\proj_data_" + localStorage.getItem("codename") + ".json"
+		url: "..\\JsonFiles\\proj_data_" + localStorage.getItem("codename") + ".json"
 		,type: "get"
 		,error: function() {
 				localStorage.setItem("projobj", default_proj_json);

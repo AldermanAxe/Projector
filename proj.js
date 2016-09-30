@@ -12,6 +12,7 @@ function load() {
 	localStorage.setItem("codename", (getUrlParameter("codename") || localStorage.getItem("codename")) || "");
 	$.ajax({
 		url: "..\\JsonFiles\\proj_data_" + localStorage.getItem("codename") + ".json"
+		,cache: false
 		,type: "get"
 		,error: function() {
 				localStorage.setItem("projobj", default_proj_json);
@@ -185,11 +186,14 @@ function hidemore(){
 };
 function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
-	$.post( "proj_data.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "" + (JSON.stringify(glob_root) || 0)}, function( result ) {
-		$("#savetime").html("saved at: " + result);
+	$.post( "proj_data.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
+		$("#savetime").html("saved at: " + msg);
 		refresh(glob_level);
-		$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});
-	});
+		$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	
+	}).fail(function(xhr, status, error) {
+		$("#savetime").html("save failed");
+		refresh(glob_level);
+    });
 	$("#savetime").html("saving...");
 };
 //List Item Functions

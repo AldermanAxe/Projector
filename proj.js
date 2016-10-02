@@ -73,7 +73,7 @@ function refresh(inLevel){
 		break;
 	}}};	
 	glob_level = inLevel;
-	var dataobj = glob_projobj[glob_level]["value"] || glob_projobj[glob_level]["data"] || glob_projobj[glob_level] || 0;
+	var dataobj = followJG(glob_projobj, glob_level);
 	var listitems = [];
 	if (typeof dataobj === 'object'){
 		$("#valuespan").hide();
@@ -376,7 +376,7 @@ function followJGpath(objJG, arrPath){
 		if (typeof nextObj[arrPath[x]] !== 'undefined' && typeof nextObj[arrPath[x]]["$type"] !== 'undefined' && nextObj[arrPath[x]]["$type"] === "ref"){
 			nextObj = followJGpath(firstObj, nextObj[arrPath[x]]["value"]);
 		} else {
-			nextObj = nextObj[arrPath[x]];
+			nextObj = followJG[arrPath[x]];
 		}
 	}
 	return nextObj;
@@ -385,7 +385,7 @@ function followJG(objJG, strKey){
 	var nextObj = objJG;
 	if (typeof nextObj[strKey]["$type"] !== 'undefined' && nextObj[strKey]["$type"] === "ref"){
 		nextObj = followJGpath(firstObj, nextObj[strKey]["value"]);
-	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[arrPath[x]]["$type"] === "node" || nextObj[arrPath[x]]["$type"] === "atom")) {
+	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "node" || nextObj[strKey]["$type"] === "atom")) {
 		nextObj = nextObj[strKey]["value"];
 	} else {
 		nextObj = nextObj[strKey];

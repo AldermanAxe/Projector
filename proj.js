@@ -373,10 +373,10 @@ function getUrlParameter(sParam) {
 function followJGpath(objJG, arrPath){
 	var nextObj = objJG;
 	for (var x = 0; x < arrPath.length; x++) {
-		if (typeof nextObj[arrPath[x]] !== 'undefined' && typeof nextObj[arrPath[x]]["$type"] !== 'undefined' && nextObj[arrPath[x]]["$type"] === "ref"){
+		if (typeof followJG(nextObj, arrPath[x]) !== 'undefined' && typeof followJG(nextObj, arrPath[x])["$type"] !== 'undefined' && followJG(nextObj, arrPath[x])["$type"] === "ref"){
 			nextObj = followJGpath(firstObj, nextObj[arrPath[x]]["value"]);
 		} else {
-			nextObj = followJG[arrPath[x]];
+			nextObj = followJG(nextObj, arrPath[x]);
 		}
 	}
 	return nextObj;

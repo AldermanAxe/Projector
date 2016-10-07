@@ -106,6 +106,7 @@ function refresh(inLevel){
     $("#levelspan").text(JSON.stringify(glob_path) + "." + glob_level + ". ");
     $("#itemcount").text(listitems.length + " Items. ");
 	if (localStorage.getItem("codename")) { $("#listinputspan").hide(); } else { $("#listinputspan").show(); };
+	$(".underbardiv").css("height", $(".topbardiv").height());
 };
 //List Level Functions
 function add(inItem){
@@ -178,6 +179,8 @@ function togglemore(){
 	$("#morespan").toggle();
 	$(".minorbutton").toggle();
 	$("#morebutton").val($("#morebutton").val() === "more" ? "less" : "more");
+	if ($("#morebutton").val() === "less") {$(".topbardiv").height("450px")} else {$(".topbardiv").height("320px")};
+	$(".underbardiv").css("height", $(".topbardiv").height());
 };
 function hidemore(){
 	$("#morespan").hide();

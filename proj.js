@@ -66,7 +66,6 @@ function refresh(inLevel){
 	var sortfun;
 	var dataobj;
 	var listitems;
-	
 	$(".taskdiv").remove();
 	if (!inLevel){ for (var property in glob_projobj) { if (glob_projobj.hasOwnProperty(property)) {
 		inLevel = property;
@@ -92,7 +91,7 @@ function refresh(inLevel){
 	};
 
 	try {
-		eval("sortfun = " + (glob_projobj[glob_level]["$sort"] || glob_projobj[glob_level]["sort"]));
+		eval("sortfun = " + glob_projobj[glob_level]["$sort"]);
 	} catch (e) {
 		alert(e.message);
 	};
@@ -200,6 +199,11 @@ function save(){
 	$("#savetime").html("saving...");
 };
 //List Item Functions
+function settings(){
+	glob_projobj = glob_projobj[glob_level];
+	addbuttons();
+	refresh();
+};
 function removeItem(caller){
 	var id = $(caller.parentElement).children(".id_input").val();
 	var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
@@ -270,6 +274,9 @@ function updatevalue(a){
 		} catch(e) {
 			alert(e);
 		}
+	} else if (newvalue.substring(0, 1) === ">"){
+		newvalue = {"$type":"ref","value": newvalue.substr(1, newvalue.length)};
+console.log(newvalue);
 	};
 	glob_projobj[glob_level] = newvalue;
 };

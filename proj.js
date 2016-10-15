@@ -11,11 +11,13 @@ var glob_objlabellength = 15;
 function load() {
 	localStorage.setItem("codename", (getUrlParameter("codename") || localStorage.getItem("codename")) || "");
 	$.ajax({
-		url: "..\\JsonFiles\\proj_data_" + localStorage.getItem("codename") + ".json"
+		url: "../JsonFiles/proj_data_" + localStorage.getItem("codename") + ".json"
 		,cache: false
 		,type: "get"
+		,datatype: "json"
+        ,contentType: "application/json; charset=ISO-8859-1"
 		,error: function() {
-				localStorage.setItem("projobj", default_proj_json);
+		localStorage.setItem("projobj", default_proj_json);
 				setup();
 		}
 		,success: function(in_data) {
@@ -24,7 +26,7 @@ function load() {
 		}	
 	});
 	$.post( "proj_visitor.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "visitor log"}, function( result ){;});
-	$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});
+	$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});	
 };
 function setup(){
 	glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
@@ -37,7 +39,7 @@ function setup(){
 				try {
 					eval(runners[key]["-function"]);
 				} catch (e) {
-						alert(e.message);
+						$("#alert").val(e.message);
 				}
 			};
 		}
@@ -93,7 +95,7 @@ function refresh(inLevel){
 	try {
 		eval("sortfun = " + glob_projobj[glob_level]["$sort"]);
 	} catch (e) {
-		alert(e.message);
+		$("#alert").val(e.message);
 	};
 	listitems.sort( sortfun || function(a, b){return a - b} );
 
@@ -105,7 +107,8 @@ function refresh(inLevel){
     $("#levelspan").text(JSON.stringify(glob_path) + "." + glob_level + ". ");
     $("#itemcount").text(listitems.length + " Items. ");
 	if (localStorage.getItem("codename")) { $("#listinputspan").hide(); } else { $("#listinputspan").show(); };
-	$(".underbardiv").css("height", $(".topbardiv").height());
+	heightchange();
+	$(window).resize(heightchange);
 };
 //List Level Functions
 function add(inItem){
@@ -169,17 +172,19 @@ function add(inItem){
 	};
 	newHTML += '<span class="showspan"/>';
 	newdiv.innerHTML = newHTML;
-	document.getElementById("thebody").insertBefore(newdiv, document.getElementById("controldiv").nextSibling);
+	$("#itemsdiv").prepend(newdiv);
 	$(newdiv).children("textarea").blur(updatefield);
 	$(newdiv).children("select").blur(updatefield);
 	if (typeof inItem === 'undefined') $.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
 };
+function heightchange(){
+	$('#itemsdiv').height(parseInt($(window).height() - $('#controldiv').height())); 
+}
 function togglemore(){
 	$("#morespan").toggle();
 	$(".minorbutton").toggle();
 	$("#morebutton").val($("#morebutton").val() === "more" ? "less" : "more");
-	if ($("#morebutton").val() === "less") {$(".topbardiv").height("450px")} else {$(".topbardiv").height("320px")};
-	$(".underbardiv").css("height", $(".topbardiv").height());
+	heightchange();
 };
 function hidemore(){
 	$("#morespan").hide();
@@ -242,7 +247,7 @@ function updatefield(a){
 		try {
 			eval('newvalue = ' + newvalue.substr(1, newvalue.length));
 		} catch(e) {
-			alert(e);
+			$("#alert").val(e);
 		}
 	};
 	key = (key.substr(key.length - 6, 6) === '_input' ? key.substr(0, key.length - 6): key);
@@ -272,11 +277,10 @@ function updatevalue(a){
 		try {
 			eval('newvalue = ' + newvalue.substr(1, newvalue.length));
 		} catch(e) {
-			alert(e);
+			$("#alert").val(e);
 		}
 	} else if (newvalue.substring(0, 1) === ">"){
 		newvalue = {"$type":"ref","value": newvalue.substr(1, newvalue.length)};
-console.log(newvalue);
 	};
 	glob_projobj[glob_level] = newvalue;
 };
@@ -329,6 +333,11 @@ function setcodename(){
 	$("#savetime").html("logged in as: " + localStorage.getItem("codename"));
 };
 //Page-Specific Utilities
+function addlistitem(strlist, objitem){
+	glob_projobj[strlist]['$max_id'] = "" + (parseInt(glob_projobj[strlist]['$max_id']) + 1);
+	objitem['id'] = glob_projobj[strlist]['$max_id'];
+	glob_projobj[strlist]["value"][glob_projobj[strlist]['$max_id']] = objitem;
+};
 function addbuttons(){
 	$("#listbuttons").html("");
 	for (var property in glob_projobj) {

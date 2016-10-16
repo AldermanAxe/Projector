@@ -280,7 +280,11 @@ function updatevalue(a){
 			$("#alert").val(e);
 		}
 	} else if (newvalue.substring(0, 1) === ">"){
-		newvalue = {"$type":"ref","value": newvalue.substr(1, newvalue.length)};
+		try {
+			eval('newvalue = {"$type":"ref","value": ' + newvalue.substr(1, newvalue.length) + '}');
+		} catch(e) {
+			$("#alert").val(e);
+		}
 	};
 	glob_projobj[glob_level] = newvalue;
 };
@@ -390,6 +394,10 @@ function getUrlParameter(sParam) {
 	}
 };
 function followJGpath(objJG, arrPath){
+console.log("followjgpath: ")
+console.log(objJG);
+console.log(arrPath);
+
 	var nextObj = objJG;
 	for (var x = 0; x < arrPath.length; x++) {
 		if (typeof followJG(nextObj, arrPath[x]) !== 'undefined' && typeof followJG(nextObj, arrPath[x])["$type"] !== 'undefined' && followJG(nextObj, arrPath[x])["$type"] === "ref"){
@@ -401,9 +409,12 @@ function followJGpath(objJG, arrPath){
 	return nextObj;
 };
 function followJG(objJG, strKey){
+console.log("followjg: ")
+console.log(objJG);
+console.log(strKey);
 	var nextObj = objJG;
 	if (typeof nextObj[strKey]["$type"] !== 'undefined' && nextObj[strKey]["$type"] === "ref"){
-		nextObj = followJGpath(firstObj, nextObj[strKey]["value"]);
+		nextObj = followJGpath(nextObj, nextObj[strKey]["value"]);
 	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "node" || nextObj[strKey]["$type"] === "atom")) {
 		nextObj = nextObj[strKey]["value"];
 	} else {

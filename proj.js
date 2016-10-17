@@ -3,30 +3,39 @@ var glob_root = null;
 var glob_path = [];
 var glob_projobj = null;
 var glob_level = "";
+var glob_codename = "";
 var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 var default_proj_json = '{"list1":' + default_list_json + '}'
 var glob_objlabellength = 15;
 
 //Page Setup 
 function load() {
-	localStorage.setItem("codename", (getUrlParameter("codename") || localStorage.getItem("codename")) || "");
-	$.ajax({
-		url: "../JsonFiles/proj_data_" + localStorage.getItem("codename") + ".json"
-		,cache: false
-		,type: "get"
-		,datatype: "json"
-        ,contentType: "application/json; charset=ISO-8859-1"
-		,error: function() {
-		localStorage.setItem("projobj", default_proj_json);
+	glob_codename = (getUrlParameter("codename") || localStorage.getItem("codename")) || "";
+	localStorage.setItem("codename", glob_codename);
+	//if codename begins with '%' get remote storage version
+	if (glob_codename.substring(0, 1) === "%"){
+		$.ajax({
+			url: "../JsonFiles/proj_data_" + glob_codename.substring(1, glob_codename.length) + ".json"
+			,cache: false
+			,type: "get"
+			,datatype: "json"
+			,contentType: "application/json; charset=ISO-8859-1"
+			,error: function() {
+				localStorage.setItem("projobj", default_proj_json);
 				setup();
-		}
-		,success: function(in_data) {
+			}
+			,success: function(in_data) {
 				localStorage.setItem("projobj", JSON.stringify(in_data));
 				setup();
-		}	
-	});
-	$.post( "proj_visitor.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "visitor log"}, function( result ){;});
-	$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});	
+			}	
+		});
+	} else {
+		localStorage.setItem("projobj", localStorage.getItem(glob_codename) || default_proj_json);
+		setup();
+	};
+
+	$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
+	$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});	
 };
 function setup(){
 	glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
@@ -106,7 +115,7 @@ function refresh(inLevel){
 	$(".showspan").each(function(){showfields(this);});
     $("#levelspan").text(JSON.stringify(glob_path) + "." + glob_level + ". ");
     $("#itemcount").text(listitems.length + " Items. ");
-	if (localStorage.getItem("codename")) { $("#listinputspan").hide(); } else { $("#listinputspan").show(); };
+	if (glob_codename) { $("#listinputspan").hide(); } else { $("#listinputspan").show(); };
 	heightchange();
 	$(window).resize(heightchange);
 };
@@ -175,10 +184,13 @@ function add(inItem){
 	$("#itemsdiv").prepend(newdiv);
 	$(newdiv).children("textarea").blur(updatefield);
 	$(newdiv).children("select").blur(updatefield);
-	if (typeof inItem === 'undefined') $.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
+	if (typeof inItem === 'undefined') $.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
 };
 function heightchange(){
-	$('#itemsdiv').height(parseInt($(window).height() - $('#controldiv').height())); 
+	newheight = window.innerHeight || parseInt($(window).outerHeight());
+	$('#itemsdiv').height(
+		parseInt(newheight  - $('#controldiv').outerHeight())
+	);
 }
 function togglemore(){
 	$("#morespan").toggle();
@@ -190,29 +202,39 @@ function hidemore(){
 	$("#morespan").hide();
 	$(".minorbutton").hide();
 	$("#morebutton").val("more");
+	heightchange();
 };
 function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
-	$.post( "proj_data.aspx", {codename: "" + localStorage.getItem("codename") + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
-		$("#savetime").html("saved at: " + msg);
-		refresh(glob_level);
-		$.post( "proj_logger.aspx", {data: "{'codename':'" + localStorage.getItem("codename") + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	
-	}).fail(function(xhr, status, error) {
-		$("#savetime").html("save failed");
-		refresh(glob_level);
-    });
-	$("#savetime").html("saving...");
+	if (glob_codename.substring(0, 1) === "%"){
+		//if the codename begins with '%' save remotely in the browser
+		$.post( "proj_data.aspx", {codename: "" + glob_codename.substring(1, glob_codename.length) + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
+			$("#savetime").html("saved at: " + msg);
+			refresh(glob_level);
+			$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	
+		}).fail(function(xhr, status, error) {
+			$("#savetime").html("save failed");
+			refresh(glob_level);
+		});
+		$("#savetime").html("saving...");
+	} else {
+		localStorage.setItem(glob_codename, localStorage.getItem("projobj") || default_proj_json);
+		setup();
+		$("#savetime").html("saved locally (in browser)");
+	};
+	heightchange();
 };
 //List Item Functions
 function settings(){
 	glob_projobj = glob_projobj[glob_level];
 	addbuttons();
 	refresh();
+	heightchange();
 };
 function removeItem(caller){
 	var id = $(caller.parentElement).children(".id_input").val();
 	var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
-	var logstring = JSON.stringify({'codename': localStorage.getItem("codename"), 'time': Date(),'action':'Deleted Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
+	var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Deleted Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 	delete glob_projobj[glob_level][datavalue][id]
 	$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
 		var parentDiv = caller.parentElement;
@@ -222,7 +244,7 @@ function removeItem(caller){
 function closeItem(caller) {
 	var id = $(caller.parentElement).children(".id_input").val();
 	var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
-	var logstring = JSON.stringify({'codename': localStorage.getItem("codename"), 'time': Date(),'action':'Completed Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
+	var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Completed Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 	delete glob_projobj[glob_level][datavalue][id]
 	$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
 		var parentDiv = caller.parentElement;
@@ -334,7 +356,7 @@ function logout(){
 function setcodename(){
 	localStorage.setItem("codename", $("#listinput").val());
 	load();
-	$("#savetime").html("logged in as: " + localStorage.getItem("codename"));
+	$("#savetime").html("logged in as: " + glob_codename);
 };
 //Page-Specific Utilities
 function addlistitem(strlist, objitem){
@@ -394,10 +416,6 @@ function getUrlParameter(sParam) {
 	}
 };
 function followJGpath(objJG, arrPath){
-console.log("followjgpath: ")
-console.log(objJG);
-console.log(arrPath);
-
 	var nextObj = objJG;
 	for (var x = 0; x < arrPath.length; x++) {
 		if (typeof followJG(nextObj, arrPath[x]) !== 'undefined' && typeof followJG(nextObj, arrPath[x])["$type"] !== 'undefined' && followJG(nextObj, arrPath[x])["$type"] === "ref"){
@@ -409,9 +427,6 @@ console.log(arrPath);
 	return nextObj;
 };
 function followJG(objJG, strKey){
-console.log("followjg: ")
-console.log(objJG);
-console.log(strKey);
 	var nextObj = objJG;
 	if (typeof nextObj[strKey]["$type"] !== 'undefined' && nextObj[strKey]["$type"] === "ref"){
 		nextObj = followJGpath(nextObj, nextObj[strKey]["value"]);

@@ -3,6 +3,7 @@ var glob_root = null;
 var glob_path = [];
 var glob_projobj = null;
 var glob_level = "";
+var glob_datasource = "";
 var glob_codename = "";
 var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 var default_proj_json = '{"list1":' + default_list_json + '}'
@@ -14,6 +15,7 @@ function load() {
 	localStorage.setItem("codename", glob_codename);
 	//if codename begins with '%' get remote storage version
 	if (glob_codename.substring(0, 1) === "%"){
+		glob_datasource = 'server';
 		$.ajax({
 			url: "../JsonFiles/proj_data_" + glob_codename.substring(1, glob_codename.length) + ".json"
 			,cache: false
@@ -30,12 +32,14 @@ function load() {
 			}	
 		});
 	} else {
+		glob_datasource = 'local';
 		localStorage.setItem("projobj", localStorage.getItem(glob_codename) || default_proj_json);
 		setup();
 	};
-
-	$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
-	$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});	
+	if (glob_datasource === 'server'){
+		$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
+		$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});	
+	};
 };
 function setup(){
 	glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
@@ -184,7 +188,7 @@ function add(inItem){
 	$("#itemsdiv").prepend(newdiv);
 	$(newdiv).children("textarea").blur(updatefield);
 	$(newdiv).children("select").blur(updatefield);
-	if (typeof inItem === 'undefined') $.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
+	if (typeof inItem === 'undefined' && glob_datasource === 'server') $.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
 };
 function heightchange(){
 	newheight = window.innerHeight || parseInt($(window).outerHeight());
@@ -206,7 +210,7 @@ function hidemore(){
 };
 function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
-	if (glob_codename.substring(0, 1) === "%"){
+	if (glob_datasource === 'server'){
 		//if the codename begins with '%' save remotely in the browser
 		$.post( "proj_data.aspx", {codename: "" + glob_codename.substring(1, glob_codename.length) + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
 			$("#savetime").html("saved at: " + msg);
@@ -236,20 +240,24 @@ function removeItem(caller){
 	var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
 	var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Deleted Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 	delete glob_projobj[glob_level][datavalue][id]
-	$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
-		var parentDiv = caller.parentElement;
-		parentDiv.parentElement.removeChild(parentDiv);
-	});
+	if (glob_datasource === 'server'){
+		$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
+			var parentDiv = caller.parentElement;
+			parentDiv.parentElement.removeChild(parentDiv);
+		});
+	};
 };
 function closeItem(caller) {
 	var id = $(caller.parentElement).children(".id_input").val();
 	var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
 	var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Completed Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 	delete glob_projobj[glob_level][datavalue][id]
-	$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
-		var parentDiv = caller.parentElement;
-		parentDiv.parentElement.removeChild(parentDiv);
-	});
+	if (glob_datasource === 'server'){
+		$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
+			var parentDiv = caller.parentElement;
+			parentDiv.parentElement.removeChild(parentDiv);
+		});
+	};
 };
 function showfields(caller){
 	var divspans = caller.parentNode.getElementsByTagName("span");

@@ -11,10 +11,13 @@ div {
 	background-color: lightblue; 
 	text-align:center;
 }
-
 #controldiv {
 	margin: 0 0 0 0;
+	white-space:wrap; 
+	border: 2px solid black;
+	padding: 0 0 0 0; 
 }
+
 #itemsdiv{
 	margin: 0 0 0 0;
 	overflow: scroll;
@@ -26,6 +29,16 @@ div {
 #itemsdiv::-webkit-scrollbar { 
     display: none; 
 }
+
+#noticediv{
+	white-space:nowrap;
+	overflow:auto;
+	margin: 0 0 0 0;	
+	height: 12	0px;
+	border: 2px dotted black;
+	overflow: -moz-scrollbars-none;
+}
+
 .taskdiv {
 	padding: 20px 20px 20px 20px; 
 	margin: 20px 20px 20px 20px; 
@@ -35,17 +48,13 @@ div {
 #listbuttons {
 	white-space:nowrap;
 	overflow:scroll;
+	margin: 0 0 0 0;	
 	height: 90px;
 	border: 2px dotted black;
 	overflow: -moz-scrollbars-none;
 }
 #listbuttons::-webkit-scrollbar { 
     display: none; 
-}
-#controldiv {
-	white-space:wrap; 
-	border: 2px solid black;
-	padding: 20px 20px 20px 20px; 
 }
 input, button, textarea {
 	font-size: 120%;

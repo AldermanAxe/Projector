@@ -3,7 +3,7 @@
 		<meta http-equiv="pragma" content="no-cache">
 		<title>Projector</title>
 		<link rel="icon" sizes="192x192" href="favicon.ico">
-		<link rel="stylesheet" type="text/css" href="proj_style.css?version=3.10">
+		<link rel="stylesheet" type="text/css" href="proj_style.css?version=3.2">
 		<script src="../proj/libraries/jquery-1.12.0.js"></script>
 		<script src="../proj/proj.js?version=1.1"></script>
 	</head>
@@ -15,14 +15,12 @@
 				<input type="button"  class='buttonspan' id="morebutton" onclick="togglemore()" value="less"/>
 				<input type="button"  class='buttonspan' id="savebutton" onclick="save()" type="button" value="save" />
 			</span>
-			<br/>
-			<span>
+			<div id="noticediv">
 				<span id="levelspan"></span>
 				<span id="itemcount"></span>
 				<span id="savetime">Not Yet Saved</span>
 				<span id="alert"></span>
-			</span>
-			<br/>
+			</div>
 			<span id="topbarspan">
 				<span id="morespan">
 					<div>

@@ -1,7 +1,7 @@
 runcommit
 
 sub runcommit
-	commitmsg = InputBox("Enter Commit message")
+	commitmsg = InputBox("commit message")
 
 	if commitmsg = "" then 
 		msgbox "cancelled"

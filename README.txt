@@ -1,1 +1,1 @@
-all rights reserved, for now
+A tool to record, process, and share information. A sort of project organizer.

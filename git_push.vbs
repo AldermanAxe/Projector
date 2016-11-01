@@ -1,6 +1,15 @@
-commitmsg = InputBox("Enter Commit message")
+runcommit
 
-Set oShell = WScript.CreateObject("WSCript.shell")
-oShell.run "git add *"
-oShell.run "git commit -m """ & commitmsg & """"
-oShell.run "git push -u webbie master"
+sub runcommit
+	commitmsg = InputBox("Enter Commit message")
+
+	if commitmsg = "" then 
+		msgbox "cancelled"
+		exit sub
+	end if
+
+	Set oShell = WScript.CreateObject("WSCript.shell")
+	oShell.run "git add *"
+	oShell.run "git commit -m """ & commitmsg & """"
+	oShell.run "git push -u webbie master"
+end sub

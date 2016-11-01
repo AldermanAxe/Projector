@@ -39,8 +39,6 @@ function load() {
 		});
 	} else if (glob_datasource === "myjson") {
 		glob_datasource = 'myjson';
-
-
 		localStorage.setItem("projobj", glob_codename || default_proj_json);
 		$.get("https://api.myjson.com/bins/" + glob_codename, function(in_data, textStatus, jqXHR) {
 			localStorage.setItem("projobj", JSON.stringify(in_data));
@@ -51,6 +49,7 @@ function load() {
 		$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
 		$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});	
 	};
+	$("#newcodenamebutton").hide();
 };
 function setup(){
 	glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
@@ -72,6 +71,7 @@ function setup(){
 //	$("#listinputbutton").bind('click', setcodename);
 	$(window).resize(function() { return false; }); //needed to cancel resizing when the soft keyboard disappears, as happens when a textarea is exited. This resizing will interfere with button presses.
 	hidemore();
+
 	
 	// define a handler
 	function doc_keyUp(e) {
@@ -257,6 +257,25 @@ function info(){
 	$("#alert").html("datasource:" + glob_datasource + " / " + "codename: " + glob_codename);
 };
 //List Item Functions
+function datasourcechange(){
+		if ($("#dsinput").val() === "myjson") {
+			$("#newcodenamebutton").show()
+		} else {
+			$("#newcodenamebutton").hide()			
+		}
+}
+function newcodename(){
+	$.ajax({
+		url:"https://api.myjson.com/bins",
+		type:"POST",
+		data:default_proj_json,
+		contentType:"application/json; charset=utf-8",
+		dataType:"json",
+		success: function(data, textStatus, jqXHR){
+				$("#listinput").val(data.uri.substring(data.uri.lastIndexOf("/") + 1));
+		}
+	});   
+}
 function settings(){
 	glob_projobj = glob_projobj[glob_level];
 	addbuttons();
@@ -396,7 +415,7 @@ function setcodename(){
 	localStorage.setItem("datasource", $("#dsinput").val());
 	localStorage.setItem("codename", $("#listinput").val());
 	load();
-	$("#alert").html("logged in as: " + glob_codename + $("#alert").html());
+	$("#alert").html("logged in as: " + glob_codename + $("#alert").html() + ". ");
 };
 //Page-Specific Utilities
 function addlistitem(strlist, objitem){

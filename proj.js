@@ -13,11 +13,17 @@ var glob_objlabellength = 15;
 function load() {
 	glob_codename = (getUrlParameter("codename") || localStorage.getItem("codename")) || "";
 	localStorage.setItem("codename", glob_codename);
-	//if codename begins with '%' get remote storage version
-	if (glob_codename.substring(0, 1) === "%"){
+	glob_datasource  = (getUrlParameter("datasource") || localStorage.getItem("datasource")) || "";
+	localStorage.setItem("datasource", glob_datasource);
+	
+	if (glob_datasource === "local") {
+		glob_datasource = 'local';
+		localStorage.setItem("projobj", glob_codename || default_proj_json);
+		setup();
+	} else if (glob_datasource === "server"){
 		glob_datasource = 'server';
 		$.ajax({
-			url: "../JsonFiles/proj_data_" + glob_codename.substring(1, glob_codename.length) + ".json"
+			url: "../JsonFiles/proj_data_" + glob_codename + ".json"
 			,cache: false
 			,type: "get"
 			,datatype: "json"
@@ -31,10 +37,15 @@ function load() {
 				setup();
 			}	
 		});
-	} else {
-		glob_datasource = 'local';
-		localStorage.setItem("projobj", localStorage.getItem(glob_codename) || default_proj_json);
-		setup();
+	} else if (glob_datasource === "myjson") {
+		glob_datasource = 'myjson';
+
+
+		localStorage.setItem("projobj", glob_codename || default_proj_json);
+		$.get("https://api.myjson.com/bins/" + glob_codename, function(in_data, textStatus, jqXHR) {
+			localStorage.setItem("projobj", JSON.stringify(in_data));
+			setup();
+		});
 	};
 	if (glob_datasource === 'server'){
 		$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
@@ -52,13 +63,13 @@ function setup(){
 				try {
 					eval(runners[key]["-function"]);
 				} catch (e) {
-						$("#alert").val(e.message);
+						$("#alert").html(e.message + $("#alert").html());
 				}
 			};
 		}
 	};
 	refresh(glob_level); 	//refresh
-	$("#listinputbutton").bind('click', setcodename);
+//	$("#listinputbutton").bind('click', setcodename);
 	$(window).resize(function() { return false; }); //needed to cancel resizing when the soft keyboard disappears, as happens when a textarea is exited. This resizing will interfere with button presses.
 	hidemore();
 	
@@ -86,6 +97,7 @@ function refresh(inLevel){
 		inLevel = property;
 		break;
 	}}};	
+	var blnNewLevel = inLevel !== glob_level;
 	glob_level = inLevel;
 	var dataobj = followJG(glob_projobj, glob_level);
 	var listitems = [];
@@ -104,21 +116,20 @@ function refresh(inLevel){
 		$("#valuespan").show();
 		$("#valueinput").val(dataobj);		
 	};
-
 	try {
 		eval("sortfun = " + glob_projobj[glob_level]["$sort"]);
 	} catch (e) {
-		$("#alert").val(e.message);
+		$("#alert").html(e.message + $("#alert").html());
 	};
 	listitems.sort( sortfun || function(a, b){return a - b} );
-
 	listitems.forEach(function(a){
 		add(a);
 	});
-	
 	$(".showspan").each(function(){showfields(this);});
-    $("#levelspan").text(JSON.stringify(glob_path) + "." + glob_level + ". ");
-    $("#itemcount").text(listitems.length + " Items. ");
+	if(blnNewLevel){
+		$("#alert").html(JSON.stringify(glob_path) + "." + glob_level + ". " + $("#alert").html());
+		$("#alert").html(listitems.length + " Items. " + $("#alert").html());
+	};
 	if (glob_codename) { $("#listinputspan").hide(); } else { $("#listinputspan").show(); };
 	heightchange();
 	$(window).resize(heightchange);
@@ -211,22 +222,39 @@ function hidemore(){
 function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
 	if (glob_datasource === 'server'){
-		//if the codename begins with '%' save remotely in the browser
-		$.post( "proj_data.aspx", {codename: "" + glob_codename.substring(1, glob_codename.length) + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
-			$("#savetime").html("saved at: " + msg);
+		//if the codename begins with '%' save locally in the browser
+		$.post( "proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
+			$("#alert").html("saved at: " + msg + $("#alert").html());
 			refresh(glob_level);
 			$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	
 		}).fail(function(xhr, status, error) {
-			$("#savetime").html("save failed");
+			$("#alert").html("save failed" + $("#alert").html());
 			refresh(glob_level);
 		});
-		$("#savetime").html("saving...");
+		$("#alert").html("...saving..." + $("#alert").html());
+	} else if (glob_datasource = 'myjson') {
+		$.ajax({
+			url:"https://api.myjson.com/bins/" + glob_codename,
+			type:"PUT",
+			data: JSON.stringify(glob_root),
+			contentType:"application/json; charset=utf-8",
+			dataType:"json",
+			success: function(data, textStatus, jqXHR){
+				$("#alert").html("saved myjson at at: " + Date() + $("#alert").html());
+				refresh(glob_level);
+			}
+		});   
+		$("#alert").html("...saving..." + $("#alert").html());
+
 	} else {
 		localStorage.setItem(glob_codename, localStorage.getItem("projobj") || default_proj_json);
 		setup();
-		$("#savetime").html("saved locally (in browser)");
+		$("#alert").html("saved locally (in browser)" + $("#alert").html());
 	};
 	heightchange();
+};
+function info(){
+	$("#alert").html("datasource:" + glob_datasource + " / " + "codename: " + glob_codename);
 };
 //List Item Functions
 function settings(){
@@ -234,6 +262,9 @@ function settings(){
 	addbuttons();
 	refresh();
 	heightchange();
+};
+function showstring(){
+	$("#alert").html(JSON.stringify(glob_projobj) + $("#alert").html());
 };
 function removeItem(caller){
 	var id = $(caller.parentElement).children(".id_input").val();
@@ -277,7 +308,7 @@ function updatefield(a){
 		try {
 			eval('newvalue = ' + newvalue.substr(1, newvalue.length));
 		} catch(e) {
-			$("#alert").val(e);
+			$("#alert").html(e + $("#alert").html());
 		}
 	};
 	key = (key.substr(key.length - 6, 6) === '_input' ? key.substr(0, key.length - 6): key);
@@ -307,13 +338,13 @@ function updatevalue(a){
 		try {
 			eval('newvalue = ' + newvalue.substr(1, newvalue.length));
 		} catch(e) {
-			$("#alert").val(e);
+			$("#alert").html(e + $("#alert").html());
 		}
 	} else if (newvalue.substring(0, 1) === ">"){
 		try {
 			eval('newvalue = {"$type":"ref","value": ' + newvalue.substr(1, newvalue.length) + '}');
 		} catch(e) {
-			$("#alert").val(e);
+			$("#alert").html(e + $("#alert").html());
 		}
 	};
 	glob_projobj[glob_level] = newvalue;
@@ -362,9 +393,10 @@ function logout(){
 	window.location.href = newloc
 };
 function setcodename(){
+	localStorage.setItem("datasource", $("#dsinput").val());
 	localStorage.setItem("codename", $("#listinput").val());
 	load();
-	$("#savetime").html("logged in as: " + glob_codename);
+	$("#alert").html("logged in as: " + glob_codename + $("#alert").html());
 };
 //Page-Specific Utilities
 function addlistitem(strlist, objitem){

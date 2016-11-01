@@ -15,35 +15,40 @@
 				<input type="button"  class='buttonspan' id="morebutton" onclick="togglemore()" value="less"/>
 				<input type="button"  class='buttonspan' id="savebutton" onclick="save()" type="button" value="save" />
 			</span>
-			<div id="noticediv">
-				<span id="levelspan"></span>
-				<span id="itemcount"></span>
-				<span id="savetime">Not Yet Saved</span>
-				<span id="alert"></span>
-			</div>
 			<span id="topbarspan">
 				<span id="morespan">
-					<div>
+					<div id="morediv">
 						<input type="button" class='buttonspan' id="addlistbutton" onclick="setinput('list name:', '', addlist)" value="add list"/>
 						<input type="button" class='buttonspan' id="addvaluebutton" onclick="setinput('value name:', '', addvalue)" value="add value"/>
 						<input type="button" class='buttonspan' id="deletelistbutton" onclick="deletelist()" value="delete"/>
 						<input type="button" class='buttonspan' id="movedownbutton" onclick="move_down()" value="go down"/>
 						<input type="button" class='buttonspan' id="moveupbutton" onclick="move_up()" value="go up"/>
 						<input type="button" class='buttonspan' id="settingsbutton" onclick="settings()" value="settings"/>
+						<input type="button" class='buttonspan' id="stringifybutton" onclick="showstring()" value="stringify"/>
 						<input type="button" class='buttonspan' id="logoutbutton" onclick="logout()" value="logout"/>
-					</div>
-				</span>		
-				
+						<input type="button" class='buttonspan' id="infobutton" onclick="info()" value="info"/>
+						</div>
+				</span>
 				<span id='listinputspan'>
-					<div id='listinputlabel'>Identity not found. Enter your code name:</div>
+					<div id='dslabel'>data source:</div>
+					<select id='dsinput'>
+					  <option value="local">local browser</option>
+					  <option value="server">server</option>
+					  <option value="myjson">myjson</option>
+					</select>
+					<div id='listinputlabel'>code name:</div>
 					<div><input type='textarea' id = 'listinput' onkeypress="listInputChange()"></input><br/></div>
-					<input type="button" class='buttonspan' id='listinputbutton' value='Enter' />
+					<input type="button" class='buttonspan' id='listinputbutton' value='Enter' onclick='setcodename()'/>
 				</span>
 				<span id='valuespan'>
 					<div>Value:</div>
 					<textarea id='valueinput' onblur='updatevalue(this)'></textarea>
 				</span>
 			</span>
+			<div id="noticediv">
+				<span id="alert"></span>
+			</div>
+
 		</div>
 		<div id='itemsdiv'>
 		</div>

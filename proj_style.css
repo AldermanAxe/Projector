@@ -30,6 +30,18 @@ div {
     display: none; 
 }
 
+#morediv{
+	white-space:nowrap;
+	overflow:auto;
+	margin: 0 0 0 0;	
+	height: 12	0px;
+	border: 2px dotted black;
+	overflow: -moz-scrollbars-none;
+}
+#morediv::-webkit-scrollbar { 
+    display: none; 
+}
+
 #noticediv{
 	white-space:nowrap;
 	overflow:auto;
@@ -37,6 +49,7 @@ div {
 	height: 12	0px;
 	border: 2px dotted black;
 	overflow: -moz-scrollbars-none;
+	text-align: left;
 }
 
 .taskdiv {

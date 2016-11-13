@@ -13,7 +13,7 @@ var glob_objlabellength = 15;
 function load() {
 	glob_codename = (getUrlParameter("codename") || localStorage.getItem("codename")) || "";
 	localStorage.setItem("codename", glob_codename);
-	glob_datasource  = (getUrlParameter("datasource") || localStorage.getItem("datasource")) || "";
+	glob_datasource  = (getUrlParameter("datasource") || localStorage.getItem("datasource")) || "server";
 	localStorage.setItem("datasource", glob_datasource);
 	
 	if (glob_datasource === "local") {
@@ -68,7 +68,7 @@ function setup(){
 		}
 	};
 	refresh(glob_level); 	//refresh
-//	$("#listinputbutton").bind('click', setcodename);
+	$("#listinputbutton").bind('click', setcodename);
 	$(window).resize(function() { return false; }); //needed to cancel resizing when the soft keyboard disappears, as happens when a textarea is exited. This resizing will interfere with button presses.
 	hidemore();
 
@@ -133,6 +133,7 @@ function refresh(inLevel){
 	if (glob_codename) { $("#listinputspan").hide(); } else { $("#listinputspan").show(); };
 	heightchange();
 	$(window).resize(heightchange);
+
 };
 //List Level Functions
 function add(inItem){
@@ -379,6 +380,7 @@ function deletelist(){
 function addlist(){
 	glob_projobj[$("#listinput").val()] = JSON.parse(default_list_json)
 	addbuttons();
+	console.log(glob_projobj);
 	refresh($("#listinput").val());
 };
 function addvalue(){

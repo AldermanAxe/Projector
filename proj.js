@@ -71,7 +71,6 @@ function setup(){
 	$("#listinputbutton").bind('click', setcodename);
 	$(window).resize(function() { return false; }); //needed to cancel resizing when the soft keyboard disappears, as happens when a textarea is exited. This resizing will interfere with button presses.
 	hidemore();
-
 	
 	// define a handler
 	function doc_keyUp(e) {
@@ -201,6 +200,7 @@ function add(inItem){
 	$(newdiv).children("textarea").blur(updatefield);
 	$(newdiv).children("select").blur(updatefield);
 	if (typeof inItem === 'undefined' && glob_datasource === 'server') $.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
+	document.getElementById('itemsdiv').scrollTop = 0;
 };
 function heightchange(){
 	newheight = window.innerHeight || parseInt($(window).outerHeight());
@@ -219,6 +219,16 @@ function hidemore(){
 	$(".minorbutton").hide();
 	$("#morebutton").val("more");
 	heightchange();
+};
+function showsaveto(){
+	setinput("Save To", glob_codename, saveto	);
+};
+function saveto(){
+	localStorage.setItem("datasource", $("#dsinput").val());
+	glob_datasource = $("#dsinput").val();
+	localStorage.setItem("codename", $("#listinput").val());
+	glob_codename = $("#listinput").val();
+	save();
 };
 function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
@@ -491,6 +501,9 @@ function followJG(objJG, strKey){
 	var nextObj = objJG;
 	if (typeof nextObj[strKey]["$type"] !== 'undefined' && nextObj[strKey]["$type"] === "ref"){
 		nextObj = followJGpath(nextObj, nextObj[strKey]["value"]);
+	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "link")) { //follow a link to another location and add the values to the object
+		nextObj = followlink(nextObj[strKey]["addr"]);
+		nextObj[strKey]["value"] = nextObj;
 	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "node" || nextObj[strKey]["$type"] === "atom")) {
 		nextObj = nextObj[strKey]["value"];
 	} else {

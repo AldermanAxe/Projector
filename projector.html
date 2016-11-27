@@ -29,7 +29,10 @@
 						<input type="button" class='buttonspan' id="infobutton" onclick="info()" value="info"/>
 						<input type="button" class='buttonspan' id="savetobutton" onclick="showsaveto()" value="saveto"/>
 					</div>
-					<div>Search: <input type='textarea' id = 'searchinput' onkeypress="search()"></input><br/></div>
+					<div>
+						<input type='textarea' id = 'searchinput' onkeypress="searchentry()"></input>
+						<input type="button" class='buttonspan' id="searchbutton" onclick="search()" value="search"/>
+					</div>
 				</span>
 				<span id='listinputspan'>
 					<div id='dslabel'>data source:</div>

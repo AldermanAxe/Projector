@@ -453,6 +453,25 @@ function setinput(strLabel, strDefault, funUpdate){
 	$("#listinputbutton").unbind('click');
 	$("#listinputbutton").bind('click', funUpdate);	
 }
+
+function searchentry() {
+    var key = window.event.keyCode;
+    if (key === 13) search(); // If the user has pressed enter
+	return key != 13;
+	
+};
+
+function search() {
+	var searchtxt = $("#searchinput").val();
+	$(".taskdiv").each(function(i, e){
+		if(e.innerHTML.search(searchtxt) === -1){
+			$(e).hide();
+		} else {
+			$(e).show();			
+		}
+	});
+};
+
 function listInputChange() {
     var key = window.event.keyCode;
     if (key === 13) $("#listinputbutton").click(); // If the user has pressed enter

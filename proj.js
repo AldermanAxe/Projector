@@ -521,7 +521,7 @@ function followJG(objJG, strKey){
 	if (typeof nextObj[strKey]["$type"] !== 'undefined' && nextObj[strKey]["$type"] === "ref"){
 		nextObj = followJGpath(nextObj, nextObj[strKey]["value"]);
 	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "link")) { //follow a link to another location and add the values to the object
-		nextObj = followlink(nextObj[strKey]["addr"]);
+		nextObj = followlink(nextObj[strKey]["value"]);
 		nextObj[strKey]["value"] = nextObj;
 	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "node" || nextObj[strKey]["$type"] === "atom")) {
 		nextObj = nextObj[strKey]["value"];
@@ -529,6 +529,10 @@ function followJG(objJG, strKey){
 		nextObj = nextObj[strKey];
 	}
 	return nextObj;
+}
+//UNDER CONSTRUCTION need to add
+function followlink(x){
+	return x;
 }
 //Execution Code
 $(load);

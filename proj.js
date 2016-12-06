@@ -5,6 +5,7 @@ var glob_projobj = null;
 var glob_level = "";
 var glob_datasource = "";
 var glob_codename = "";
+var glob_log = [];
 var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 var default_proj_json = '{"list1":' + default_list_json + '}'
 var glob_objlabellength = 15;
@@ -91,6 +92,11 @@ function refresh(inLevel){
 	var sortfun;
 	var dataobj;
 	var listitems;
+	
+	if (glob_projobj[inLevel] && glob_projobj[inLevel]["$type"] &&  glob_projobj[inLevel]["$type"] === "link"){
+		window.location.href = glob_projobj[inLevel]["value"];
+	}
+	
 	$(".taskdiv").remove();
 	if (!inLevel){ for (var property in glob_projobj) { if (glob_projobj.hasOwnProperty(property)) {
 		inLevel = property;
@@ -234,7 +240,7 @@ function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
 	if (glob_datasource === 'server'){
 		//if the codename begins with '%' save locally in the browser
-		$.post( "proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
+		$.post( "proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root, null, 2) || 0)}).done(function(msg){  
 			$("#alert").html("saved at: " + msg + $("#alert").html());
 			refresh(glob_level);
 			$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	
@@ -334,6 +340,10 @@ function updatefield(a){
 	var id = $(a.target.parentElement).children(".id_input").val();
 	var key = a.target.className;
 	var newvalue = a.target.value;
+	
+	glob_log.push({"level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue});
+	console.log(glob_log);
+	
 	if (newvalue.substring(0, 1) === "="){
 		try {
 			eval('newvalue = ' + newvalue.substr(1, newvalue.length));
@@ -390,7 +400,6 @@ function deletelist(){
 function addlist(){
 	glob_projobj[$("#listinput").val()] = JSON.parse(default_list_json)
 	addbuttons();
-	console.log(glob_projobj);
 	refresh($("#listinput").val());
 };
 function addvalue(){
@@ -521,8 +530,7 @@ function followJG(objJG, strKey){
 	if (typeof nextObj[strKey]["$type"] !== 'undefined' && nextObj[strKey]["$type"] === "ref"){
 		nextObj = followJGpath(nextObj, nextObj[strKey]["value"]);
 	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "link")) { //follow a link to another location and add the values to the object
-		nextObj = followlink(nextObj[strKey]["value"]);
-		nextObj[strKey]["value"] = nextObj;
+		nextObj = nextObj[strKey]["value"];
 	} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "node" || nextObj[strKey]["$type"] === "atom")) {
 		nextObj = nextObj[strKey]["value"];
 	} else {

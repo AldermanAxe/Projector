@@ -340,10 +340,12 @@ function updatefield(a){
 	var id = $(a.target.parentElement).children(".id_input").val();
 	var key = a.target.className;
 	var newvalue = a.target.value;
-	
-	glob_log.push({"level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue});
-	console.log(glob_log);
-	
+
+	//log the change
+	var logitem = {"source":glob_datasource, "codename":glob_codename, "level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue, "time": Date()};
+	glob_log.push(logitem);
+	$.post( "proj_logger.aspx", {"data": JSON.stringify(logitem)}, function( result ) {;});	
+
 	if (newvalue.substring(0, 1) === "="){
 		try {
 			eval('newvalue = ' + newvalue.substr(1, newvalue.length));

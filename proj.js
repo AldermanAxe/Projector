@@ -336,6 +336,9 @@ function showfields(caller){
 		};
 	};
 };
+function undo(){
+	$("#alert").html("undo not yet working. " + $("#alert").html());
+};
 function updatefield(a){
 	var id = $(a.target.parentElement).children(".id_input").val();
 	var key = a.target.className;

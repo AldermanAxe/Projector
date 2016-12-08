@@ -248,7 +248,7 @@ function save(){
 			$("#alert").html("save failed" + $("#alert").html());
 			refresh(glob_level);
 		});
-		$("#alert").html("...saving..." + $("#alert").html());
+		$("#aFlert").html("...saving..." + $("#alert").html());
 	} else if (glob_datasource = 'myjson') {
 		$.ajax({
 			url:"https://api.myjson.com/bins/" + glob_codename,
@@ -344,7 +344,10 @@ function updatefield(a){
 	//log the change
 	var logitem = {"source":glob_datasource, "codename":glob_codename, "level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue, "time": Date()};
 	glob_log.push(logitem);
-	$.post( "proj_logger.aspx", {"data": JSON.stringify(logitem)}, function( result ) {;});	
+	$.post( "proj_logger.aspx", {"data": JSON.stringify(logitem)}, function( result ) {;})
+		.fail(function() {
+			$("#alert").html("remote log failed. " + $("#alert").html());
+		});	
 
 	if (newvalue.substring(0, 1) === "="){
 		try {

@@ -240,7 +240,7 @@ function save(){
 	localStorage.setItem("projobj", JSON.stringify(glob_root));
 	if (glob_datasource === 'server'){
 		//if the codename begins with '%' save locally in the browser
-		$.post( "proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root, null, 2) || 0)}).done(function(msg){  
+		$.post( "proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
 			$("#alert").html("saved at: " + msg + $("#alert").html());
 			refresh(glob_level);
 			$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	

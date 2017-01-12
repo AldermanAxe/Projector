@@ -132,7 +132,7 @@
 				} else if (glob_datasource === "server"){
 					glob_datasource = 'server';
 					$.ajax({
-						url: "../JsonFiles/proj_data_" + glob_codename + ".json"
+						url: "http://aleadenmarx.hopto.org/JsonFiles/proj_data_" + glob_codename + ".json"
 						,cache: false
 						,type: "get"
 						,datatype: "json"
@@ -347,7 +347,7 @@
 				localStorage.setItem("projobj", JSON.stringify(glob_root));
 				if (glob_datasource === 'server'){
 					//if the codename begins with '%' save locally in the browser
-					$.post( "proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
+					$.post( "http://aleadenmarx.hopto.org/proj/proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
 						$("#alert").html("saved at: " + msg + $("#alert").html());
 						refresh(glob_level);
 						$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	

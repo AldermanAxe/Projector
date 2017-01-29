@@ -101,7 +101,6 @@
 			var glob_level = "";
 			var glob_datasource = "";
 			var glob_codename = "";
-			var glob_log = [];
 			var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 			var default_proj_json = '{"list1":' + default_list_json + '}'
 			var glob_objlabellength = 15;
@@ -155,13 +154,14 @@
 					});
 				};
 				if (glob_datasource === 'server'){
-					$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
-					$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}" }, function( result ) {;});	
+					//disabling visitor logging
+					//$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
 				};
 				$("#newcodenamebutton").hide();
 			};
 			function setup(){
 				glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
+				log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}");
 				glob_level = getUrlParameter("inLevel") || "";
 				addbuttons();
 				if (typeof glob_projobj["-autorun"] !== 'undefined') { 	//run the autorun functions
@@ -312,7 +312,7 @@
 				$("#itemsdiv").prepend(newdiv);
 				$(newdiv).children("textarea").blur(updatefield);
 				$(newdiv).children("select").blur(updatefield);
-				if (typeof inItem === 'undefined' && glob_datasource === 'server') $.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}"}, function( result ) {;});
+				if (typeof inItem === 'undefined' && glob_datasource === 'server') log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}");
 				document.getElementById('itemsdiv').scrollTop = 0;
 			};
 			function heightchange(){
@@ -350,7 +350,7 @@
 					$.post( "http://aleadenmarx.hopto.org/proj/proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
 						$("#alert").html("saved at: " + msg + $("#alert").html());
 						refresh(glob_level);
-						$.post( "proj_logger.aspx", {data: "{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}" }, function( result ) {;});	
+						log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}");	
 					}).fail(function(xhr, status, error) {
 						$("#alert").html("save failed" + $("#alert").html());
 						refresh(glob_level);
@@ -414,24 +414,18 @@
 				var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
 				var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Deleted Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 				delete glob_projobj[glob_level][datavalue][id]
-				if (glob_datasource === 'server'){
-					$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
-						var parentDiv = caller.parentElement;
-						parentDiv.parentElement.removeChild(parentDiv);
-					});
-				};
+				log(logstring);
+				var parentDiv = caller.parentElement;
+				parentDiv.parentElement.removeChild(parentDiv);
 			};
 			function closeItem(caller) {
 				var id = $(caller.parentElement).children(".id_input").val();
 				var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
 				var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Completed Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 				delete glob_projobj[glob_level][datavalue][id]
-				if (glob_datasource === 'server'){
-					$.post( "proj_logger.aspx", {data: logstring}, function( result ) {
-						var parentDiv = caller.parentElement;
-						parentDiv.parentElement.removeChild(parentDiv);
-					});
-				};
+				log(logstring);
+				var parentDiv = caller.parentElement;
+				parentDiv.parentElement.removeChild(parentDiv);
 			};
 			function showfields(caller){
 				var divspans = caller.parentNode.getElementsByTagName("span");
@@ -453,12 +447,7 @@
 
 				//log the change
 				var logitem = {"source":glob_datasource, "codename":glob_codename, "level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue, "time": Date()};
-				glob_log.push(logitem);
-				$.post( "proj_logger.aspx", {"data": JSON.stringify(logitem)}, function( result ) {;})
-					.fail(function() {
-						$("#alert").html("remote log failed. " + $("#alert").html());
-					});	
-
+				log(JSON.stringify(logitem));
 				if (newvalue.substring(0, 1) === "="){
 					try {
 						eval('newvalue = ' + newvalue.substr(1, newvalue.length));
@@ -651,8 +640,18 @@
 				return nextObj;
 			}
 			//UNDER CONSTRUCTION need to add
-			function followlink(x){
-				return x;
+			function log(x){
+				if (!(glob_projobj.hasOwnProperty("-log"))){
+					glob_projobj["-log"] = [];
+				}
+				if (Object.prototype.toString.call(glob_projobj["-log"]) != "[object Array]"){
+					glob_projobj["-log"] = [];
+				}
+				glob_projobj["-log"].push(x);
+				console.log("logged " + x);
+			}
+			function clearLog(){
+				glob_projobj["-log"] = [];
 			}
 			//Execution Code
 			$(load);
@@ -680,7 +679,8 @@
 						<input type="button" class='buttonspan' id="logoutbutton" onclick="logout()" value="logout"/>
 						<input type="button" class='buttonspan' id="infobutton" onclick="info()" value="info"/>
 						<input type="button" class='buttonspan' id="savetobutton" onclick="showsaveto()" value="saveto"/>
-					</div>
+						<input type="button" class='buttonspan' id="clearlogbutton" onclick="clearLog()" value="clearLog"/>
+						</div>
 					<div>
 						<input type='textarea' id = 'searchinput' onkeypress="searchentry()"></input>
 						<input type="button" class='buttonspan' id="searchbutton" onclick="search()" value="search"/>

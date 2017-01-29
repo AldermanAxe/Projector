@@ -1,1 +1,1 @@
-A tool to record, process, and share information. A sort of project organizer.
+A tool to record, process, and share information. A sort of project organizer, note keeper, scheduler

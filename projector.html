@@ -104,6 +104,7 @@
 			var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 			var default_proj_json = '{"list1":' + default_list_json + '}'
 			var glob_objlabellength = 15;
+			
 			//Page Setup 
 			function load() {
 				//using arguments given in the file name if there are any. arguments are separated by underscore _
@@ -332,16 +333,6 @@
 				$(".minorbutton").hide();
 				$("#morebutton").val("more");
 				heightchange();
-			};
-			function showsaveto(){
-				setinput("Save To", glob_codename, saveto	);
-			};
-			function saveto(){
-				localStorage.setItem("datasource", $("#dsinput").val());
-				glob_datasource = $("#dsinput").val();
-				localStorage.setItem("codename", $("#listinput").val());
-				glob_codename = $("#listinput").val();
-				save();
 			};
 			function save(){
 				localStorage.setItem("projobj", JSON.stringify(glob_root));

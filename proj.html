@@ -566,6 +566,22 @@
 				$("#listinputbutton").unbind('click');
 				$("#listinputbutton").bind('click', funUpdate);	
 			};
+			function searchentry() {
+				var key = window.event.keyCode;
+				if (key === 13) search(); // If the user has pressed enter
+				return key != 13;
+				
+			};
+			function search() {
+				var searchtxt = $("#searchinput").val();
+				$(".taskdiv").each(function(i, e){
+					if(e.innerHTML.search(searchtxt) === -1){
+						$(e).hide();
+					} else {
+						$(e).show();			
+					}
+				});
+			};
 			function listInputChange() {
 				var key = window.event.keyCode;
 				if (key === 13) $("#listinputbutton").click(); // If the user has pressed enter
@@ -623,6 +639,7 @@
 				}
 				return nextObj;
 			}
+			//UNDER CONSTRUCTION need to add
 			function log(x){
 				if (!(glob_projobj.hasOwnProperty("-log"))){
 					glob_projobj["-log"] = [];
@@ -651,12 +668,22 @@
 			<span id="topbarspan">
 				<span id="morespan">
 					<div id="morediv">
+						<input type="button" class='buttonspan' id="undobutton" onclick="undo()" value="undo"/>						
 						<input type="button" class='buttonspan' id="addlistbutton" onclick="setinput('list name:', '', addlist)" value="add list"/>
+						<input type="button" class='buttonspan' id="addvaluebutton" onclick="setinput('value name:', '', addvalue)" value="add value"/>
 						<input type="button" class='buttonspan' id="deletelistbutton" onclick="deletelist()" value="delete"/>
+						<input type="button" class='buttonspan' id="movedownbutton" onclick="move_down()" value="go down"/>
 						<input type="button" class='buttonspan' id="moveupbutton" onclick="move_up()" value="go up"/>
 						<input type="button" class='buttonspan' id="settingsbutton" onclick="settings()" value="settings"/>
+						<input type="button" class='buttonspan' id="stringifybutton" onclick="showstring()" value="stringify"/>
 						<input type="button" class='buttonspan' id="logoutbutton" onclick="logout()" value="logout"/>
+						<input type="button" class='buttonspan' id="infobutton" onclick="info()" value="info"/>
+						<input type="button" class='buttonspan' id="savetobutton" onclick="showsaveto()" value="saveto"/>
 						<input type="button" class='buttonspan' id="clearlogbutton" onclick="clearLog()" value="clearLog"/>
+						</div>
+					<div>
+						<input type='textarea' id = 'searchinput' onkeypress="searchentry()"></input>
+						<input type="button" class='buttonspan' id="searchbutton" onclick="search()" value="search"/>
 					</div>
 				</span>
 				<span id='listinputspan'>

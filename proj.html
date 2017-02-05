@@ -102,10 +102,11 @@
 			var glob_level = "";
 			var glob_datasource = "";
 			var glob_codename = "";
-			var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
-			var default_proj_json = '{"list1":' + default_list_json + '}'
+			var default_list_json = '[]';
+			var default_proj_json = '{}';
 			var glob_objlabellength = 15;
-
+//Major refactoring - use simple objects and arrays rather than ids
+			
 			//Page Setup 
 			function load() {
 				//using arguments given in the file name if there are any. arguments are separated by underscore _
@@ -159,7 +160,6 @@
 			};
 			function setup(){
 				glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
-				log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}");
 				glob_level = getUrlParameter("inLevel") || "";
 				addbuttons();
 				if (typeof glob_projobj["-autorun"] !== 'undefined') { 	//run the autorun functions
@@ -258,7 +258,7 @@
 				var newHTML = "";
 				if (typeof inItem === 'undefined'){
 					glob_projobj[glob_level]["$max_id"] = (glob_projobj[glob_level]["$max_id"] ? "" + (1 + parseInt(glob_projobj[glob_level]["$max_id"])) : "" + 1)
-					var newid = glob_projobj[glob_level]["$max_id"]
+					var newid = glob_projobj[glob_level]["$max_id"];
 					newobj["id"] = newid;
 					if (typeof glob_projobj[glob_level]["data"] !== 'undefined') {
 						glob_projobj[glob_level]["data"][newid] = newobj;
@@ -310,7 +310,6 @@
 				$("#itemsdiv").prepend(newdiv);
 				$(newdiv).children("textarea").blur(updatefield);
 				$(newdiv).children("select").blur(updatefield);
-				if (typeof inItem === 'undefined' && glob_datasource === 'server') log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}");
 				document.getElementById('itemsdiv').scrollTop = 0;
 			};
 			function heightchange(){
@@ -348,7 +347,6 @@
 					$.post( "http://aleadenmarx.hopto.org/proj/proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
 						$("#alert").html("saved at: " + msg + $("#alert").html());
 						refresh(glob_level);
-						log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}");	
 					}).fail(function(xhr, status, error) {
 						$("#alert").html("save failed" + $("#alert").html());
 						refresh(glob_level);
@@ -410,18 +408,14 @@
 			function removeItem(caller){
 				var id = $(caller.parentElement).children(".id_input").val();
 				var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
-				var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Deleted Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 				delete glob_projobj[glob_level][datavalue][id]
-				log(logstring);
 				var parentDiv = caller.parentElement;
 				parentDiv.parentElement.removeChild(parentDiv);
 			};
 			function closeItem(caller) {
 				var id = $(caller.parentElement).children(".id_input").val();
 				var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
-				var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Completed Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 				delete glob_projobj[glob_level][datavalue][id]
-				log(logstring);
 				var parentDiv = caller.parentElement;
 				parentDiv.parentElement.removeChild(parentDiv);
 			};
@@ -442,8 +436,6 @@
 				var id = $(a.target.parentElement).children(".id_input").val();
 				var key = a.target.className;
 				var newvalue = a.target.value;
-				var logitem = {"source":glob_datasource, "codename":glob_codename, "level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue, "time": Date()};
-				log(JSON.stringify(logitem));
 				if (newvalue.substring(0, 1) === "="){
 					try {
 						eval('newvalue = ' + newvalue.substr(1, newvalue.length));
@@ -635,23 +627,10 @@
 				}
 				return nextObj;
 			}
-			function log(x){
-				if (!(glob_projobj.hasOwnProperty("-log"))){
-					glob_projobj["-log"] = [];
-				}
-				if (Object.prototype.toString.call(glob_projobj["-log"]) != "[object Array]"){
-					glob_projobj["-log"] = [];
-				}
-				glob_projobj["-log"].push(x);
-				console.log("logged " + x);
-			}
-			function clearLog(){
-				glob_projobj["-log"] = [];
-			}
 			$(load);
 		</script>
 	</head>
-	<body id='thebody'>
+	<body>
 		<div id='controldiv' class='topbardiv'>
 			<div id="listbuttons"></div>
 			<span>
@@ -673,7 +652,6 @@
 						<input type="button" class='buttonspan' id="logoutbutton" onclick="logout()" value="logout"/>
 						<input type="button" class='buttonspan' id="infobutton" onclick="info()" value="info"/>
 						<input type="button" class='buttonspan' id="savetobutton" onclick="showsaveto()" value="saveto"/>
-						<input type="button" class='buttonspan' id="clearlogbutton" onclick="clearLog()" value="clearLog"/>
 						</div>
 					<div>
 						<input type='textarea' id = 'searchinput' onkeypress="searchentry()"></input>

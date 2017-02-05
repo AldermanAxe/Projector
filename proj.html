@@ -94,6 +94,7 @@
 			n.cssHooks[b]=Ua(l.pixelPosition,function(a,c){return c?(c=Sa(a,b),Oa.test(c)?n(a).position()[b]+"px":c):void 0})}),n.each({Height:"height",Width:"width"},function(a,b){n.each({padding:"inner"+a,content:b,"":"outer"+a},function(c,d){n.fn[d]=function(d,e){var f=arguments.length&&(c||"boolean"!=typeof d),g=c||(d===!0||e===!0?"margin":"border");return Y(this,function(b,c,d){var e;return n.isWindow(b)?b.document.documentElement["client"+a]:9===b.nodeType?(e=b.documentElement,Math.max(b.body["scroll"+a],e["scroll"+a],b.body["offset"+a],e["offset"+a],e["client"+a])):void 0===d?n.css(b,c,g):n.style(b,c,d,g)},b,f?d:void 0,f,null)}})}),n.fn.extend({bind:function(a,b,c){return this.on(a,null,b,c)},unbind:function(a,b){return this.off(a,null,b)},delegate:function(a,b,c,d){return this.on(b,a,c,d)},undelegate:function(a,b,c){return 1===arguments.length?this.off(a,"**"):this.off(b,a||"**",c)}}),n.fn.size=function(){return this.length},n.fn.andSelf=n.fn.addBack,"function"==typeof define&&define.amd&&define("jquery",[],function(){return n});var mc=a.jQuery,nc=a.$;return n.noConflict=function(b){return a.$===n&&(a.$=nc),b&&a.jQuery===n&&(a.jQuery=mc),n},b||(a.jQuery=a.$=n),n});
 		</script>
 		<script>
+		
 			/*! Projector Code */
 			var glob_root = null;
 			var glob_path = [];
@@ -104,6 +105,7 @@
 			var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 			var default_proj_json = '{"list1":' + default_list_json + '}'
 			var glob_objlabellength = 15;
+
 			//Page Setup 
 			function load() {
 				//using arguments given in the file name if there are any. arguments are separated by underscore _
@@ -152,10 +154,6 @@
 						localStorage.setItem("projobj", JSON.stringify(in_data));
 						setup();
 					});
-				};
-				if (glob_datasource === 'server'){
-					//disabling visitor logging
-					//$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
 				};
 				$("#newcodenamebutton").hide();
 			};
@@ -444,8 +442,6 @@
 				var id = $(a.target.parentElement).children(".id_input").val();
 				var key = a.target.className;
 				var newvalue = a.target.value;
-
-				//log the change
 				var logitem = {"source":glob_datasource, "codename":glob_codename, "level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue, "time": Date()};
 				log(JSON.stringify(logitem));
 				if (newvalue.substring(0, 1) === "="){
@@ -639,7 +635,6 @@
 				}
 				return nextObj;
 			}
-			//UNDER CONSTRUCTION need to add
 			function log(x){
 				if (!(glob_projobj.hasOwnProperty("-log"))){
 					glob_projobj["-log"] = [];
@@ -653,7 +648,6 @@
 			function clearLog(){
 				glob_projobj["-log"] = [];
 			}
-			//Execution Code
 			$(load);
 		</script>
 	</head>

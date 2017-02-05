@@ -105,7 +105,6 @@
 			var default_list_json = '[]';
 			var default_proj_json = '{}';
 			var glob_objlabellength = 15;
-//Major refactoring - use simple objects and arrays rather than ids
 			
 			//Page Setup 
 			function load() {
@@ -127,35 +126,12 @@
 				localStorage.setItem("codename", glob_codename);
 				glob_datasource  = (fsource || getUrlParameter("datasource") || localStorage.getItem("datasource")) || "local";
 				localStorage.setItem("datasource", glob_datasource);
-				if (glob_datasource === "local") {
-					glob_datasource = 'local';
-					localStorage.setItem("projobj", localStorage.getItem(glob_codename) || default_proj_json);
+				glob_datasource = 'myjson';
+				localStorage.setItem("projobj", glob_codename || default_proj_json);
+				$.get("https://api.myjson.com/bins/" + glob_codename, function(in_data, textStatus, jqXHR) {
+					localStorage.setItem("projobj", JSON.stringify(in_data));
 					setup();
-				} else if (glob_datasource === "server"){
-					glob_datasource = 'server';
-					$.ajax({
-						url: "http://aleadenmarx.hopto.org/JsonFiles/proj_data_" + glob_codename + ".json"
-						,cache: false
-						,type: "get"
-						,datatype: "json"
-						,contentType: "application/json; charset=ISO-8859-1"
-						,error: function() {
-							localStorage.setItem("projobj", default_proj_json);
-							setup();
-						}
-						,success: function(in_data) {
-							localStorage.setItem("projobj", JSON.stringify(in_data));
-							setup();
-						}	
-					});
-				} else if (glob_datasource === "myjson") {
-					glob_datasource = 'myjson';
-					localStorage.setItem("projobj", glob_codename || default_proj_json);
-					$.get("https://api.myjson.com/bins/" + glob_codename, function(in_data, textStatus, jqXHR) {
-						localStorage.setItem("projobj", JSON.stringify(in_data));
-						setup();
-					});
-				};
+				});
 				$("#newcodenamebutton").hide();
 			};
 			function setup(){
@@ -210,7 +186,7 @@
 				}}};	
 				var blnNewLevel = inLevel !== glob_level;
 				glob_level = inLevel;
-				var dataobj = followJG(glob_projobj, glob_level);
+				var dataobj = glob_projobj[glob_level];
 				var listitems = [];
 				if (typeof dataobj === 'object'){
 					$("#valuespan").hide();
@@ -227,12 +203,6 @@
 					$("#valuespan").show();
 					$("#valueinput").val(dataobj);		
 				};
-				try {
-					eval("sortfun = " + glob_projobj[glob_level]["$sort"]);
-				} catch (e) {
-					$("#alert").html(e.message + $("#alert").html());
-				};
-				listitems.sort( sortfun || function(a, b){return a - b} );
 				listitems.forEach(function(a){
 					add(a);
 				});
@@ -250,7 +220,7 @@
 				var newdiv = document.createElement("div");
 				var _x;
 				newdiv.className = "taskdiv";
-				var newobj = inItem || eval('var _x = ' + glob_projobj[glob_level]["$template"] + '; _x') || glob_projobj[glob_level]["template"] //TODO need a more general fix if there is no template
+				var newobj = inItem ||{'value':''} //TODO need a more general fix if there is no template
 				var _x = undefined;
 				var proj = glob_projobj["projects"] ? glob_projobj["projects"]["value"] || glob_projobj["projects"]["data"] : glob_projobj["-projects"] ? glob_projobj["-projects"]["value"] || glob_projobj["-projects"]["data"] : {};
 				var projitems = [];
@@ -396,12 +366,6 @@
 					}
 				});   
 			};
-			function settings(){
-				glob_projobj = glob_projobj[glob_level];
-				addbuttons();
-				refresh();
-				heightchange();
-			};
 			function showstring(){
 				$("#alert").html(JSON.stringify(glob_projobj) + $("#alert").html());
 			};
@@ -499,25 +463,6 @@
 				addbuttons();
 				refresh($("#listinput").val());
 			};
-			function move_up(){
-				glob_path.pop();
-				glob_projobj = followJGpath(glob_root, glob_path);
-				addbuttons();
-				refresh();
-			};
-			function move_to(x) {
-				var newpath = eval($(x).attr('data-path'))
-				glob_path = newpath;
-				glob_projobj = followJGpath(glob_root, glob_path);
-				addbuttons();
-				refresh();
-			};
-			function move_down() {
-				glob_path.push(glob_level);
-				glob_projobj = followJGpath(glob_root, glob_path);
-				addbuttons();
-				refresh();
-			};
 			function logout(){
 				var newloc = window.location.href
 				newloc = newloc.substring(0, newloc.indexOf("?"));
@@ -603,30 +548,6 @@
 					if (sParameterName[0] === sParam) return sParameterName[1] === undefined ? true : sParameterName[1];
 				}
 			};
-			function followJGpath(objJG, arrPath){
-				var nextObj = objJG;
-				for (var x = 0; x < arrPath.length; x++) {
-					if (typeof followJG(nextObj, arrPath[x]) !== 'undefined' && typeof followJG(nextObj, arrPath[x])["$type"] !== 'undefined' && followJG(nextObj, arrPath[x])["$type"] === "ref"){
-						nextObj = followJGpath(firstObj, nextObj[arrPath[x]]["value"]);
-					} else {
-						nextObj = followJG(nextObj, arrPath[x]);
-					}
-				}
-				return nextObj;
-			};
-			function followJG(objJG, strKey){
-				var nextObj = objJG;
-				if (typeof nextObj[strKey]["$type"] !== 'undefined' && nextObj[strKey]["$type"] === "ref"){
-					nextObj = followJGpath(nextObj, nextObj[strKey]["value"]);
-				} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "link")) { //follow a link to another location and add the values to the object
-					nextObj = nextObj[strKey]["value"];
-				} else if ( typeof nextObj[strKey]["$type"] !== 'undefined' && (nextObj[strKey]["$type"] === "node" || nextObj[strKey]["$type"] === "atom")) {
-					nextObj = nextObj[strKey]["value"];
-				} else {
-					nextObj = nextObj[strKey];
-				}
-				return nextObj;
-			}
 			$(load);
 		</script>
 	</head>
@@ -645,9 +566,6 @@
 						<input type="button" class='buttonspan' id="addlistbutton" onclick="setinput('list name:', '', addlist)" value="add list"/>
 						<input type="button" class='buttonspan' id="addvaluebutton" onclick="setinput('value name:', '', addvalue)" value="add value"/>
 						<input type="button" class='buttonspan' id="deletelistbutton" onclick="deletelist()" value="delete"/>
-						<input type="button" class='buttonspan' id="movedownbutton" onclick="move_down()" value="go down"/>
-						<input type="button" class='buttonspan' id="moveupbutton" onclick="move_up()" value="go up"/>
-						<input type="button" class='buttonspan' id="settingsbutton" onclick="settings()" value="settings"/>
 						<input type="button" class='buttonspan' id="stringifybutton" onclick="showstring()" value="stringify"/>
 						<input type="button" class='buttonspan' id="logoutbutton" onclick="logout()" value="logout"/>
 						<input type="button" class='buttonspan' id="infobutton" onclick="info()" value="info"/>

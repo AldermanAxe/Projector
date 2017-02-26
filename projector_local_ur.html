@@ -347,7 +347,7 @@
 						refresh(glob_level);
 					});
 					$("#aFlert").html("...saving..." + $("#alert").html());
-				} else if (glob_datasource = 'myjson') {
+				} else if (glob_datasource === 'myjson') {
 					$.ajax({
 						url:"https://api.myjson.com/bins/" + glob_codename,
 						type:"PUT",
@@ -360,10 +360,8 @@
 						}
 					});   
 					$("#alert").html("...saving..." + $("#alert").html());
-
 				} else {
 					localStorage.setItem(glob_codename, localStorage.getItem("projobj") || default_proj_json);
-					setup();
 					$("#alert").html("saved locally (in browser)" + $("#alert").html());
 				};
 				heightchange();

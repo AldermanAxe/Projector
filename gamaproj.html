@@ -1,6 +1,4 @@
-﻿<!-- No Logging -->
-
-<html>
+﻿<html>
 	<head>
 		<meta http-equiv="pragma" content="no-cache">
 		<title>Projector</title>
@@ -16,7 +14,7 @@
 			}
 			div {
 				margin: 20px 20px 20px 20px; 
-				background-color: lightblue; 
+				background-color: steelblue; 
 				text-align:center;
 			}
 			#controldiv {
@@ -97,18 +95,14 @@
 		</script>
 		<script>
 			/*! Projector Code */
-			var glob_projobj = null;
 			var glob_root = null;
 			var glob_path = [];
+			var glob_projobj = null;
 			var glob_level = "";
-			var glob_backup = "";
-			
 			var glob_datasource = "";
 			var glob_codename = "";
-
 			var default_list_json = '{"$type":"node", "$template":"{\\"item\\":\\"\\"}", "$sort":"function(a,b){return a > b;}", "$hidebuttons":0, "value":{}, "$max_id": 0}';
 			var default_proj_json = '{"list1":' + default_list_json + '}'
-
 			var glob_objlabellength = 15;
 			
 			//Page Setup 
@@ -127,11 +121,10 @@
 					}
 				};
 				//setting up data sources
-				glob_codename = (fcodename || getUrlParameter("codename") || localStorage.getItem("codename")) || "";
+				glob_codename = "GAMA";
 				localStorage.setItem("codename", glob_codename);
-				glob_datasource  = (fsource || getUrlParameter("datasource") || localStorage.getItem("datasource")) || "local";
+				glob_datasource  = "server";
 				localStorage.setItem("datasource", glob_datasource);
-	
 				if (glob_datasource === "local") {
 					glob_datasource = 'local';
 					localStorage.setItem("projobj", localStorage.getItem(glob_codename) || default_proj_json);
@@ -139,7 +132,7 @@
 				} else if (glob_datasource === "server"){
 					glob_datasource = 'server';
 					$.ajax({
-						url: "../JsonFiles/proj_data_" + glob_codename + ".json"
+						url: "../GamaJsonFiles/proj_data_" + glob_codename + ".json"
 						,cache: false
 						,type: "get"
 						,datatype: "json"
@@ -161,11 +154,15 @@
 						setup();
 					});
 				};
-				glob_backup = localStorage.getItem("projobj");
+				if (glob_datasource === 'server'){
+					//disabling visitor logging
+					//$.post( "proj_visitor.aspx", {codename: "" + glob_codename + "", data: "visitor log"}, function( result ){;});
+				};
 				$("#newcodenamebutton").hide();
 			};
 			function setup(){
 				glob_projobj = glob_root = JSON.parse(localStorage.getItem("projobj"));
+				log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'(Re)Loaded-Page'}");
 				glob_level = getUrlParameter("inLevel") || "";
 				addbuttons();
 				if (typeof glob_projobj["-autorun"] !== 'undefined') { 	//run the autorun functions
@@ -187,13 +184,13 @@
 				
 				// define a handler
 				function doc_keyUp(e) {
-
+					// this would test for whichever key is 40 and the ctrl key at the same time
 					if (e.ctrlKey && e.keyCode == 83) {
 						var $focused = $(':focus');
 						if ($focused.prop("tagName") === "TEXTAREA"){
 							$focused.blur(); //to record changes to the text area first before changing
 						};
-
+						// call your function to do the thing
 						save();
 					}
 				}
@@ -204,6 +201,7 @@
 				var sortfun;
 				var dataobj;
 				var listitems;
+				
 				
 				if (glob_projobj[inLevel] && glob_projobj[inLevel]["$type"] &&  glob_projobj[inLevel]["$type"] === "link"){
 					window.location.href = glob_projobj[inLevel]["value"];
@@ -216,6 +214,8 @@
 				}}};	
 				var blnNewLevel = inLevel !== glob_level;
 				glob_level = inLevel;
+				$("#levellabel").text(glob_level);
+
 				var dataobj = followJG(glob_projobj, glob_level);
 				var listitems = [];
 				if (typeof dataobj === 'object'){
@@ -307,15 +307,14 @@
 				};
 				newHTML += 	'<br/>';
 				if (!eval(glob_projobj[glob_level]["$hidebuttons"])){
-					newHTML += 	'<input class="removebutton" type="button" value="delete" onclick="removeItem(this)"/>' +
-						'<input class="completebutton" type="button" value="complete" onclick="closeItem(this)"/>' +
-						'<input type="button" value="show" class="showbutton" onclick="showfields(this)"/>';
+					newHTML += 	'<input class="removebutton" type="button" value="delete" onclick="removeItem(this)"/>';
 				};
 				newHTML += '<span class="showspan"/>';
 				newdiv.innerHTML = newHTML;
 				$("#itemsdiv").prepend(newdiv);
 				$(newdiv).children("textarea").blur(updatefield);
 				$(newdiv).children("select").blur(updatefield);
+				if (typeof inItem === 'undefined' && glob_datasource === 'server') log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Added Item " + glob_level + " " + newobj["id"] + "'}");
 				document.getElementById('itemsdiv').scrollTop = 0;
 			};
 			function heightchange(){
@@ -340,20 +339,15 @@
 				localStorage.setItem("projobj", JSON.stringify(glob_root));
 				if (glob_datasource === 'server'){
 					//if the codename begins with '%' save locally in the browser
-					$.post( "../proj/proj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
+					$.post( "../proj/gamaproj_data.aspx", {codename: "" + glob_codename + "", data: "" + (JSON.stringify(glob_root) || 0)}).done(function(msg){  
 						$("#alert").html("saved at: " + msg + $("#alert").html());
-						$.post( "../proj/proj_data.aspx", {codename: "" + glob_codename + "_backup" + "", data: "" + (JSON.stringify(glob_backup) || 0)}).done(function(msg){  
-							$("#alert").html("backedup at: " + msg + $("#alert").html());
-							//refresh(glob_level);
-						}).fail(function(xhr, status, error) {
-							$("#alert").html("backup failed" + $("#alert").html());
-							//refresh(glob_level);
-						});
+						refresh(glob_level);
+						log("{'codename':'" + glob_codename + "','time':'" + Date() + "','action':'Saved All'}");	
 					}).fail(function(xhr, status, error) {
 						$("#alert").html("save failed" + $("#alert").html());
-						//refresh(glob_level);
+						refresh(glob_level);
 					});
-					$("#alert").html("...saving..." + $("#alert").html());
+					$("#aFlert").html("...saving..." + $("#alert").html());
 				} else if (glob_datasource === 'myjson') {
 					$.ajax({
 						url:"https://api.myjson.com/bins/" + glob_codename,
@@ -407,14 +401,18 @@
 			function removeItem(caller){
 				var id = $(caller.parentElement).children(".id_input").val();
 				var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
+				var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Deleted Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 				delete glob_projobj[glob_level][datavalue][id]
+				log(logstring);
 				var parentDiv = caller.parentElement;
 				parentDiv.parentElement.removeChild(parentDiv);
 			};
 			function closeItem(caller) {
 				var id = $(caller.parentElement).children(".id_input").val();
 				var datavalue = glob_projobj[glob_level]["data"] ? "data" : "value"
+				var logstring = JSON.stringify({'codename': glob_codename, 'time': Date(),'action':'Completed Item ' + glob_level + ' ' + id, 'value': glob_projobj[glob_level][datavalue][id]})
 				delete glob_projobj[glob_level][datavalue][id]
+				log(logstring);
 				var parentDiv = caller.parentElement;
 				parentDiv.parentElement.removeChild(parentDiv);
 			};
@@ -433,6 +431,9 @@
 				var key = a.target.className;
 				var newvalue = a.target.value;
 
+				//log the change
+				var logitem = {"source":glob_datasource, "codename":glob_codename, "level":glob_level, "path":glob_path, "id":id, "key":key, "value":newvalue, "time": Date()};
+				log(JSON.stringify(logitem));
 				if (newvalue.substring(0, 1) === "="){
 					try {
 						eval('newvalue = ' + newvalue.substr(1, newvalue.length));
@@ -608,25 +609,40 @@
 				}
 				return nextObj;
 			}
+			function log(x){
+				if (!(glob_projobj.hasOwnProperty("-log"))){
+					glob_projobj["-log"] = [];
+				}
+				if (Object.prototype.toString.call(glob_projobj["-log"]) != "[object Array]"){
+					glob_projobj["-log"] = [];
+				}
+				glob_projobj["-log"].push(x);
+				console.log("logged " + x);
+			}
+			function clearLog(){
+				glob_projobj["-log"] = [];
+			}
 			//Execution Code
 			$(load);
 		</script>
 	</head>
 	<body id='thebody'>
 		<div id='controldiv' class='topbardiv'>
+			<h1>Γ - GAMA: <span id="levellabel"></span></h1>
 			<div id="listbuttons"></div>
 			<span>
-				<input type="button"  class='buttonspan' id="addbutton" onclick="add()" value="add item"/>
+				<input type="button"  class='buttonspan' id="addbutton" onclick="add()" value="add an item"/>
 				<input type="button"  class='buttonspan' id="morebutton" onclick="togglemore()" value="less"/>
 				<input type="button"  class='buttonspan' id="savebutton" onclick="save()" type="button" value="save" />
 			</span>
 			<span id="topbarspan">
 				<span id="morespan">
 					<div id="morediv">
-						<input type="button" class='buttonspan' id="addlistbutton" onclick="setinput('list name:', '', addlist)" value="add list"/>
-						<input type="button" class='buttonspan' id="deletelistbutton" onclick="deletelist()" value="delete"/>
-						<input type="button" class='buttonspan' id="moveupbutton" onclick="move_up()" value="go up"/>
+						<input type="button" class='buttonspan' id="addlistbutton" onclick="setinput('list name:', '', addlist)" value="add a list"/>
+						<input type="button" class='buttonspan' id="deletelistbutton" onclick="deletelist()" value="delete this list"/>
 						<input type="button" class='buttonspan' id="settingsbutton" onclick="settings()" value="settings"/>
+						<input type="button" class='buttonspan' id="moveupbutton" onclick="move_up()" value="exit settings"/>	
+						<input type="button" class='buttonspan' id="clearlogbutton" onclick="clearLog()" value="clear log"/>
 						<input type="button" class='buttonspan' id="logoutbutton" onclick="logout()" value="logout"/>
 					</div>
 				</span>

@@ -39,6 +39,7 @@
 			*/
 			/* load projector */
 			proj = eval('{init:"function(proj){proj.test = function(){alert()};}",maxrow:0,root:0,0:{"i":0,"v":[0, 0, 0]}}');
+			proj.init(proj);
 			/*  build interface */
 			$(function(){ //jquery call to run below code on page load
 				document.body.innerHTML += "hi";

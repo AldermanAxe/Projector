@@ -38,14 +38,27 @@
 				can it be easier to click that something is done? maybe a big checkbox on one side of the task?
 			*/
 			/* load projector */
-			proj = eval('{init:"function(proj){proj.test = function(){alert()};}",maxrow:0,root:0,0:{"i":0,"v":[0, 0, 0]}}');
-			proj.init(proj);
+			proj = JSON.parse('{"init":"y = function(){this.test = function(){alert()};}","maxrow":0,"root":0,"0":{"i":0,"v":[0, 0, 0]}}');
+			eval(proj.init)();
 			/*  build interface */
 			$(function(){ //jquery call to run below code on page load
-				document.body.innerHTML += "hi";
+				var x = document.getElementsByTagName("input")[0];
+				var y = document.getElementsByTagName("div")[0];
+				x.focus();
+				x.onkeypress = function(e){
+					if (e.keyCode == 13) {
+						command = "proj['" + x.value + "']";
+						y.innerHTML += command + "<br/>";
+						y.innerHTML += eval(command) + "<br/>";
+						x.value = "";
+						x.focus();
+					};
+				};
 			});
 		</script>
 	</head>
 	<body>
+		<input type="text"/>
+		<div/>
 	</body>
 </html>

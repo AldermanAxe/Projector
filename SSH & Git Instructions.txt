@@ -8,7 +8,8 @@ To set up SSH and GIT servers
 	b. edit the file removing root access and changing passwordlogon to 'no'
 4. install git
 5. create a bare repo at the location of your choice (optionally may set up the shell to go to that directory by default to make things easier for the ssh user logging in)
-	a. something like 'git init'
+	a. something like 'git init --bare' (the bare flag is required to make a bare repository that can be updated from another source)
+5. grant read/write access to the folder "chmod 700 " or something
 
 
 To set up client access to SSH and GIT:
@@ -35,13 +36,11 @@ To set up client access to SSH and GIT:
 	ii. pull from remote repo
 		a. navigate to your bare repository, or your repository that matches the remote repo
 		b. in git bash type: git pull mittens
-		(where 'mittens' is any name you have assigned to the remote. For a list of remotes you can type 'git remotes -v')
+		(where 'mittens' is any name you have assigned to the remote. For a list of remotes you can type 'git remotes -v' from within your local repo directory)
 	iii. push to a remote repo
 		a. navigate to your local repo
 		b. in git bash type: git push mittens
 		(where 'mittens' is any name you have assigned to the remote).		
-
-
 
 
 Appendix A - Git Push Bash script

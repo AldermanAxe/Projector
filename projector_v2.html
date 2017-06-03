@@ -38,8 +38,17 @@
 				can it be easier to click that something is done? maybe a big checkbox on one side of the task?
 			*/
 			/* load projector */
-			proj = JSON.parse('{"init":"y = function(){this.test = function(){alert()};}","maxrow":0,"root":0,"0":{"i":0,"v":[0, 0, 0]}}');
-			eval(proj.init)();
+			proj = JSON.parse(`{
+				"init":"=function(){this.test = function(){alert()};}",
+				"add":"=function(){return(this)}",
+				"lst":"=function(){return('test')}",
+				"rem":"=function(){return('test')}",
+				"chg":"=function(){return('test')}",
+				"maxrow":0,
+				"root":0,
+				"0":{"i":0,"v":[0, 0, 0]}
+			}`);
+			eval("y" + proj.init)();
 			/*  build interface */
 			$(function(){ //jquery call to run below code on page load
 				var x = document.getElementsByTagName("input")[0];
@@ -47,9 +56,15 @@
 				x.focus();
 				x.onkeypress = function(e){
 					if (e.keyCode == 13) {
-						command = "proj['" + x.value + "']";
-						y.innerHTML += command + "<br/>";
-						y.innerHTML += eval(command) + "<br/>";
+						target = "proj['" + x.value + "']";
+						command = eval(target);
+						if (command.substring(0,1) == "0") {
+							y.innerHTML += command + "<br/>";
+						} else {
+							console.log(command.substring(1,command.length));
+							w = eval(command.substring(1,command.length));
+							y.innerHTML += w.call(proj) + "<br/>";
+						}
 						x.value = "";
 						x.focus();
 					};

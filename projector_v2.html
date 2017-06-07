@@ -38,17 +38,61 @@
 				can it be easier to click that something is done? maybe a big checkbox on one side of the task?
 			*/
 			/* load projector */
-			proj = JSON.parse(`{
-				"init":"=function(){this.test = function(){alert()};}",
-				"add":"=function(){return(this)}",
-				"lst":"=function(){return('test')}",
-				"rem":"=function(){return('test')}",
-				"chg":"=function(){return('test')}",
+			proj = eval(`x={
+				"ini":function(){this.test = function(){alert()};},
+				"add":function(a){
+					this.maxrow++;
+					this[this.maxrow] = {id:this.maxrow, v:[a]};
+					return("added " + this.maxrow);
+				},
+				"lst":function(){
+					str = "";
+					for (var property in this) {
+						if (this.hasOwnProperty(property) && property > -1){
+							if (typeof this[property] == "function"){
+								;
+							}
+							else if (typeof this[property] == "object"){
+								str += "\\"" + property + "\\":" + JSON.stringify(this[property]) + "<br/>";	
+							} else {
+								str += "\\"" + property + "\\":" + this[property] + "<br/>";
+							}
+						}
+					};
+					str = str.substring(0, str.length - 2);
+					str += "";
+					return str;
+				},
+				"rem":function(){return("test")},
+				"chg":function(a, b){
+					this[a] = b;
+					return(a + " changed to " + b);
+				},
+				"get":function(a){return(this[a])},
 				"maxrow":0,
 				"root":0,
-				"0":{"i":0,"v":[0, 0, 0]}
+				"0":{"id":0,"v":[0, 0, 0]},
+				"toString":function(){
+					str = "{";
+					for (var property in this) {
+						if (this.hasOwnProperty(property)){
+							if (typeof this[property] == "object"){
+								str += "\\"" + property + "\\":" + JSON.stringify(this[property]) + ",\\n";	
+							} else {
+								str += "\\"" + property + "\\":" + this[property] + ",\\n";
+							}
+						}
+					};
+					str = str.substring(0, str.length - 2);
+					str += "}";
+					return str;
+				}
 			}`);
-			eval("y" + proj.init)();
+ 	
+			//projector objects should have the property
+			//""+proj==""+eval('x=' + proj.toString());
+			//in order to be serialized
+			
 			/*  build interface */
 			$(function(){ //jquery call to run below code on page load
 				var x = document.getElementsByTagName("input")[0];
@@ -56,15 +100,8 @@
 				x.focus();
 				x.onkeypress = function(e){
 					if (e.keyCode == 13) {
-						target = "proj['" + x.value + "']";
-						command = eval(target);
-						if (command.substring(0,1) == "0") {
-							y.innerHTML += command + "<br/>";
-						} else {
-							console.log(command.substring(1,command.length));
-							w = eval(command.substring(1,command.length));
-							y.innerHTML += w.call(proj) + "<br/>";
-						}
+						command = eval("proj." + x.value);
+						y.innerHTML += command + "<br/>";
 						x.value = "";
 						x.focus();
 					};

@@ -101,7 +101,7 @@
 				x.onkeypress = function(e){
 					if (e.keyCode == 13) {
 						command = eval("proj." + x.value);
-						y.innerHTML += command + "<br/>";
+						y.innerHTML = command + "<br/>" + y.innerHTML;
 						x.value = "";
 						x.focus();
 					};
@@ -110,7 +110,7 @@
 		</script>
 	</head>
 	<body style="background-color:black;">
-		<div style="background-color:black;height:90%;color:white"/>
-		<input style="background-color:black;height:10%;color:white" type="text"/>
+		<input style="background-color:black;height:50;color:white;position:fixed;display:block;top:0;width:100%;padding:0 0 0 0;margin:0 0 0 0" type="text"></input>
+		<div style="background-color:black;height:90%;color:white;position:fixed;top:50;width:100%;padding:0 0 0 0;margin:0 0 0 0;vertical-align:top;border-color:white"></div>
 	</body>
 </html>

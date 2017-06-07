@@ -92,17 +92,30 @@
 			//projector objects should have the property
 			//""+proj==""+eval('x=' + proj.toString());
 			//in order to be serialized
+			var w;
+			var v;
 			
 			/*  build interface */
 			$(function(){ //jquery call to run below code on page load
 				var x = document.getElementsByTagName("input")[0];
 				var y = document.getElementsByTagName("div")[0];
+				var z = document;
+				w = [];
+				v = 0;
 				x.focus();
-				x.onkeypress = function(e){
+				z.onkeydown = function(e){
 					if (e.keyCode == 13) {
-						command = eval("proj." + x.value);
-						y.innerHTML = command + "<br/>" + y.innerHTML;
+						command = x.value;
+						output = eval("proj." + command);
+						y.innerHTML = "<br/>" + output + "<br/>" + y.innerHTML;
 						x.value = "";
+						x.focus();
+						w.push(command);
+						v = 0;
+					} else if  (e.keyCode == 38){
+						console.log("keypressed");
+						x.value = w[w.length - 1 - v];
+						v++;
 						x.focus();
 					};
 				};
@@ -110,7 +123,7 @@
 		</script>
 	</head>
 	<body style="background-color:black;">
-		<input style="background-color:black;height:50;color:white;position:fixed;display:block;top:0;width:100%;padding:0 0 0 0;margin:0 0 0 0" type="text"></input>
-		<div style="background-color:black;height:90%;color:white;position:fixed;top:50;width:100%;padding:0 0 0 0;margin:0 0 0 0;vertical-align:top;border-color:white"></div>
+		<input style="background-color:black;height:25;color:white;position:fixed;display:block;top:0;width:100%;padding:0 0 0 0;margin:0 0 0 0" type="text"></input>
+		<div style="background-color:black;height:90%;color:white;position:fixed;top:25;width:100%;padding:0 0 0 0;margin:0 0 0 0;vertical-align:top;border-color:white"></div>
 	</body>
 </html>

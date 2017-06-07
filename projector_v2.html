@@ -68,7 +68,7 @@
 					this[a] = b;
 					return(a + " changed to " + b);
 				},
-				"get":function(a){return(this[a])},
+				"get":function(a){return(JSON.stringify(this[a]))},
 				"maxrow":0,
 				"root":0,
 				"0":{"id":0,"v":[0, 0, 0]},
@@ -110,12 +110,15 @@
 						y.innerHTML = "<br/>" + output + "<br/>" + y.innerHTML;
 						x.value = "";
 						x.focus();
-						w.push(command);
+						if (command != w[w.length - 1])	w.push(command);
 						v = 0;
-					} else if  (e.keyCode == 38){
-						console.log("keypressed");
+					} else if  (e.keyCode == 38){ //up arrow to get prior commands
 						x.value = w[w.length - 1 - v];
-						v++;
+						if (v <= w.length - 1) v++;
+						x.focus();
+					} else if  (e.keyCode == 40){ //down arrow to get prior commands
+						if (v >= 0 ) v--;
+						x.value = w[w.length - 1 - v];
 						x.focus();
 					};
 				};

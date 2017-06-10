@@ -45,8 +45,24 @@
 					this[this.maxrow] = {id:this.maxrow, v:[a]};
 					return("added " + this.maxrow);
 				},
-				"save":function(){
-					$.post( "../proj/proj_data.aspx", {codename: "proj2", data: ""+this}).done(function(msg){  
+				"load":function(x){
+					$.ajax({
+						url: "../JsonFiles/proj_data_" + (x || "proj2") + ".json"
+						,cache: false
+						,type: "get"
+						,dataType: "text"
+						,error: function(e, f) {
+							console.log("load error!" + f);
+						}
+						,success: function(in_data) {
+							eval("proj = " + in_data);
+							console.log("load succeeded");
+						}							
+					});
+					return "load attempted";
+				},
+				"save":function(x){
+					$.post( "../proj/proj_data.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
 						console.log("save succeeded");
 					}).fail(function(xhr, status, error) {
 						console.log("save failed");
@@ -76,7 +92,7 @@
 					this[a] = b;
 					return(a + " changed to " + b);
 				},
-				"get":function(a){return(JSON.stringify(this[a]))},
+				"get":function(x){return(JSON.stringify(this[x]))},
 				"maxrow":0,
 				"root":0,
 				"0":{"id":0,"v":[0, 0, 0]},

@@ -128,8 +128,17 @@
 				v = 0;
 				x.focus();
 				z.onkeydown = function(e){
-					if (e.keyCode == 13) {
+					if (e.keyCode == 13) { //when 'enter' is pressed
 						command = x.value;
+						//convert input with spaces to function call syntax
+						if (command.substring(command.length - 1) != ")")
+						{
+							if(command.includes(" ")){
+								command = command.replace(" ", "(") + ")";
+							} else {
+								command = command + "()";
+							}
+						}
 						output = eval("proj." + command);
 						y.innerHTML = "<br/>" + output + "<br/>" + y.innerHTML;
 						x.value = "";

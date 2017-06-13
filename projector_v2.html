@@ -19,6 +19,7 @@
 		
 			/*! Projector Code */
 			/*desired features:
+				deal with async feedback
 				sublists, Cross referencing
 				incremental increase in rep task targets - ability to set variable values via = functions probably
 
@@ -58,7 +59,7 @@
 				"init":function(){this.test = function(){alert()};},
 				"add":function(a){
 					this.maxrow++;
-					this[this.maxrow] = {id:this.maxrow, v:[a]};
+					this[this.maxrow] = {id:this.maxrow, v:a};
 					return("added " + this.maxrow);
 				},
 				"load":function(x){
@@ -103,7 +104,10 @@
 					str += "";
 					return str;
 				},
-				"rem":function(){return("test")},
+				"rem":function(a){
+					delete this[a];
+					return("remove attempted");
+				},
 				"chg":function(a, b){
 					this[a] = b;
 					return(a + " changed to " + b);

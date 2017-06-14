@@ -59,8 +59,13 @@
 				"init":function(){this.test = function(){alert()};},
 				"add":function(a){
 					this.maxrow++;
-					this[this.maxrow] = {id:this.maxrow, v:a};
+					this[this.maxrow] = {"id":this.maxrow, "value": typeof a == "undefined" ? "" : a, "childs":[]};
+					this[this.root]["childs"].push(this.maxrow);
 					return("added " + this.maxrow);
+				},
+				"addchild":function(a){
+					this[this.root]["childs"].push(a);
+					return("added " + a);
 				},
 				"load":function(x){
 					$.ajax({
@@ -87,6 +92,20 @@
 					return "save attempted";
 				},
 				"list":function(){
+					str = "";
+					for (element of this[this.root]["childs"]) {
+						console.log(element);
+						if (typeof this[element] == "object"){
+							str += "\\"" + element + "\\":" + JSON.stringify(this[element]) + "<br/>";	
+						} else {
+							str += "\\"" + element + "\\":" + this[element] + "<br/>";
+						}
+					};
+					str = str.substring(0, str.length - 2);
+					str += "";
+					return str;
+				},
+				"listall":function(){
 					str = "";
 					for (var property in this) {
 						if (this.hasOwnProperty(property) && property > -1){
@@ -115,7 +134,7 @@
 				"get":function(x){return(JSON.stringify(this[x]))},
 				"maxrow":0,
 				"root":0,
-				"0":{"id":0,"v":[0, 0, 0]},
+				"0":{"id":0,"value":"firstroot","childs":[]},
 				"toString":function(){
 					str = "{";
 					for (var property in this) {

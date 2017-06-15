@@ -68,6 +68,7 @@
 					return("added " + a);
 				},
 				"load":function(x){
+					that = this;
 					$.ajax({
 						url: "../JsonFiles/proj_data_" + (x || "proj2") + ".json"
 						,cache: false
@@ -78,16 +79,17 @@
 						}
 						,success: function(in_data) {
 							eval("proj = " + in_data);
-							console.log("load succeeded");
+							that.callback("load succeeded");
 						}							
 					});
 					return "load attempted";
 				},
 				"save":function(x){
+					that = this;
 					$.post( "../proj/proj_data.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
-						console.log("save succeeded");
+						that.callback("save succeeded");
 					}).fail(function(xhr, status, error) {
-						console.log("save failed");
+						that.callback("save failed");
 					});
 					return "save attempted";
 				},
@@ -149,6 +151,9 @@
 					str = str.substring(0, str.length - 2);
 					str += "}";
 					return str;
+				},
+				"callback":function(x){
+					console.log(x);
 				}
 			}`);
  	
@@ -163,6 +168,10 @@
 				var x = document.getElementsByTagName("input")[0];
 				var y = document.getElementsByTagName("div")[0];
 				var z = document;
+				proj.callback = function(a){
+					y = document.getElementsByTagName("div")[0];
+					y.innerHTML = "<br/>" + a + "<br/>" + y.innerHTML;
+				};
 				w = [];
 				v = 0;
 				x.focus();

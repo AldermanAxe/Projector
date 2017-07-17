@@ -5,27 +5,29 @@
 			var fso;
 			var f;
 			var f2;
-			fso = new ActiveXObject("Scripting.FileSystemObject");
 
-//			f2 = fso.CreateTextFile("C:\\inetpub\\wwwroot\\JsonFiles\\proj_data_" + Request.Form("codename").toString() + ".json", true, true);
-//			f2.Write(Request.Form("data").toString());
-//			f2.Close();
+			var ForReading = 1, ForWriting = 2, ForAppending = 8;
+			var TristateUseDefault = -2, TristateTrue = -1, TristateFalse = 0;
+			var fsT;
 
-var fsT;
-fsT = new ActiveXObject("ADODB.Stream");
-fsT.Type = 2;
-fsT.Charset = "utf-8";
-fsT.Open();
-fsT.WriteText(Request.Form("data").toString());
-fsT.SaveToFile("C:\\inetpub\\wwwroot\\JsonFiles\\proj_data_" + Request.Form("codename").toString() + ".json", 2);
+			var fso = new ActiveXObject("Scripting.FileSystemObject");
+			fso.Type = 2;
+			fso.Charset = "utf-8";
 
-			f = fso.OpenTextFile("C:\\inetpub\\wwwroot\\proj_data_log.txt", 8, true, -1);
-			f.Write("\r\n\r\n\r\n" + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + "\r\n\r\n");
-			f.Write(Request.ServerVariables("REMOTE_ADDR") + ": ");
-			f.Write(Request.Form("codename").toString() + ": ");
-			f.Write(Request.Form("data").toString());
-			f.Close();	
-			Response.Write(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
+			// Create the file, and obtain a file object for the file.
+			var savedate = new Date();
+			var strsavedate = savedate.getTime();
+			var filename = "C:\\inetpub\\wwwroot\\JsonFiles\\backup\\proj_data_" + Request.Form("codename").toString() + "_" + strsavedate + ".json";
+			var tss = fso.CreateTextFile(filename);
+			tss.close();
+			var fileObj = fso.GetFile(filename);
+
+			// Open a text stream for output.
+			var ts = fileObj.OpenAsTextStream(ForWriting, TristateUseDefault);
+
+			// Write to the text stream.
+			ts.WriteLine(Request.Form("data").toString());
+			ts.Close();
 		} catch(err) {
 			Response.Write("failed " + err);			
 		};

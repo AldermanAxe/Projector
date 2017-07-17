@@ -12,7 +12,7 @@
 	</script>
 	<script>
 		//load input object
-		inobj = eval(`x={
+		proj = eval(`x={
 				"init":function(){this.test = function(){alert()};},
 				"add":function(a){
 					a = a || "";
@@ -43,6 +43,15 @@
 					});
 					return "load attempted";
 				},
+				"loadlocal":function(x){
+					localstring = localStorage.getItem(x || "proj2");
+					if (localstring == null) {
+						return "local file " + (x || "proj2") + " not found";						
+					} else {
+						eval("proj = " + localstring);
+						return "loaded local " + (x || "proj2");
+					};
+				},				
 				"save":function(x){
 					that = this;
 					that.callback("async request sent...");
@@ -51,7 +60,16 @@
 					}).fail(function(xhr, status, error) {
 						that.callback("...save failed");
 					});
+					$.post( "../proj/proj_backup.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
+						that.callback("backup save succeeded " + msg);
+					}).fail(function(xhr, status, error) {
+						that.callback("backup save failed");
+					});
 					return "save attempted";
+				},
+				"savelocal":function(x){
+					localStorage.setItem(x || "proj2", ""+this)
+					return "saved local " + (x || "proj2");
 				},
 				"list":function(){
 					str = "";
@@ -124,18 +142,22 @@
 	document.body.onload = function(){
 		bod = document.body;
 		bdiv = document.getElementById("buttondiv");
+		//Add Callback write to output
+		proj.callback = function(a){
+			document.getElementById('displaydiv').innerHTML += '<br/>' + a;			
+		};
 		//Add function buttons
-		for (var k in inobj) {
-			if (inobj.hasOwnProperty(k)) {
-				if (typeof inobj[k] == "function"){
+		for (var k in proj) {
+			if (proj.hasOwnProperty(k)) {
+				if (typeof proj[k] == "function"){
 					b = document.createElement("button");
 					b.class = "funcButton";
 //need to provide parameters					
 					b.innerText = k;
 					b.onclick = eval(`x = function(){
-						buttonFun = inobj['` + k + `'];
-						if(buttonFun.length > 0) alert('arguments required');
-						document.getElementById('displaydiv').innerHTML += '<br/>' + inobj['` + k + `']();
+						buttonFun = proj['` + k + `'];
+						if(buttonFun.length > 0) document.getElementById('displaydiv').innerHTML += '<br/>NOTE: Arguments Possible';
+						document.getElementById('displaydiv').innerHTML += '<br/>' + proj['` + k + `']();
 					}`);
 					bdiv.appendChild(b);
 				}

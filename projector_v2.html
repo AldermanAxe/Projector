@@ -1,5 +1,4 @@
 ﻿<!-- No Logging -->
-
 <html>
 	<head>
 		<meta http-equiv="pragma" content="no-cache">
@@ -16,45 +15,33 @@
 			n.cssHooks[b]=Ua(l.pixelPosition,function(a,c){return c?(c=Sa(a,b),Oa.test(c)?n(a).position()[b]+"px":c):void 0})}),n.each({Height:"height",Width:"width"},function(a,b){n.each({padding:"inner"+a,content:b,"":"outer"+a},function(c,d){n.fn[d]=function(d,e){var f=arguments.length&&(c||"boolean"!=typeof d),g=c||(d===!0||e===!0?"margin":"border");return Y(this,function(b,c,d){var e;return n.isWindow(b)?b.document.documentElement["client"+a]:9===b.nodeType?(e=b.documentElement,Math.max(b.body["scroll"+a],e["scroll"+a],b.body["offset"+a],e["offset"+a],e["client"+a])):void 0===d?n.css(b,c,g):n.style(b,c,d,g)},b,f?d:void 0,f,null)}})}),n.fn.extend({bind:function(a,b,c){return this.on(a,null,b,c)},unbind:function(a,b){return this.off(a,null,b)},delegate:function(a,b,c,d){return this.on(b,a,c,d)},undelegate:function(a,b,c){return 1===arguments.length?this.off(a,"**"):this.off(b,a||"**",c)}}),n.fn.size=function(){return this.length},n.fn.andSelf=n.fn.addBack,"function"==typeof define&&define.amd&&define("jquery",[],function(){return n});var mc=a.jQuery,nc=a.$;return n.noConflict=function(b){return a.$===n&&(a.$=nc),b&&a.jQuery===n&&(a.jQuery=mc),n},b||(a.jQuery=a.$=n),n});
 		</script>
 		<script> 
-		
-			/*! Projector Code */
+	
 			/*desired features:
-				deal with async feedback
-				sublists, Cross referencing
-				incremental increase in rep task targets - ability to set variable values via = functions probably
+				Applications:calendar-reminders-budget-goals-notes-point system-project management and task system-communicator 
+				
+				GOAL: save time by organizing and prioritizing tasks.
+					Systems representing imperfect information for analytic processing and reasoning.
+					Single system which can dynamically link multiple app functions and use data and code across multiple of these to integrate their functionality.
 
-				calendar -reminders - budget -goals - notes - project management - point system, project management and task system - save time by organizing and prioritizing tasks
-				todo items as formulas that increase goals over time
+				TASKS: init code, incremental increase in rep task targets. variable values via "=" functions probably
+					Allow some users to see things others cannot. Eg chritmas list. Distributed storage so not everything has to load every time... a sort of transclusion but with the ability to edit.
 
-				keyboard only controls
-				command line interface - mobile interface
-				merge ability to allow distributed app like git or blockchain
-				log everything, 'undo' ability
-				easily can run without internet - syncing when internet is back - deal with multiple updates from different sources
-				better backup - default debug menu to retrieve old versions of the page if needed - deal with projector failing when router messes up. Maybe have more robust external backups.
-				notify if data was changed by another user/instance
-				run distributed or disconnected and re-combine as needed
+				TECHNICAL ABILITIES:
+					merge ability to allow distributed app like git or blockchain. run distributed or disconnected and re-combine as needed
+					easily can run without internet - syncing when internet is back - deal with multiple updates from different sources. notify if data was changed by another user/instance
+					better backup - debug menu to retrieve backup data - deal router messes up. robust external backups. need to be able to go back several saves... ability to assign automatic backup locations
+					security https
+					more save options
+					log everything, 'undo' & redo ability
 
-				better backup... need to be able to go back several saves... ability to assign automatic backup locations
-
-				Communicator
-				security https
-				Allow some users to see things others cannot. Eg chritmas list
-
-				cross platform testing
-
-				Distributed storage so not everything has to load every time... a sort of transclusion but with the ability to edit.
-				jump to elements with a hyperlink (eg reminder to play can link to 'to play list' without leaving current page (open in new tab)
-				Systems representing imperfect information for analytic processing and reasoning 
-
-				save options - local, server, myjson, other
-
-				if there are multiple reminders of the same thing can we show one item with a multiplier in the view list
-
-				can it be easier to click that something is done? maybe a big checkbox on one side of the task?
-				minimal effort to add a new item. Maybe call the page with a parameter which sets the new item
+				INTERFACE - keyboard only controls, command line, mobile.
+					minimal effort to add a new item. Maybe call the page with a parameter which sets the new item.
+					jump to elements with a hyperlink (eg reminder to play can link to 'to play list' without leaving current page (open in new tab).
+					if there are multiple reminders of the same thing can we show one item with a multiplier in the view list.
+					can it be easier to click that something is done? maybe a big checkbox on one side of the task?
 			*/
-			/* load projector */
+			/*! Projector Code */
+			/* Load Projector */
 			proj = eval(`x={
 				"init":function(){this.test = function(){alert()};},
 				"add":function(a){
@@ -69,27 +56,29 @@
 				},
 				"load":function(x){
 					that = this;
+					that.callback("async request sent...");
 					$.ajax({
 						url: "../JsonFiles/proj_data_" + (x || "proj2") + ".json"
 						,cache: false
 						,type: "get"
 						,dataType: "text"
 						,error: function(e, f) {
-							console.log("load error!" + f);
+							that.callback("...load failed!");
 						}
 						,success: function(in_data) {
 							eval("proj = " + in_data);
-							that.callback("load succeeded");
+							that.callback("...load succeeded");
 						}							
 					});
 					return "load attempted";
 				},
 				"save":function(x){
 					that = this;
+					that.callback("async request sent...");
 					$.post( "../proj/proj_data.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
-						that.callback("save succeeded");
+						that.callback("...save succeeded");
 					}).fail(function(xhr, status, error) {
-						that.callback("save failed");
+						that.callback("...save failed");
 					});
 					return "save attempted";
 				},

@@ -58,11 +58,12 @@
 					str = str.substring(0, str.length - 5);
 					return str;
 				},
-				"load":function(save_name){
+				"load":function(load_name){
 					that = this;
 					that._callback("async request sent...");
+					name = load_name || "proj2";
 					$.ajax({
-						url: "../JsonFiles/proj_data_" + (save_name || "proj2") + ".json"
+						url: "../JsonFiles/proj_data_" + name + ".json"
 						,cache: false
 						,type: "get"
 						,dataType: "text"
@@ -70,7 +71,8 @@
 							that._callback("...load failed!");
 						}
 						,success: function(in_data) {
-							eval("proj = " + in_data);
+							console.log(in_data);
+							eval(in_data);
 							that._callback("...load succeeded");
 						}							
 					});
@@ -79,16 +81,20 @@
 				"save":function(save_name){
 					that = this;
 					that._callback("async request sent...");
-					$.post( "../proj/proj_data.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
+					name = save_name || "proj2";
+
+					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
 						that._callback("...save done: " + msg);
 					}).fail(function(xhr, status, error) {
 						that._callback("...save failed");
 					});
-					$.post( "../proj/proj_backup.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
+
+					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()}).done(function(msg){  
 						that._callback("backup save done: " + msg);
 					}).fail(function(xhr, status, error) {
 						that._callback("backup save failed");
 					});
+
 					return "save attempted";
 				},
 				"listall":function(){
@@ -136,7 +142,7 @@
 					return "saved local " + (x || "proj2");
 				},
 				"toString":function(){
-					str = "{";
+					str = "proj = {";
 					for (var property in this) {
 						if (this.hasOwnProperty(property)){
 							if (typeof this[property] == "object"){
@@ -156,8 +162,7 @@
 					console.log(result);
 				},
 				"init":function(){
-					this.test = function(){return("you ran a test")};
-//					this.load(); // this loads prior versions of the projector as well, including old function definitions
+					this.test = function(){return("you ran a test");};
 				},
 			};
 			proj.init();

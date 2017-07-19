@@ -10,19 +10,17 @@
 			overflow:hidden;
 		}
 		#displaydiv {
-/*			display: inline-block; */
 			height: 90%;
-/*			position: relative;*/
-/*			top: 30px;*/
 			overflow:scroll;
+			background-color: black;
+			color: white;
+			
 		}
 		#buttondiv {
-/*			position: fixed; */
 			white-space:nowrap;
 			overflow:scroll;
 			width:100%;
 			height: 10%
-/*			padding-bottom: 5px;*/
 		}
 		.funcButton {
 			margin: 0px 5px 0px 5px;
@@ -57,7 +55,7 @@
 							str += "\\"" + element + "\\":" + this[element] + "<br/>";
 						}
 					};
-					str = str.substring(0, str.length - 4);
+					str = str.substring(0, str.length - 5);
 					return str;
 				},
 				"load":function(save_name){
@@ -82,12 +80,12 @@
 					that = this;
 					that._callback("async request sent...");
 					$.post( "../proj/proj_data.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
-						that._callback("...save succeeded");
+						that._callback("...save done: " + msg);
 					}).fail(function(xhr, status, error) {
 						that._callback("...save failed");
 					});
 					$.post( "../proj/proj_backup.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
-						that._callback("backup save succeeded " + msg);
+						that._callback("backup save done: " + msg);
 					}).fail(function(xhr, status, error) {
 						that._callback("backup save failed");
 					});

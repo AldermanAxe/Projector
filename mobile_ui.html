@@ -2,7 +2,7 @@
 <head>
 
 	<style>
-		::-webkit-scrollbar {
+		#buttondiv::-webkit-scrollbar {
 			width: 0px;
 			background: transparent; /* make scrollbar transparent */
 		}
@@ -10,16 +10,23 @@
 			overflow:hidden;
 		}
 		#displaydiv {
-			display: inline-block; 
-			height: 30%
+/*			display: inline-block; */
+			height: 90%;
+/*			position: relative;*/
+/*			top: 30px;*/
+			overflow:scroll;
 		}
 		#buttondiv {
-			position: fixed; 
+/*			position: fixed; */
 			white-space:nowrap;
 			overflow:scroll;
 			width:100%;
-			padding-bottom: 5px;
-		};
+			height: 10%
+/*			padding-bottom: 5px;*/
+		}
+		.funcButton {
+			margin: 0px 5px 0px 5px;
+		}
 	</style>
 	<script>
 		/*! jQuery v1.12.0 | (c) jQuery Foundation | jquery.org/license */
@@ -30,8 +37,10 @@
 	</script>
 	<script>
 		//load input object
-		proj = eval(`x={
-				"init":function(){this.test = function(){alert()};},
+		proj = eval(`proj={
+				"maxrow":0,
+				"root":0,
+				"0":{"id":0,"value":"firstroot","childs":[]},
 				"add":function(text_to_add){
 					text_to_add = text_to_add || "";
 					this.maxrow++;
@@ -39,69 +48,50 @@
 					this[this.root]["childs"].push(this.maxrow);
 					return("added " + this.maxrow);
 				},
-				"addchild":function(a){
-					this[this.root]["childs"].push(a);
-					return("added " + a);
-				},
-				"load":function(x){
-					that = this;
-					that.callback("async request sent...");
-					$.ajax({
-						url: "../JsonFiles/proj_data_" + (x || "proj2") + ".json"
-						,cache: false
-						,type: "get"
-						,dataType: "text"
-						,error: function(e, f) {
-							that.callback("...load failed!");
-						}
-						,success: function(in_data) {
-							eval("proj = " + in_data);
-							that.callback("...load succeeded");
-						}							
-					});
-					return "load attempted";
-				},
-				"loadlocal":function(x){
-					localstring = localStorage.getItem(x || "proj2");
-					if (localstring == null) {
-						return "local file " + (x || "proj2") + " not found";						
-					} else {
-						eval("proj = " + localstring);
-						return "loaded local " + (x || "proj2");
-					};
-				},				
-				"save":function(x){
-					that = this;
-					that.callback("async request sent...");
-					$.post( "../proj/proj_data.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
-						that.callback("...save succeeded");
-					}).fail(function(xhr, status, error) {
-						that.callback("...save failed");
-					});
-					$.post( "../proj/proj_backup.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
-						that.callback("backup save succeeded " + msg);
-					}).fail(function(xhr, status, error) {
-						that.callback("backup save failed");
-					});
-					return "save attempted";
-				},
-				"savelocal":function(x){
-					localStorage.setItem(x || "proj2", ""+this)
-					return "saved local " + (x || "proj2");
-				},
 				"list":function(){
 					str = "";
 					for (element of this[this.root]["childs"]) {
-						console.log(element);
 						if (typeof this[element] == "object"){
 							str += "\\"" + element + "\\":" + JSON.stringify(this[element]) + "<br/>";	
 						} else {
 							str += "\\"" + element + "\\":" + this[element] + "<br/>";
 						}
 					};
-					str = str.substring(0, str.length - 2);
-					str += "";
+					str = str.substring(0, str.length - 4);
 					return str;
+				},
+				"load":function(save_name){
+					that = this;
+					that._callback("async request sent...");
+					$.ajax({
+						url: "../JsonFiles/proj_data_" + (save_name || "proj2") + ".json"
+						,cache: false
+						,type: "get"
+						,dataType: "text"
+						,error: function(e, f) {
+							that._callback("...load failed!");
+						}
+						,success: function(in_data) {
+							eval("proj = " + in_data);
+							that._callback("...load succeeded");
+						}							
+					});
+					return "load attempted";
+				},
+				"save":function(save_name){
+					that = this;
+					that._callback("async request sent...");
+					$.post( "../proj/proj_data.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
+						that._callback("...save succeeded");
+					}).fail(function(xhr, status, error) {
+						that._callback("...save failed");
+					});
+					$.post( "../proj/proj_backup.aspx", {codename: x || "proj2", data: ""+this}).done(function(msg){  
+						that._callback("backup save succeeded " + msg);
+					}).fail(function(xhr, status, error) {
+						that._callback("backup save failed");
+					});
+					return "save attempted";
 				},
 				"listall":function(){
 					str = "";
@@ -121,18 +111,32 @@
 					str += "";
 					return str;
 				},
-				"rem":function(a){
-					delete this[a];
-					return("remove attempted");
-				},
+				"get":function(x){return(JSON.stringify(this[x]))},
 				"chg":function(a, b){
 					this[a] = b;
 					return(a + " changed to " + b);
 				},
-				"get":function(x){return(JSON.stringify(this[x]))},
-				"maxrow":0,
-				"root":0,
-				"0":{"id":0,"value":"firstroot","childs":[]},
+				"rem":function(a){
+					delete this[a];
+					return("remove attempted");
+				},
+				"addchild":function(child_number){
+					this[this.root]["childs"].push(a);
+					return("added " + a);
+				},
+				"loadlocal":function(x){
+					localstring = localStorage.getItem(x || "proj2");
+					if (localstring == null) {
+						return "local file " + (x || "proj2") + " not found";						
+					} else {
+						eval("proj = " + localstring);
+						return "loaded local " + (x || "proj2");
+					};
+				},				
+				"savelocal":function(x){
+					localStorage.setItem(x || "proj2", ""+this)
+					return "saved local " + (x || "proj2");
+				},
 				"toString":function(){
 					str = "{";
 					for (var property in this) {
@@ -145,14 +149,21 @@
 						}
 					};
 					str = str.substring(0, str.length - 2);
-					str += "}";
+					str += "};";
+					str += "proj.init();";
+					str += "proj = proj;";
 					return str;
 				},
-				"callback":function(x){
-					console.log(x);
-				}
-			}`);
- 
+				"_callback":function(result){
+					console.log(result);
+				},
+				"init":function(){
+					this.test = function(){return("you ran a test")};
+//					this.load(); // this loads prior versions of the projector as well, including old function definitions
+				},
+			};
+			proj.init();
+			proj = proj;`);
 	</script>
 </head>
 <body>
@@ -160,26 +171,29 @@
 	document.body.onload = function(){
 		bod = document.body;
 		bdiv = document.getElementById("buttondiv");
+		lineNum = 0;
+
 		//Add Callback write to output
-		proj.callback = function(a){
-			document.getElementById('displaydiv').innerHTML += '<br/>' + a;			
+		proj._callback = function(result){
+			document.getElementById('displaydiv').innerHTML = "[Result " + lineNum++ + "]<br/>" + result + '<br/><br/>' + document.getElementById('displaydiv').innerHTML;			
 		};
+				
 		//Add function buttons
 		for (var k in proj) {
 			if (proj.hasOwnProperty(k)) {
-				if (typeof proj[k] == "function"){
+				if (typeof proj[k] == "function" && k.substring(0,1)!= "_"){
 					b = document.createElement("button");
-					b.class = "funcButton";
+					b.className = "funcButton";
 					b.innerText = k;
 					b.onclick = eval(`x = function(){
 						buttonFun = proj['` + k + `'];
 						paramNames = getParamNames(buttonFun); //prompt for parameters
 						args = [];
 						for (paramName of paramNames){
-							args.push(prompt("Please provide '" + paramName + "':"));
+							args.push(prompt("" + paramName + ":"));
 						};
 						//call the function and display the results
-						document.getElementById('displaydiv').innerHTML += '<br/>' + proj['` + k + `'].apply(proj, args);
+						document.getElementById('displaydiv').innerHTML = "[Result " + lineNum++ + "]<br/>" + proj['` + k + `'].apply(proj, args) + '<br/><br/>' + document.getElementById('displaydiv').innerHTML;
 					}`);
 					bdiv.appendChild(b);
 				}

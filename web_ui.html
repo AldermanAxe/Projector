@@ -122,7 +122,8 @@
 					return str;
 				},
 				"rem":function(a){
-					delete this[a];
+					that = this;
+					delete that[a];
 					return("remove attempted");
 				},
 				"chg":function(a, b){

@@ -58,6 +58,42 @@
 					str = str.substring(0, str.length - 5);
 					return str;
 				},
+				"loadData":function(load_name){
+					that = this;
+					that._callback("async request sent...");
+					name = load_name || "proj2";
+					$.ajax({
+						url: "../JsonFiles/proj_data_" + name + ".json"
+						,cache: false
+						,type: "get"
+						,dataType: "text"
+						,error: function(e, f) {
+							that._callback("...load failed!");
+						}
+						,success: function(in_data) {
+							that._callback("updating data");
+							proj2 = proj;
+							proj = eval(in_data);
+							for (var property in proj2) {
+								if (proj2.hasOwnProperty(property)){
+									if (typeof proj2[property] != "function"){
+										delete proj2[property];	
+									};
+								}
+							};
+							for (var property in proj) {
+								if (proj.hasOwnProperty(property)){
+									if (typeof proj[property] != "function"){
+										proj2[property] = proj[property];	
+									};
+								}
+							};
+							proj = proj2;
+							that._callback("...load succeeded");
+						}							
+					});
+					return "load attempted";
+				},
 				"load":function(load_name){
 					that = this;
 					that._callback("async request sent...");
@@ -72,7 +108,7 @@
 						}
 						,success: function(in_data) {
 							console.log(in_data);
-							eval(in_data);
+							proj = eval(in_data);
 							that._callback("...load succeeded");
 						}							
 					});

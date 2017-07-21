@@ -12,7 +12,7 @@
 			width: 0px;
 			background: transparent; /* make scrollbar transparent */
 		}
-		body{
+		body {
 			overflow:hidden;
 		}
 		#displaydiv {
@@ -21,6 +21,10 @@
 			background-color: black;
 			color: white;
 			
+		}
+		button {
+			font-size : 40px; 
+			height: 9%"
 		}
 		#buttondiv {
 			white-space:nowrap;
@@ -212,7 +216,7 @@
 
 		//Add Callback write to output
 		proj._callback = function(result){
-			document.getElementById('displaydiv').innerHTML = "[Result " + lineNum++ + "]<br/>" + result + '<br/><br/>' + document.getElementById('displaydiv').innerHTML;			
+			document.getElementById('displaydiv').innerHTML += "[Result " + lineNum++ + "]<br/>" + result + '<br/><br/>';			
 		};
 				
 		//Add function buttons
@@ -230,7 +234,8 @@
 							args.push(prompt("" + paramName + ":"));
 						};
 						//call the function and display the results
-						document.getElementById('displaydiv').innerHTML = "[Result " + lineNum++ + "]<br/>" + proj['` + k + `'].apply(proj, args) + '<br/><br/>' + document.getElementById('displaydiv').innerHTML;
+						document.getElementById('displaydiv').innerHTML += "[Result " + lineNum++ + "]<br/>" + proj['` + k + `'].apply(proj, args) + '<br/><br/>';
+						document.getElementById('displaydiv').scrollTo(0,document.getElementById('displaydiv').scrollHeight);
 					}`);
 					bdiv.appendChild(b);
 				}
@@ -248,7 +253,8 @@
 		}
 	};
 	</script>
-	<div id="buttondiv"></div>
 	<div id="displaydiv">Activated Web UI</div>
+	<div id="buttondiv"></div>
+
 </body>
 </html>

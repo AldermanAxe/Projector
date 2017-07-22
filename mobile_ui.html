@@ -20,8 +20,7 @@
 			overflow:scroll;
 			background-color: black;
 			color: white;
-			
-		}
+					}
 		button {
 			font-size : 40px; 
 			height: 9%"
@@ -200,7 +199,13 @@
 					console.log(result);
 				},
 				"init":function(){
-					this.test = function(){return("you ran a test");};
+					//in order to only run once, only load data if initrun is undefined, and then define initrun
+					if (typeof initrun == "undefined"){
+						this.loadData();
+					} else {
+						console.log("yet!");
+					}
+					initrun = true;
 				},
 			};
 			proj.init();
@@ -216,7 +221,9 @@
 
 		//Add Callback write to output
 		proj._callback = function(result){
-			document.getElementById('displaydiv').innerHTML += "[Result " + lineNum++ + "]<br/>" + result + '<br/><br/>';			
+			disp = document.getElementById('displaydiv');
+			disp.innerHTML += "[Result " + lineNum++ + "]<br/>" + result + '<br/><br/><br/>';			
+			disp.scrollTop = disp.scrollHeight;
 		};
 				
 		//Add function buttons
@@ -234,8 +241,9 @@
 							args.push(prompt("" + paramName + ":"));
 						};
 						//call the function and display the results
-						document.getElementById('displaydiv').innerHTML += "[Result " + lineNum++ + "]<br/>" + proj['` + k + `'].apply(proj, args) + '<br/><br/>';
-						document.getElementById('displaydiv').scrollTo(0,document.getElementById('displaydiv').scrollHeight);
+						disp = document.getElementById('displaydiv');
+						disp.innerHTML += "[Result " + lineNum++ + "]<br/>" + proj['` + k + `'].apply(proj, args) + '<br/><br/><br/>';
+						disp.scrollTop = disp.scrollHeight;
 					}`);
 					bdiv.appendChild(b);
 				}
@@ -253,7 +261,7 @@
 		}
 	};
 	</script>
-	<div id="displaydiv">Activated Web UI</div>
+	<div id="displaydiv">Activated Web UI<br/><br/></div>
 	<div id="buttondiv"></div>
 
 </body>

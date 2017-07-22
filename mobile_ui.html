@@ -12,18 +12,31 @@
 			width: 0px;
 			background: transparent; /* make scrollbar transparent */
 		}
-		body {
+		body{
 			overflow:hidden;
+		    overflow-x:hidden;
 		}
-		#displaydiv {
-			height: 90%;
+		#maininput{
+			background-color:black;
+			height:100%;
+			color:white;
+			display:block;
+			top:0;
+			width:100%;
+			padding:0 0 0 0;
+			margin:0 0 0 0;
+		}
+		#inputdiv{
+			height: 10%;
 			overflow:scroll;
 			background-color: black;
 			color: white;
-					}
-		button {
-			font-size : 40px; 
-			height: 9%"
+		}
+		#displaydiv {
+			height: 80%;
+			overflow:scroll;
+			background-color: black;
+			color: white;
 		}
 		#buttondiv {
 			white-space:nowrap;
@@ -138,7 +151,10 @@
 					str = "";
 					for (var property in this) {
 						if (this.hasOwnProperty(property) && property > -1){
-							if (typeof this[property] == "object"){
+							if (typeof this[property] == "function"){
+								;
+							}
+							else if (typeof this[property] == "object"){
 								str += "\\"" + property + "\\":" + JSON.stringify(this[property]) + "<br/>";	
 							} else {
 								str += "\\"" + property + "\\":" + this[property] + "<br/>";
@@ -192,7 +208,7 @@
 					str = str.substring(0, str.length - 2);
 					str += "};";
 					str += "proj.init();";
-					str += "proj;";
+					str += "proj = proj;";
 					return str;
 				},
 				"_callback":function(result){
@@ -261,8 +277,13 @@
 		}
 	};
 	</script>
-	<div id="displaydiv">Activated Web UI<br/><br/></div>
+	<div id="displaydiv">Activated Web UI</div>
+	<div id="inputdiv">
+		<input id="maininput" type="text"></input>
+	</div>
 	<div id="buttondiv"></div>
-
-</body>
+	</body>
+</html>
+	<div id="buttondiv"></div>
+	</body>
 </html>

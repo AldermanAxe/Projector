@@ -8,13 +8,14 @@
 		n.cssHooks[b]=Ua(l.pixelPosition,function(a,c){return c?(c=Sa(a,b),Oa.test(c)?n(a).position()[b]+"px":c):void 0})}),n.each({Height:"height",Width:"width"},function(a,b){n.each({padding:"inner"+a,content:b,"":"outer"+a},function(c,d){n.fn[d]=function(d,e){var f=arguments.length&&(c||"boolean"!=typeof d),g=c||(d===!0||e===!0?"margin":"border");return Y(this,function(b,c,d){var e;return n.isWindow(b)?b.document.documentElement["client"+a]:9===b.nodeType?(e=b.documentElement,Math.max(b.body["scroll"+a],e["scroll"+a],b.body["offset"+a],e["offset"+a],e["client"+a])):void 0===d?n.css(b,c,g):n.style(b,c,d,g)},b,f?d:void 0,f,null)}})}),n.fn.extend({bind:function(a,b,c){return this.on(a,null,b,c)},unbind:function(a,b){return this.off(a,null,b)},delegate:function(a,b,c,d){return this.on(b,a,c,d)},undelegate:function(a,b,c){return 1===arguments.length?this.off(a,"**"):this.off(b,a||"**",c)}}),n.fn.size=function(){return this.length},n.fn.andSelf=n.fn.addBack,"function"==typeof define&&define.amd&&define("jquery",[],function(){return n});var mc=a.jQuery,nc=a.$;return n.noConflict=function(b){return a.$===n&&(a.$=nc),b&&a.jQuery===n&&(a.jQuery=mc),n},b||(a.jQuery=a.$=n),n});
 	</script>
 	<style>
-		#buttondiv::-webkit-scrollbar {
-			width: 0px;
-			background: transparent; /* make scrollbar transparent */
-		}
 		body{
 			overflow:hidden;
 		    overflow-x:hidden;
+		    font-size: 50px;
+		}
+		#buttondiv::-webkit-scrollbar {
+			width: 0px;
+			background: transparent; /* make scrollbar transparent */
 		}
 		#maininput{
 			background-color:black;
@@ -45,12 +46,15 @@
 			height: 10%
 		}
 		.funcButton {
-			margin: 0px 5px 0px 5px;
+			height: 100%;
+			padding: 0px 15px 0px 15px;
+			margin: 10px 5px 0px 5px;
+			font-size: 50px;
 		}
 	</style>
 	<script>
-		//load input object
-		proj = eval(`proj={
+		//get input object string definition
+		projstr = `proj={
 				"maxrow":0,
 				"root":0,
 				"0":{"id":0,"value":"firstroot","childs":[]},
@@ -72,6 +76,17 @@
 					};
 					str = str.substring(0, str.length - 5);
 					return str;
+				},
+				"rem":function(id){
+					children = this[this.root]["childs"];
+					index = children.indexOf(parseInt(id));
+					if (index > -1) delete this[this.root]["childs"].splice(index,1);
+					delete this[id];
+					return("remove attempted");
+				},
+				"chg":function(a, b){
+					this[a] = b;
+					return(a + " changed to " + b);
 				},
 				"loadData":function(load_name){
 					that = this;
@@ -166,17 +181,6 @@
 					return str;
 				},
 				"get":function(x){return(JSON.stringify(this[x]))},
-				"chg":function(a, b){
-					this[a] = b;
-					return(a + " changed to " + b);
-				},
-				"rem":function(id){
-					children = this[this.root]["childs"];
-					index = children.indexOf(parseInt(id));
-					if (index > -1) delete this[this.root]["childs"].splice(index,1);
-					delete this[id];
-					return("remove attempted");
-				},
 				"addchild":function(child_number){
 					this[this.root]["childs"].push(a);
 					return("added " + a);
@@ -225,7 +229,7 @@
 				},
 			};
 			proj.init();
-			proj = proj;`);
+			proj = proj;`;
 	</script>
 </head>
 <body>
@@ -234,6 +238,9 @@
 		bod = document.body;
 		bdiv = document.getElementById("buttondiv");
 		lineNum = 0;
+		
+		//Create proj objects
+		proj = eval(projstr);
 
 		//Add Callback write to output
 		proj._callback = function(result){
@@ -310,13 +317,10 @@
 		}
 	};
 	</script>
-	<div id="displaydiv">Activated Web UI</div>
+	<div id="displaydiv">Activated Web UI<br/><br/></div>
 	<div id="inputdiv">
 		<input id="maininput" type="text"></input>
 	</div>
-	<div id="buttondiv"></div>
-	</body>
-</html>
 	<div id="buttondiv"></div>
 	</body>
 </html>

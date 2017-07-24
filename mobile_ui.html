@@ -241,6 +241,39 @@
 			disp.innerHTML += "[Result " + lineNum++ + "]<br/>" + result + '<br/><br/><br/>';			
 			disp.scrollTop = disp.scrollHeight;
 		};
+		//Add Text Input behavior
+		var mInput = document.getElementById("maininput");
+		cmdHist = [];
+		cmdHistPos = 0;
+		mInput.focus();
+		document.onkeydown = function(inKey){
+			if (inKey.keyCode == 13) { //when 'enter' is pressed
+				command = mInput.value;
+				//convert input with spaces to function call syntax
+				if (command.substring(command.length - 1) != ")")
+				{
+					if(command.includes(" ")){
+						command = command.replace(" ", "(") + ")";
+					} else {
+						command = command + "()";
+					}
+				}
+				output = eval("proj." + command);
+				proj._callback("<br/>" + output + "<br/>");
+				mInput.value = "";
+				mInput.focus();
+				if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
+				cmdHistPos = 0;
+			} else if  (inKey.keyCode == 38){ //up arrow to get prior commands
+				mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
+				if (cmdHistPos <= cmdHist.length - 1) cmdHistPos++;
+				mInput.focus();
+			} else if  (inKey.keyCode == 40){ //down arrow to get prior commands
+				if (cmdHistPos >= 0 ) cmdHistPos--;
+				mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
+				mInput.focus();
+			};
+		};
 				
 		//Add function buttons
 		for (var k in proj) {

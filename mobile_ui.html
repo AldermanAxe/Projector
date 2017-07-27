@@ -54,10 +54,10 @@
 			height: 10%
 		}
 		.funcButton {
-			height: 90%;
-			padding: 0px 15px 0px 15px;
-			margin: 0px 5px 0px 5px;
-			font-size: 50px;
+			height: 100%;
+			padding: 5px 15px 5px 15px;
+			margin: 5px 5px 5px 5px;
+			font-size: 45px;
 		}
 	</style>
 	<script>
@@ -260,41 +260,82 @@
 		cmdHist = [];
 		cmdHistPos = 0;
 		mInput.focus();
+		var inputMode = {selected: 0, text:0, parameters:1};
+		g_parameterCallback = function(){;};
+		g_args = [];
+		g_paramNames = [];
+		
 		document.onkeydown = function(inKey){
-			if (inKey.keyCode == 13) { //when 'enter' is pressed
-				command = mInput.value;
-				//check for strings beginning with '=' and treat them as an eval
-				if (command.substring(0, 1) == "=") {
-					command = command.substring(1, command.length);
-					proj._callback(eval(command));
-				} else {
-					//convert input with spaces to function call syntax
-					if (command.substring(command.length - 1) != ")")
-					{
-						if(command.includes(" ")){
-							command = command.replace(" ", "(") + ")";
-						} else {
-							command = command + "()";
+			if (inputMode.selected == inputMode.text){
+				if (inKey.keyCode == 13) { //when 'enter' is pressed
+					command = mInput.value;
+					//check for strings beginning with '=' and treat them as an eval
+					if (command.substring(0, 1) == "=") {
+						command = command.substring(1, command.length);
+						proj._callback(eval(command));
+						mInput.value = "";
+					} else if (proj.hasOwnProperty(command)){
+						runFun(eval("proj." + command));
+											} else {
+						
+						//convert input with spaces to function call syntax
+						if (command.substring(command.length - 1) != ")")
+						{
+							if(command.includes(" ")){
+								command = command.replace(" ", "(") + ")";
+							} else {
+								command = command + "()";
+							}
 						}
-					}
-					output = eval("proj." + command);
-					proj._callback(output);
+						output = eval("proj." + command);
+						proj._callback(output);
+						mInput.value = "";
+					};
+					mInput.focus();
+					if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
+					cmdHistPos = 0;
+				} else if  (inKey.keyCode == 38){ //up arrow to get prior commands
+					mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
+					if (cmdHistPos <= cmdHist.length - 1) cmdHistPos++;
+					mInput.focus();
+				} else if  (inKey.keyCode == 40){ //down arrow to get prior commands
+					if (cmdHistPos >= 0 ) cmdHistPos--;
+					mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
+					mInput.focus();
 				};
-				mInput.value = "";
-				mInput.focus();
-				if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
-				cmdHistPos = 0;
-			} else if  (inKey.keyCode == 38){ //up arrow to get prior commands
-				mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
-				if (cmdHistPos <= cmdHist.length - 1) cmdHistPos++;
-				mInput.focus();
-			} else if  (inKey.keyCode == 40){ //down arrow to get prior commands
-				if (cmdHistPos >= 0 ) cmdHistPos--;
-				mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
-				mInput.focus();
+			} else if (inputMode.selected == inputMode.parameters){
+				if (inKey.keyCode == 13) { //when 'enter' is pressed
+					addval = mInput.value.substring(g_paramNames[g_paramNames.length - 1].length + 2 ,mInput.value.length);
+					runFun(g_parameterCallback, g_paramNames, g_args.concat([addval]));
+				};		
 			};
 		};
-				
+
+		function runFun(callback, paramNames, args){
+			if (typeof paramNames == 'undefined'){
+				paramNames = getParamNames(callback);
+				args = [];
+			};
+			if (paramNames.length == args.length){
+				var output = callback.apply(proj, args);
+				proj._callback(output);
+				disp.scrollTop = disp.scrollHeight;
+				inputMode.selected = inputMode.text;
+				mInput.value = "";
+			} else {
+				g_parameterCallback = callback;
+				g_args = args;
+				g_paramNames = paramNames;
+				label = paramNames[args.length];
+				prompt = label + ": ";
+				mInput.value = prompt;
+				mInput.focus();
+				inputMode.selected = inputMode.parameters;
+			};
+		};
+		
+		function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms));}
+		
 		//Add function buttons
 		for (var k in proj) {
 			if (proj.hasOwnProperty(k)) {
@@ -306,14 +347,15 @@
 						buttonFun = proj['` + k + `'];
 						paramNames = getParamNames(buttonFun); //prompt for parameters
 						args = [];
-						for (paramName of paramNames){
-							args.push(prompt("" + paramName + ":"));
+						runFun(proj['` + k + `'], paramNames, args);
+/*						for (paramName of paramNames){
+							args.push(getTextInput(paramName));
 						};
 						//call the function and display the results
 						disp = document.getElementById('displaydiv');
 						disp.innerHTML += "[Result " + lineNum++ + "]<br/>" + proj['` + k + `'].apply(proj, args) + '<br/><br/>';
 						disp.scrollTop = disp.scrollHeight;
-					}`);
+*/					}`);
 					bdiv.appendChild(b);
 				}
 			}

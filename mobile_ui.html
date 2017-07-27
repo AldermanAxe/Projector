@@ -11,7 +11,7 @@
 		body{
 			overflow:hidden;
 		    overflow-x:hidden;
-		    font-size: 50px;
+		    font-size: 40px;
 			font-family: Arial, Helvetica, sans-serif;
 		}
 		#buttondiv::-webkit-scrollbar {
@@ -54,7 +54,7 @@
 			height: 10%
 		}
 		.funcButton {
-			height: 100%;
+			height: 90%;
 			padding: 5px 15px 5px 15px;
 			margin: 5px 5px 5px 5px;
 			font-size: 45px;
@@ -85,6 +85,25 @@
 					str = str.substring(0, str.length - 5);
 					return str;
 				},
+				"save":function(save_name){
+					that = this;
+					that._callback("async request sent...");
+					name = save_name || "proj2";
+
+					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
+						that._callback("...save done: " + msg);
+					}).fail(function(xhr, status, error) {
+						that._callback("...save failed");
+					});
+
+					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()}).done(function(msg){  
+						that._callback("backup save done: " + msg);
+					}).fail(function(xhr, status, error) {
+						that._callback("backup save failed");
+					});
+
+					return "save attempted";
+				},
 				"rem":function(id){
 					children = this[this.root]["childs"];
 					index = children.indexOf(parseInt(id));
@@ -92,9 +111,9 @@
 					delete this[id];
 					return("remove attempted");
 				},
-				"chg":function(a, b){
-					this[a] = b;
-					return(a + " changed to " + b);
+				"chg":function(id, new_value){
+					this[id] = new_value;
+					return(id + " changed to " + new_value);
 				},
 				"loadData":function(load_name){
 					that = this;
@@ -151,25 +170,6 @@
 					});
 					return "load attempted";
 				},
-				"save":function(save_name){
-					that = this;
-					that._callback("async request sent...");
-					name = save_name || "proj2";
-
-					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
-						that._callback("...save done: " + msg);
-					}).fail(function(xhr, status, error) {
-						that._callback("...save failed");
-					});
-
-					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()}).done(function(msg){  
-						that._callback("backup save done: " + msg);
-					}).fail(function(xhr, status, error) {
-						that._callback("backup save failed");
-					});
-
-					return "save attempted";
-				},
 				"listall":function(){
 					str = "";
 					for (var property in this) {
@@ -188,23 +188,23 @@
 					str += "";
 					return str;
 				},
-				"get":function(x){return(JSON.stringify(this[x]))},
+				"get":function(id){return(JSON.stringify(this[id]))},
 				"addchild":function(child_number){
 					this[this.root]["childs"].push(a);
 					return("added " + a);
 				},
-				"loadlocal":function(x){
-					localstring = localStorage.getItem(x || "proj2");
+				"loadlocal":function(load_name){
+					localstring = localStorage.getItem(load_name || "proj2");
 					if (localstring == null) {
-						return "local file " + (x || "proj2") + " not found";						
+						return "local file " + (load_name || "proj2") + " not found";						
 					} else {
 						eval("proj = " + localstring);
-						return "loaded local " + (x || "proj2");
+						return "loaded local " + (load_name || "proj2");
 					};
 				},				
-				"savelocal":function(x){
-					localStorage.setItem(x || "proj2", ""+this)
-					return "saved local " + (x || "proj2");
+				"savelocal":function(save_name){
+					localStorage.setItem(save_name || "proj2", ""+this)
+					return "saved local " + (save_name || "proj2");
 				},
 				"toString":function(){
 					str = "proj = {";

@@ -1,0 +1,68 @@
+To set up SSH and GIT servers
+
+0. ensure you have port 22 on your network forwarded to the server computer to allow ssh access.
+1. ensure ubuntu os is installed on the server computer
+2. install openssh if it is not already on the computer
+3. configure openssh to only allow key access and ban root access. (this is very nessary as public ssh servers are constantly hit by malicious attempts to gain root access)
+	a. go to etc/ssh/sshd_config
+	b. edit the file removing root access and changing passwordlogon to 'no'
+4. install git
+5. create a bare repo at the location of your choice (optionally may set up the shell to go to that directory by default to make things easier for the ssh user logging in)
+<<<<<<< HEAD
+	a. something like 'git init --bare'
+=======
+	a. something like 'git init --bare' (the bare flag is required to make a bare repository that can be updated from another source)
+5. grant read/write access to the folder "chmod 700 " or something
+>>>>>>> 0bf8ae6c1d0060fd10dbed3b48eb658fd05b9cd4
+
+
+To set up client access to SSH and GIT:
+
+1. Download GIT and Install it
+	a. for windows https://git-scm.com/download/win
+2. Open the program 'GIT Bash'
+3. Generate a pair of SSH Keys (Public & Private). The public key will be shared to gain access to the ssh server, but the private key must be kept private.
+	a. in git bash type 'ssh-keygen -t rsa'
+		i. enter a passphrase if you wish. You will need to provide this on each logon but it provides a bit more security in case your private key is ever obtained by someone else.
+		ii. Save to the default directory, making note of the location - or you can save to another directory if you wish, but ensure you note the location. You may rename the file if you wish, but note the name for later.
+4. Set up your user id on the GIT server
+	i. Navigate to the folder containing your public key just created (*.pub), 
+	ii. open it in a file editor and send it to the GIT server administrator to add to the accepted ssh keys.
+		(eg add to to the file in '~/.ssh/authorized_keys')
+	iii. also ask the server administrator for a username and password, ip address, and git repo folder location
+5. After the GIT server admin has confirmed adding your key, configure bash to use your ssh keys (note it seems like this may have to be done every time you log in, so it can be useful to create a bash script. see appendices)
+	i. enable the ssh agent with the following line in git bash: "eval $(ssh-agent -s)"
+	ii. add your private key to the ssh agent with (replacing the path '/c/Users...' with your own path and private key file): ssh-add /c/Users/Alexander/.ssh/github_rsa
+	iii. set up the GIT server as a remote repo 
+		a. in git bash: git remote add mittens ssh://[uname]@[hostip]/[path]
+		where 'mittens' is any name you want to assign to the remote repo, and uname and path were received from the ssh admin
+6. Try pushing and pulling from the remote repo
+	i. for each new session, you may need to re-do steps 5.i-5.ii if you do not have these in a script.
+	ii. pull from remote repo
+		a. navigate to your bare repository, or your repository that matches the remote repo
+		b. in git bash type: git pull mittens
+		(where 'mittens' is any name you have assigned to the remote. For a list of remotes you can type 'git remotes -v' from within your local repo directory)
+	iii. push to a remote repo
+		a. navigate to your local repo
+		b. in git bash type: git push mittens
+		(where 'mittens' is any name you have assigned to the remote).		
+
+
+Appendix A - Git Push Bash script
+
+NOTE: you can call this script from a batch file with a line like the following (changing t he path to your script location) - "C:\Program Files\Git\bin\sh.exe" --login -i -c "/c/inetpub/wwwroot/proj/gitpush.sh"
+
+cd /c/inetpub/wwwroot/proj
+eval $(ssh-agent -s)
+ssh-add /c/Users/Alexander/.ssh/github_rsa
+git add *
+git commit -m "auto"
+git push -u mittens master
+
+Appendix B - Git Pull Bash script
+NOTE: see appendix A for batch file syntax
+
+cd /c/inetpub/wwwroot/proj
+eval $(ssh-agent -s)
+ssh-add /c/Users/Alexander/.ssh/github_rsa
+git pull mittens master

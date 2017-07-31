@@ -11,7 +11,7 @@
 		body{
 			overflow:hidden;
 		    overflow-x:hidden;
-		    font-size: 40px;
+		    font-size: 30px;
 			font-family: Arial, Helvetica, sans-serif;
 		}
 		#buttondiv::-webkit-scrollbar {
@@ -23,7 +23,7 @@
 			height:100%;
 			color:white;
 			display:block;
-		    font-size: 50px;
+		    font-size: 30px;
 			top:0;
 			width:100%;
 			padding:0 0 0 0;
@@ -34,7 +34,7 @@
 			overflow:scroll;
 			background-color: black;
 			color: white;
-		    font-size: 50px;
+		    font-size: 30px;
 			overflow-y: scroll;
 			overflow-x: hidden;
 		}
@@ -112,7 +112,7 @@
 					return("remove attempted");
 				},
 				"chg":function(id, new_value){
-					this[id] = new_value;
+					proj[id]["value"] = new_value;
 					return(id + " changed to " + new_value);
 				},
 				"loadData":function(load_name){
@@ -305,13 +305,14 @@
 				};
 			} else if (inputMode.selected == inputMode.parameters){
 				if (inKey.keyCode == 13) { //when 'enter' is pressed
-					addval = mInput.value.substring(g_paramNames[g_paramNames.length - 1].length + 2 ,mInput.value.length);
+					addval = mInput.value.substring(g_paramNames[g_args.length].length + 2 ,mInput.value.length);
 					runFun(g_parameterCallback, g_paramNames, g_args.concat([addval]));
 				};		
 			};
 		};
 
 		function runFun(callback, paramNames, args){
+			console.log("runfun: " + paramNames + " / " + args)
 			if (typeof paramNames == 'undefined'){
 				paramNames = getParamNames(callback);
 				args = [];

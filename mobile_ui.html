@@ -101,7 +101,10 @@
 					proj[id]["value"] = new_value;
 					return(id + " changed to " + new_value);
 				},
-				"setroot":function(id){
+				"home":function(){
+					return(proj.goto(0));
+				},
+				"goto":function(id){
 					proj.root = id;
 					return("root set to:" + id);
 				},

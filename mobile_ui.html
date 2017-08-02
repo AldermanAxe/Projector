@@ -11,7 +11,7 @@
 		body{
 			overflow:hidden;
 		    overflow-x:hidden;
-		    font-size: 40px;
+		    font-size: 30px;
 			font-family: Arial, Helvetica, sans-serif;
 		}
 		#buttondiv::-webkit-scrollbar {
@@ -23,7 +23,7 @@
 			height:100%;
 			color:white;
 			display:block;
-		    font-size: 40px;
+		    font-size: 30px;
 			top:0;
 			width:100%;
 			padding:0 0 0 0;
@@ -34,7 +34,7 @@
 			overflow:scroll;
 			background-color: black;
 			color: white;
-		    font-size: 40px;
+		    font-size: 30px;
 			overflow-y: scroll;
 			overflow-x: hidden;
 		}
@@ -43,7 +43,7 @@
 			overflow:scroll;
 			background-color: black;
 			color: white;
-		    font-size: 40px;
+		    font-size: 30px;
 			overflow-y: scroll;
 			overflow-x: hidden;
 		}
@@ -77,7 +77,7 @@
 					str = "";
 					for (element of this[this.root]["childs"]) {
 						if (typeof this[element] == "object"){
-							str += "" + element + ":" + JSON.stringify(this[element]["value"]) + "<br/>";	
+							str += "" + element + ":" + JSON.stringify(this[element]["value"]) + (this[element].hasOwnProperty("childs") ? this[element].childs.length > 0 ? "[]" : "" : "") + "<br/>";	
 						} else {
 							str += "" + element + ":" + this[element] + "<br/>";
 						}
@@ -85,35 +85,25 @@
 					str = str.substring(0, str.length - 5);
 					return str;
 				},
-				"save":function(save_name){
+				"save":function(){
 					that = this;
-					that._callback("async request sent...");
-					name = save_name || "proj2";
-
-					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
-						that._callback("...save done: " + msg);
-					}).fail(function(xhr, status, error) {
-						that._callback("...save failed");
-					});
-
-					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()}).done(function(msg){  
-						that._callback("backup save done: " + msg);
-					}).fail(function(xhr, status, error) {
-						that._callback("backup save failed");
-					});
-
-					return "save attempted";
+					return that.savefile();
 				},
 				"rem":function(id){
 					children = this[this.root]["childs"];
 					index = children.indexOf(parseInt(id));
 					if (index > -1) delete this[this.root]["childs"].splice(index,1);
-					delete this[id];
+//need a way to delete from the object if it is not a child of anything... maybe?
+					//delete this[id];
 					return("remove attempted");
 				},
 				"chg":function(id, new_value){
 					proj[id]["value"] = new_value;
 					return(id + " changed to " + new_value);
+				},
+				"setroot":function(id){
+					proj.root = id;
+					return("root set to:" + id);
 				},
 				"loadData":function(load_name){
 					that = this;
@@ -170,6 +160,25 @@
 					});
 					return "load attempted";
 				},
+				"savefile":function(save_name){
+					that = this;
+					that._callback("async request sent...");
+					name = save_name || "proj2";
+
+					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
+						that._callback("...save done: " + msg);
+					}).fail(function(xhr, status, error) {
+						that._callback("...save failed");
+					});
+
+					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()}).done(function(msg){  
+						that._callback("backup save done " + msg);
+					}).fail(function(xhr, status, error) {
+						that._callback("backup save failed");
+					});
+
+					return "save attempted";
+				},
 				"listall":function(){
 					str = "";
 					for (var property in this) {
@@ -189,9 +198,9 @@
 					return str;
 				},
 				"get":function(id){return(JSON.stringify(this[id]))},
-				"addchild":function(child_number){
-					this[this.root]["childs"].push(a);
-					return("added " + a);
+				"addchild":function(id){
+					this[this.root]["childs"].push(id);
+					return("added " + id);
 				},
 				"loadlocal":function(load_name){
 					localstring = localStorage.getItem(load_name || "proj2");
@@ -246,7 +255,7 @@
 		lineNum = 0;
 		
 		//Create proj objects
-		proj = eval(projstr);
+		proj = eval("proj = " + projstr);
 
 		//Add Callback write to output
 		proj._callback = function(result){

@@ -23,6 +23,7 @@
 			height:100%;
 			color:white;
 			display:block;
+			font-size: 30px;
 			top:0;
 			width:100%;
 			padding:0 0 0 0;
@@ -275,49 +276,53 @@
 		g_paramNames = [];
 		
 		document.onkeydown = function(inKey){
-			if (inputMode.selected == inputMode.text){
-				if (inKey.keyCode == 13) { //when 'enter' is pressed
-					command = mInput.value;
-					//check for strings beginning with '=' and treat them as an eval
-					if (command.substring(0, 1) == "=") {
-						command = command.substring(1, command.length);
-						proj._callback(eval(command));
-						mInput.value = "";
-					} else if (proj.hasOwnProperty(command)){
-						runFun(eval("proj." + command));
-											} else {
-						
-						//convert input with spaces to function call syntax
-						if (command.substring(command.length - 1) != ")")
-						{
-							if(command.includes(" ")){
-								command = command.replace(" ", "(") + ")";
-							} else {
-								command = command + "()";
+			try {
+				if (inputMode.selected == inputMode.text){
+					if (inKey.keyCode == 13) { //when 'enter' is pressed
+						command = mInput.value;
+						//check for strings beginning with '=' and treat them as an eval
+						if (command.substring(0, 1) == "=") {
+							command = command.substring(1, command.length);
+							proj._callback(eval(command));
+							mInput.value = "";
+						} else if (proj.hasOwnProperty(command)){
+							runFun(eval("proj." + command));
+												} else {
+							
+							//convert input with spaces to function call syntax
+							if (command.substring(command.length - 1) != ")")
+							{
+								if(command.includes(" ")){
+									command = command.replace(" ", "(") + ")";
+								} else {
+									command = command + "()";
+								}
 							}
-						}
-						output = eval("proj." + command);
-						proj._callback(output);
-						mInput.value = "";
+							output = eval("proj." + command);
+							proj._callback(output);
+							mInput.value = "";
+						};
+						mInput.focus();
+						if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
+						cmdHistPos = 0;
+					} else if  (inKey.keyCode == 38){ //up arrow to get prior commands
+						mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
+						if (cmdHistPos <= cmdHist.length - 1) cmdHistPos++;
+						mInput.focus();
+					} else if  (inKey.keyCode == 40){ //down arrow to get prior commands
+						if (cmdHistPos >= 0 ) cmdHistPos--;
+						mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
+						mInput.focus();
 					};
-					mInput.focus();
-					if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
-					cmdHistPos = 0;
-				} else if  (inKey.keyCode == 38){ //up arrow to get prior commands
-					mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
-					if (cmdHistPos <= cmdHist.length - 1) cmdHistPos++;
-					mInput.focus();
-				} else if  (inKey.keyCode == 40){ //down arrow to get prior commands
-					if (cmdHistPos >= 0 ) cmdHistPos--;
-					mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
-					mInput.focus();
+				} else if (inputMode.selected == inputMode.parameters){
+					if (inKey.keyCode == 13) { //when 'enter' is pressed
+						addval = mInput.value.substring(g_paramNames[g_args.length].length + 2 ,mInput.value.length);
+						runFun(g_parameterCallback, g_paramNames, g_args.concat([addval]));
+					};		
 				};
-			} else if (inputMode.selected == inputMode.parameters){
-				if (inKey.keyCode == 13) { //when 'enter' is pressed
-					addval = mInput.value.substring(g_paramNames[g_args.length].length + 2 ,mInput.value.length);
-					runFun(g_parameterCallback, g_paramNames, g_args.concat([addval]));
-				};		
-			};
+			} catch(e) {
+				proj._callback(e.toString());
+			}
 		};
 
 		function runFun(callback, paramNames, args){

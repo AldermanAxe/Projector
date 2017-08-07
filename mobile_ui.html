@@ -15,7 +15,7 @@
 			font-family: Arial, Helvetica, sans-serif;
 		}
 		a{
-			color: darkblue;
+			color: blue;
 			text-decoration: underline;
 			cursor: pointer; 
 			cursor: hand;
@@ -368,27 +368,30 @@
 						paramNames = getParamNames(buttonFun); //prompt for parameters
 						args = [];
 						runFun(proj['` + k + `'], paramNames, args);
-/*						for (paramName of paramNames){
-							args.push(getTextInput(paramName));
-						};
-						//call the function and display the results
-						disp = document.getElementById('displaydiv');
-						disp.innerHTML += "[Result " + lineNum++ + "]<br/>" + proj['` + k + `'].apply(proj, args) + '<br/><br/>';
-						disp.scrollTop = disp.scrollHeight;
-*/					}`);
+					}`);
 					bdiv.appendChild(b);
 				}
 			}
 		};
-		
-		function getParamNames(func) {
-			var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-			var ARGUMENT_NAMES = /([^\s,]+)/g;
-			var fnStr = func.toString().replace(STRIP_COMMENTS, '');
-			var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
-			if(result === null)
-				result = [];
-			return result;
+
+		function getParamNames(func){ //rewritten to allow getting generics in the future
+			fstring = func.toString();
+			firstBracket = fstring.indexOf("(");
+			lastBracket = 0; 
+			bracketDepth = 0;
+			for (var i = firstBracket + 1; i < fstring.length; i++){		
+				if (fstring[i] === ")" && bracketDepth === 0) {
+					lastBracket = i;
+					break;
+				} else if (fstring === ")" && bracketDepth !== 0) {
+					bracketDepth--;
+				} else if (fstring === "(") {
+					bracketDepth++;
+				}
+			}
+			argstring = fstring.substring(firstBracket + 1, lastBracket);
+			fargs = argstring === "" ? [] : argstring.split(",");
+			return fargs;
 		}
 	};
 	</script>

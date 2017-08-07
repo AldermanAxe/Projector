@@ -1,1 +1,0 @@
-"C:\Program Files\Git\bin\sh.exe" --login -i -c "/c/inetpub/wwwroot/proj/gitpull.sh"

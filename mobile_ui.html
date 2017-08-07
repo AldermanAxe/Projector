@@ -391,6 +391,13 @@
 			}
 			argstring = fstring.substring(firstBracket + 1, lastBracket);
 			fargs = argstring === "" ? [] : argstring.split(",");
+			fargs = fargs.map(function(mapSum, mapCurrent){
+				if (mapCurrent.indexOf("=") > 0) {
+					return mapCurrent.substring(0, mapCurrent.indexOf("="));
+				} else {
+					return mapCurrent;
+				}
+			});
 			return fargs;
 		}
 	};

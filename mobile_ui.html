@@ -14,6 +14,12 @@
 		    font-size: 30px;
 			font-family: Arial, Helvetica, sans-serif;
 		}
+		a{
+			color: darkblue;
+			text-decoration: underline;
+			cursor: pointer; 
+			cursor: hand;
+		}
 		#buttondiv::-webkit-scrollbar {
 			width: 0px;
 			background: transparent; /* make scrollbar transparent */
@@ -55,7 +61,7 @@
 			height: 90%;
 			padding: 5px 15px 5px 15px;
 			margin: 1px 5px 1px 5px;
-			font-size: 2vh;
+			font-size: 2.5vh;
 		}
 	</style>
 	<script>
@@ -75,7 +81,7 @@
 					str = "";
 					for (element of this[this.root]["childs"]) {
 						if (typeof this[element] == "object"){
-							str += "" + element + ":" + JSON.stringify(this[element]["value"]) + (this[element].hasOwnProperty("childs") ? this[element].childs.length > 0 ? "[]" : "" : "") + "<br/>";	
+							str += "" + element + ":" + JSON.stringify(this[element]["value"]) + (this[element].hasOwnProperty("childs") ? this[element].childs.length > 0 ? "<a onclick=proj._callback(proj.goto(" + element + "))>[...]</a>" : "" : "") + "<br/>";	
 						} else {
 							str += "" + element + ":" + this[element] + "<br/>";
 						}

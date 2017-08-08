@@ -81,7 +81,16 @@
 					str = "";
 					for (element of this[this.root]["childs"]) {
 						if (typeof this[element] == "object"){
-							str += "" + element + ":" + JSON.stringify(this[element]["value"]) + (this[element].hasOwnProperty("childs") ? this[element].childs.length > 0 ? "<a onclick=proj._callback(proj.goto(" + element + "))>[...]</a>" : "" : "") + "<br/>";	
+							str += "" + element + ":" + JSON.stringify(this[element]["value"]) 
+								+ (
+									this[element].hasOwnProperty("childs") ? 
+										this[element].childs.length > 0 ? 
+											" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:blue;'>[...]</a> " 
+											: "" 
+									: ""
+								) 
+								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
+								+ "<br/>";	
 						} else {
 							str += "" + element + ":" + this[element] + "<br/>";
 						}
@@ -95,10 +104,20 @@
 				},
 				"rem":function(id){
 					children = this[this.root]["childs"];
+					var index = children.indexOf(parseInt(id));
+					if (index > -1) {
+						delete this[this.root]["childs"].splice(index,1);
+					} else {
+						return("index " + id + " not found")
+					}					
+					//delete this[id];//need a way to delete from the object if it is not a child of anything. Or perhaps keep them and just add a cleanup function.
 					index = children.indexOf(parseInt(id));
-					if (index > -1) delete this[this.root]["childs"].splice(index,1);
-//need a way to delete from the object if it is not a child of anything... maybe?
-					//delete this[id];
+					if (index > -1) {
+						return("failed to remove " + id);
+					} else {
+						return("index " + id + " removed");
+					}
+					
 					return("remove attempted");
 				},
 				"chg":function(id, new_value){
@@ -391,13 +410,6 @@
 			}
 			argstring = fstring.substring(firstBracket + 1, lastBracket);
 			fargs = argstring === "" ? [] : argstring.split(",");
-			fargs = fargs.map(function(mapSum, mapCurrent){
-				if (mapCurrent.indexOf("=") > 0) {
-					return mapCurrent.substring(0, mapCurrent.indexOf("="));
-				} else {
-					return mapCurrent;
-				}
-			});
 			return fargs;
 		}
 	};

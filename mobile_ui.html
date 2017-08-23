@@ -12,11 +12,11 @@
 			overflow:hidden;
 		    overflow-x:hidden;
 		    font-size: 30px;
-			font-family: Arial, Helvetica, sans-serif;
+			font-family: "Lucida Console", Monaco, monospace;
 		}
 		a{
 			color: blue;
-			text-decoration: underline;
+			text-decoration: none;
 			cursor: pointer; 
 			cursor: hand;
 		}
@@ -61,7 +61,7 @@
 			height: 90%;
 			padding: 5px 15px 5px 15px;
 			margin: 1px 5px 1px 5px;
-			font-size: 2.5vh;
+			font-size: 30px;
 		}
 	</style>
 	<script>
@@ -78,17 +78,27 @@
 					return("added " + this.maxrow);
 				},
 				"list":function(){
+					that = this;
 					str = "";
-					for (element of this[this.root]["childs"]) {
+					listarr = this[this.root]["childs"];
+					listarr.sort(function(a,b){
+						console.log(that[a]);
+						if (that[a].childs.length == that[b].childs.length){
+							return that[a].value.localeCompare(that[b].value);						
+						} else {
+							return that[a].childs.length > that[b].childs.length;
+						}
+					});
+					var arrayLength = listarr.length;
+					for (var i = 0; i < arrayLength; i++) {
+						var element = listarr[i];
 						if (typeof this[element] == "object"){
-							str += "" + element + ":" + JSON.stringify(this[element]["value"]) 
-								+ (
-									this[element].hasOwnProperty("childs") ? 
-										this[element].childs.length > 0 ? 
-											" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:blue;'>[...]</a> " 
-											: "" 
-									: ""
+							str += (
+									this[element].hasOwnProperty("childs") && this[element].childs.length > 0 ? 
+										"<a onclick=proj._callback(proj.goto(" + element + ")) style='color:brown;'>[]</a>" 
+										: "<a onclick=proj._callback(proj.get(" + element + ")) style='color:green;'><></a>" 
 								) 
+								+ String("00000" + element).slice(-1 * this.maxrow.toString().length) + ": " + this[element].value
 								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
 								+ "<br/>";	
 						} else {
@@ -137,6 +147,53 @@
 					proj._callback(proj.list());
 					return("root set to:" + id);
 				},
+				"listdetail":function(){
+					str = "";
+					for (element of this[this.root]["childs"]) {
+						if (typeof this[element] == "object"){
+							str += JSON.stringify(this[element]) 
+								+ (
+									this[element].hasOwnProperty("childs") ? 
+										this[element].childs.length > 0 ? 
+											" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:blue;'>[=]</a> " 
+											: "" 
+									: ""
+								) 
+								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
+								+ "<br/>";	
+						} else {
+							str += "" + element + ":" + this[element] + "<br/>";
+						}
+					};
+					str = str.substring(0, str.length - 5);
+					return str;
+				},
+				"addkey":function(id, key, value){
+					this[id][key] = value;
+					return("added " + JSON.stringify(this[id]));
+				},
+				"addfunction":function(key, function_expression){
+					this[key] = eval("x=" + function_expression);
+					return("added " + key + ": " + this[key].toString());
+				},
+				"remfunction":function(key){
+					delete this[key];
+					return("removed " + key);
+				},
+				"addreps":function(){
+					that = this;
+					var result = "";
+					that[90].childs.forEach(function(rep){
+						nextdate = new Date(that[rep].next);
+						if (nextdate < new Date()){
+							that.addchildto(rep, 0);
+							nextdate.setDate(nextdate.getDate() + (that[rep].repdays || 0));
+							that[rep].next = nextdate.toString();
+							result += "added rep task " + JSON.stringify(that[rep]) + "<br/>";
+						}
+					});
+					return(result);
+				},
 				"loadData":function(load_name){
 					that = this;
 					that._callback("async request sent...");
@@ -168,7 +225,7 @@
 								}
 							};
 							proj = proj2;
-							that._callback("...load succeeded");
+							that._callback("...load succeeded<br/>" + that.addreps());  	//bad code to get addreps working around all of the callbacks
 						}							
 					});
 					return "load attempted";
@@ -283,14 +340,19 @@
 		bod = document.body;
 		bdiv = document.getElementById("buttondiv");
 		lineNum = 0;
-		
-		//Create proj objects
-		proj = eval("proj = " + projstr);
 
+		//Create proj objects		
+		if (getUrlParameter("object")){
+			console.log(getUrlParameter("object"));
+			proj = eval("proj = " + getUrlParameter("object"));
+		} else {
+			proj = eval("proj = " + projstr);
+		};
+			
 		//Add Callback write to output
 		proj._callback = function(result){
 			disp = document.getElementById('displaydiv');
-			disp.innerHTML += "[Result " + lineNum++ + "]<br/>" + result + '<br/><br/>';			
+			disp.innerHTML += "[Result " + lineNum++ + " " + (cmdHist[cmdHist.length - 1] || "") + "]<br/>" + result + '<br/><br/>';			
 			disp.scrollTop = disp.scrollHeight;
 		};
 
@@ -309,6 +371,8 @@
 				if (inputMode.selected == inputMode.text){
 					if (inKey.keyCode == 13) { //when 'enter' is pressed
 						command = mInput.value;
+						if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
+						cmdHistPos = 0;
 						//check for strings beginning with '=' and treat them as an eval
 						if (command.substring(0, 1) == "=") {
 							command = command.substring(1, command.length);
@@ -332,8 +396,6 @@
 							mInput.value = "";
 						};
 						mInput.focus();
-						if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
-						cmdHistPos = 0;
 					} else if  (inKey.keyCode == 38){ //up arrow to get prior commands
 						mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
 						if (cmdHistPos <= cmdHist.length - 1) cmdHistPos++;
@@ -382,6 +444,18 @@
 			};
 		};
 		
+		//Generic Utility Functions
+		function getUrlParameter(sParam) {
+			var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+				sURLVariables = sPageURL.split('&'),
+				sParameterName,
+				i;
+			for (i = 0; i < sURLVariables.length; i++) {
+				sParameterName = sURLVariables[i].split('=');
+				if (sParameterName[0] === sParam) return sParameterName[1] === undefined ? true : sParameterName[1];
+			}
+		};
+
 		function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms));}
 		
 		//Add function buttons

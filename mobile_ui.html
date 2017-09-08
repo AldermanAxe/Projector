@@ -82,7 +82,6 @@
 					str = "";
 					listarr = this[this.root]["childs"];
 					listarr.sort(function(a,b){
-						console.log(that[a]);
 						if (that[a].childs.length == that[b].childs.length){
 							return that[a].value.localeCompare(that[b].value);						
 						} else {
@@ -99,6 +98,7 @@
 										: "<a onclick=proj._callback(proj.get(" + element + ")) style='color:green;'><></a>" 
 								) 
 								+ String("00000" + element).slice(-1 * this.maxrow.toString().length) + ": " + this[element].value
+								+" <a onclick='proj._callback(function(newtext){return proj.chg(" + element + ", newtext);})' style='color:blue;'>[...]</a> " 
 								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
 								+ "<br/>";	
 						} else {
@@ -342,19 +342,29 @@
 		lineNum = 0;
 
 		//Create proj objects		
-		if (getUrlParameter("object")){
-			console.log(getUrlParameter("object"));
-			proj = eval("proj = " + getUrlParameter("object"));
+		
+		//from file indicated in get parameter
+		if (getUrlParameter("source")){
+			param = getUrlParameter("source").replace("%3d", "=");
+			var request = new XMLHttpRequest();
+			request.open('GET', "../JsonFiles/proj_data_" + param + ".json", false);  // `false` makes the request synchronous
+			request.send(null);
+			if (request.status === 200) {
+				proj = eval("proj = " + request.responseText);
+				console.log("loaded " + param);
+			} else {
+				alert("source " + param + " failed")
+			}
+		//from JSON object in get parameter
+		} else if (getUrlParameter("object")){
+			param = getUrlParameter("object").replace("%3d", "=");
+			proj = eval("proj = " + param);
+		//from default object
 		} else {
 			proj = eval("proj = " + projstr);
 		};
-			
-		//Add Callback write to output
-		proj._callback = function(result){
-			disp = document.getElementById('displaydiv');
-			disp.innerHTML += "[Result " + lineNum++ + " " + (cmdHist[cmdHist.length - 1] || "") + "]<br/>" + result + '<br/><br/>';			
-			disp.scrollTop = disp.scrollHeight;
-		};
+		
+		
 
 		//Add Text Input behavior
 		var mInput = document.getElementById("maininput");
@@ -365,6 +375,18 @@
 		g_parameterCallback = function(){;};
 		g_args = [];
 		g_paramNames = [];
+
+		//Add Callback write to output
+		proj._callback = function(result){
+			if (typeof result == "function"){
+				runFun(result);
+			} else {
+				disp = document.getElementById('displaydiv');
+				disp.innerHTML += "[Result " + lineNum++ + " " + (cmdHist[cmdHist.length - 1] || "") + "]<br/>" + result + '<br/><br/>';			
+				disp.scrollTop = disp.scrollHeight;
+			};
+		};
+
 		
 		document.onkeydown = function(inKey){
 			try {

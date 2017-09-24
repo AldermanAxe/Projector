@@ -24,6 +24,10 @@
 			width: 0px;
 			background: transparent; /* make scrollbar transparent */
 		}
+		#objectdiv::-webkit-scrollbar {
+			width: 0px;
+			background: transparent; /* make scrollbar transparent */
+		}
 		#maininput{
 			background-color:black;
 			height:100%;
@@ -44,18 +48,30 @@
 			overflow-x: hidden;
 		}
 		#displaydiv {
-			height: 80%;
+			height: 70%;
 			overflow:scroll;
 			background-color: black;
 			color: white;
 			overflow-y: scroll;
 			overflow-x: hidden;
 		}
+		#objectdiv {
+			white-space:nowrap;
+			overflow:scroll;
+			width:100%;
+			height: 10%
+		}
 		#buttondiv {
 			white-space:nowrap;
 			overflow:scroll;
 			width:100%;
 			height: 10%
+		}
+		.objButton {
+			height: 90%;
+			padding: 5px 15px 5px 15px;
+			margin: 1px 5px 1px 5px;
+			font-size: 30px;
 		}
 		.funcButton {
 			height: 90%;
@@ -66,294 +82,39 @@
 	</style>
 	<script>
 		//get input object string definition
-		projstr = `proj={
-				"maxrow":0,
-				"root":0,
-				"0":{"id":0,"value":"firstroot","childs":[]},
-				"add":function(text_to_add){
-					text_to_add = text_to_add || "";
-					this.maxrow++;
-					this[this.maxrow] = {"id":this.maxrow, "value": typeof text_to_add == "undefined" ? "" : text_to_add, "childs":[]};
-					this[this.root]["childs"].push(this.maxrow);
-					return("added " + this.maxrow);
-				},
-				"list":function(){
-					that = this;
-					str = "";
-					listarr = this[this.root]["childs"];
-					listarr = listarr.sort(function(a,b){
-						if (that[a].childs.length == that[b].childs.length){
-							return that[a].value > that[b].value;						
-						} else {
-							return that[a].childs.length > that[b].childs.length;
-						}
-					});
-					var arrayLength = listarr.length;
-					for (var i = 0; i < arrayLength; i++) {
-						var element = listarr[i];
-						if (typeof this[element] == "object"){
-							str += (
-									this[element].hasOwnProperty("childs") && this[element].childs.length > 0 ? 
-										"<a onclick=proj._callback(proj.goto(" + element + ")) style='color:brown;'>[]</a>" 
-										: "<a onclick=proj._callback(proj.get(" + element + ")) style='color:green;'><></a>" 
-								) 
-								+ String("00000" + element).slice(-1 * this.maxrow.toString().length) + ": " + this[element].value
-								+" <a onclick='proj._callback(function(newtext){return proj.chg(" + element + ", newtext);})' style='color:blue;'>[...]</a> " 
-								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
-								+ "<br/>";	
-						} else {
-							str += "" + element + ":" + this[element] + "<br/>";
-						}
-					};
-					str = str.substring(0, str.length - 5);
-					return str;
-				},
-				"save":function(){
-					that = this;
-					return that.savefile();
-				},
-				"rem":function(id){
-					children = this[this.root]["childs"];
-					var index = children.indexOf(parseInt(id));
-					if (index > -1) {
-						delete this[this.root]["childs"].splice(index,1);
-					} else {
-						return("index " + id + " not found")
-					}					
-					//delete this[id];//need a way to delete from the object if it is not a child of anything. Or perhaps keep them and just add a cleanup function.
-					index = children.indexOf(parseInt(id));
-					if (index > -1) {
-						return("failed to remove " + id);
-					} else {
-						return("index " + id + " removed");
-					}
-					
-					return("remove attempted");
-				},
-				"chg":function(id, new_value){
-					proj[id]["value"] = new_value;
-					return(id + " changed to " + new_value);
-				},
-				"home":function(){
-					return(proj.goto(0));
-				},
-				"move":function(id_to_move, move_to_target_id){
-					var result = this.addchildto(id_to_move, move_to_target_id);
-					result += "<br/>" + this.rem(id_to_move);
-					return(result);
-				},
-				"goto":function(id){
-					proj.root = id;
-					proj._callback(proj.list());
-					return("root set to:" + id);
-				},
-				"listdetail":function(){
-					str = "";
-					for (element of this[this.root]["childs"]) {
-						if (typeof this[element] == "object"){
-							str += JSON.stringify(this[element]) 
-								+ (
-									this[element].hasOwnProperty("childs") ? 
-										this[element].childs.length > 0 ? 
-											" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:blue;'>[=]</a> " 
-											: "" 
-									: ""
-								) 
-								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
-								+ "<br/>";	
-						} else {
-							str += "" + element + ":" + this[element] + "<br/>";
-						}
-					};
-					str = str.substring(0, str.length - 5);
-					return str;
-				},
-				"addkey":function(id, key, value){
-					this[id][key] = value;
-					return("added " + JSON.stringify(this[id]));
-				},
-				"addfunction":function(key, function_expression){
-					this[key] = eval("x=" + function_expression);
-					return("added " + key + ": " + this[key].toString());
-				},
-				"remfunction":function(key){
-					delete this[key];
-					return("removed " + key);
-				},
-				"addreps":function(){
-					that = this;
-					var result = "";
-					that[90].childs.forEach(function(rep){
-						nextdate = new Date(that[rep].next);
-						if (nextdate < new Date()){
-							that.addchildto(rep, 0);
-							nextdate.setDate(nextdate.getDate() + (that[rep].repdays || 0));
-							that[rep].next = nextdate.toString();
-							result += "added rep task " + JSON.stringify(that[rep]) + "<br/>";
-						}
-					});
-					return(result);
-				},
-				"loadData":function(load_name){
-					that = this;
-					that._callback("async request sent...");
-					name = load_name || "proj2";
-					$.ajax({
-						url: "../JsonFiles/proj_data_" + name + ".json"
-						,cache: false
-						,type: "get"
-						,dataType: "text"
-						,error: function(e, f) {
-							that._callback("...load failed!");
-						}
-						,success: function(in_data) {
-							that._callback("updating data");
-							proj2 = proj;
-							proj = eval(in_data);
-							for (var property in proj2) {
-								if (proj2.hasOwnProperty(property)){
-									if (typeof proj2[property] != "function"){
-										delete proj2[property];	
-									};
-								}
-							};
-							for (var property in proj) {
-								if (proj.hasOwnProperty(property)){
-									if (typeof proj[property] != "function"){
-										proj2[property] = proj[property];	
-									};
-								}
-							};
-							proj = proj2;
-							that._callback("...load succeeded<br/>" + that.addreps());  	//bad code to get addreps working around all of the callbacks
-						}							
-					});
-					return "load attempted";
-				},
-				"load":function(load_name){
-					that = this;
-					that._callback("async request sent...");
-					name = load_name || "proj2";
-					$.ajax({
-						url: "../JsonFiles/proj_data_" + name + ".json"
-						,cache: false
-						,type: "get"
-						,dataType: "text"
-						,error: function(e, f) {
-							that._callback("...load failed!");
-						}
-						,success: function(in_data) {
-							proj = eval(in_data);
-							that._callback("...load succeeded");
-						}							
-					});
-					return "load attempted";
-				},
-				"savefile":function(save_name){
-					that = this;
-					name = save_name || "proj2";
-
-					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
-						that._callback("...save done: " + msg);
-					}).fail(function(xhr, status, error) {
-						that._callback("...save failed");
-					});
-
-					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()});
-
-					return "save attempted";
-				},
-				"listall":function(){
-					str = "";
-					for (var property in this) {
-						if (this.hasOwnProperty(property) && property > -1){
-							if (typeof this[property] == "function"){
-								;
-							}
-							else if (typeof this[property] == "object"){
-								str += "\\"" + property + "\\":" + JSON.stringify(this[property]) + "<br/>";	
-							} else {
-								str += "\\"" + property + "\\":" + this[property] + "<br/>";
-							}
-						}
-					};
-					str = str.substring(0, str.length - 2);
-					str += "";
-					return str;
-				},
-				"get":function(id){return(JSON.stringify(this[id]))},
-				"addchild":function(id){
-					return(this.addchildto(id, this.root));
-				},
-				"addchildto":function(id_to_add, add_to_id){
-					this[add_to_id]["childs"].push(parseInt(id_to_add));
-					return("added " + id_to_add + " to " + add_to_id);
-				},
-				"loadlocal":function(load_name){
-					localstring = localStorage.getItem(load_name || "proj2");
-					if (localstring == null) {
-						return "local file " + (load_name || "proj2") + " not found";						
-					} else {
-						eval("proj = " + localstring);
-						return "loaded local " + (load_name || "proj2");
-					};
-				},				
-				"savelocal":function(save_name){
-					localStorage.setItem(save_name || "proj2", ""+this)
-					return "saved local " + (save_name || "proj2");
-				},
-				"toString":function(){
-					str = "proj = {";
-					for (var property in this) {
-						if (this.hasOwnProperty(property)){
-							if (typeof this[property] == "object"){
-								str += "\\"" + property + "\\":" + JSON.stringify(this[property]) + ",\\n";	
-							} else {
-								str += "\\"" + property + "\\":" + this[property] + ",\\n";
-							}
-						}
-					};
-					str = str.substring(0, str.length - 2);
-					str += "};";
-					str += "proj.init();";
-					str += "proj = proj;";
-					return str;
-				},
-				"_callback":function(result){
-					console.log(result);
-				},
-				"init":function(){
-					//in order to only run once, only load data if initrun is undefined, and then define initrun
-					if (typeof initrun == "undefined"){
-						this.loadData();
-					};
-					initrun = true;
-				},
-			};
-			proj.init();
-			proj = proj;`;
+		projstr = `{test:function(){return function(what){return "ok " + what;};}}`;
 	</script>
 </head>
 <body>
 	<script>
 	document.body.onload = function(){
+	
 		bod = document.body;
 		bdiv = document.getElementById("buttondiv");
+		odiv = document.getElementById("objectdiv");
 		lineNum = 0;
-
-		//Create proj objects		
 		
+		//Add Text Input behavior
+		var mInput = document.getElementById("maininput");
+		cmdHist = [];
+		cmdHistPos = 0;
+		mInput.focus();
+		var inputMode = {selected: 0, text:0, parameters:1};
+		g_parameterCallback = function(){;};
+		g_args = [];
+		g_paramNames = [];
+
+		//Create proj objects			
 		//from file indicated in get parameter
 		if (getUrlParameter("source")){
 			param = getUrlParameter("source").replace("%3d", "=");
 			var request = new XMLHttpRequest();
-			request.open('GET', "../JsonFiles/proj_data_" + param + ".json", false);  // `false` makes the request synchronous
+			request.open('GET', "../JsonFiles/proj_data_" + param + ".json?rand=" + Date.now(), false);  // `false` makes the request synchronous
 			request.send(null);
 			if (request.status === 200) {
 				proj = eval("proj = " + request.responseText);
-				console.log("loaded " + param);
 			} else {
-				alert("source " + param + " failed")
+				alert("source " + param + " failed");
 			}
 		//from JSON object in get parameter
 		} else if (getUrlParameter("object")){
@@ -365,29 +126,19 @@
 		};
 		
 		
-
-		//Add Text Input behavior
-		var mInput = document.getElementById("maininput");
-		cmdHist = [];
-		cmdHistPos = 0;
-		mInput.focus();
-		var inputMode = {selected: 0, text:0, parameters:1};
-		g_parameterCallback = function(){;};
-		g_args = [];
-		g_paramNames = [];
-
 		//Add Callback write to output
-		proj._callback = function(result){
+		proj._callback = mInputCallback;
+		
+		function mInputCallback(result){
 			if (typeof result == "function"){
 				runFun(result);
 			} else {
 				disp = document.getElementById('displaydiv');
-				disp.innerHTML += "[Result " + lineNum++ + " " + (cmdHist[cmdHist.length - 1] || "") + "]<br/>" + result + '<br/><br/>';			
+				disp.innerHTML += "[Result]<br/>" + result + '<br/><br/>';			
 				disp.scrollTop = disp.scrollHeight;
 			};
 		};
 
-		
 		document.onkeydown = function(inKey){
 			try {
 				if (inputMode.selected == inputMode.text){
@@ -438,14 +189,65 @@
 			}
 		};
 
-		function runFun(callback, paramNames, args){
+		//Add object buttons
+		for (var k in proj) {
+			if (proj.hasOwnProperty(k)) {
+				if (typeof proj[k] != "function" && k.substring(0,1)!= "_"){
+					b = document.createElement("button");
+					b.className = "objButton";
+					b.innerText = k;
+					b.onclick = eval(`x = function(){
+						runFun(function(){return JSON.stringify(proj['` + k + `']);});
+					}`);
+					odiv.appendChild(b);
+				}
+			}
+		};
+
+		//Add function buttons
+		for (var k in proj) {
+			if (proj.hasOwnProperty(k)) {
+				if (typeof proj[k] == "function" && k.substring(0,1)!= "_"){
+					b = document.createElement("button");
+					b.className = "funcButton";
+					b.innerText = k;
+					b.onclick = eval(`x = function(){
+						buttonFun = proj['` + k + `'];
+						paramNames = getParamNames(buttonFun); //prompt for parameters
+						args = [];
+						runFun(proj['` + k + `'], paramNames, args);
+					}`);
+					bdiv.appendChild(b);
+				}
+			}
+		};
+
+		function genvar(invars){ 
+			//function to generate a new variable not yet used and not in the invars list (invar can be undefined or empty)
+			//used by varInContext to assign internal function names to unused variables
+			if (typeof invars == 'undefined'){invars = []};
+			var x = 0;
+			do {
+				x++;
+			} while (invars.includes("newvar" + x) || eval("typeof newvar" + x + " == 'undefined'") != true)
+			return "newvar" + x;
+		}
+		
+		runFun = function(callback, paramNames, args, defaults){ 
+			//this is some complex business to run a function one argument at a time. prompting with the default values is the tricky part
+			//ideally prior parameters could provide the defaults for later parameters eg function(a=1,b=a){return b;} by default would return 1.
+			//but this involves creating a context for these variables and is a bit tricky (though there is a technique with chaining function contexts)
+			//so, still waiting on this
+			if (typeof defaults == 'undefined'){
+				defaults = getDefaultsArray(callback);
+			}
 			if (typeof paramNames == 'undefined'){
-				paramNames = getParamNames(callback);
+				paramNames = getParamNamesArray(callback);
 				args = [];
 			};
 			if (paramNames.length == args.length){
 				var output = callback.apply(proj, args);
-				proj._callback(output);
+				mInputCallback(output);
 				disp.scrollTop = disp.scrollHeight;
 				inputMode.selected = inputMode.text;
 				mInput.value = "";
@@ -459,7 +261,8 @@
 				g_args = args;
 				g_paramNames = paramNames;
 				label = paramNames[args.length];
-				prompt = label + ": ";
+				defVal = defaults[args.length] == "" ? "" : eval("("+defaults[args.length]+")");
+				prompt = label + ": " + defVal;
 				mInput.value = prompt;
 				mInput.focus();
 				inputMode.selected = inputMode.parameters;
@@ -479,26 +282,8 @@
 		};
 
 		function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms));}
-		
-		//Add function buttons
-		for (var k in proj) {
-			if (proj.hasOwnProperty(k)) {
-				if (typeof proj[k] == "function" && k.substring(0,1)!= "_"){
-					b = document.createElement("button");
-					b.className = "funcButton";
-					b.innerText = k;
-					b.onclick = eval(`x = function(){
-						buttonFun = proj['` + k + `'];
-						paramNames = getParamNames(buttonFun); //prompt for parameters
-						args = [];
-						runFun(proj['` + k + `'], paramNames, args);
-					}`);
-					bdiv.appendChild(b);
-				}
-			}
-		};
 
-		function getParamNames(func){ //rewritten to allow getting generics in the future
+		function getParams(func){
 			fstring = func.toString();
 			firstBracket = fstring.indexOf("(");
 			lastBracket = 0; 
@@ -514,6 +299,55 @@
 				}
 			}
 			argstring = fstring.substring(firstBracket + 1, lastBracket);
+			return argstring;
+		}
+		
+		//Doesn't work for commas in quotes not in parentheses
+		function getExpressions(instr){
+			exprs = [];
+
+			bracketDepth = 0;
+			startchr = 0;
+			for (var endchr = 0; endchr < instr.length; endchr++){		
+				if (instr[endchr] == "[" || instr[endchr] == "(" || instr[endchr] == "{"){
+					bracketDepth++;
+				} else if (instr[endchr] == "]" || instr[endchr] == ")" || instr[endchr] == "}"){
+					bracketDepth--;
+				} else if (instr[endchr] == "," && bracketDepth == 0){
+					exprs.push(instr.substring(startchr, endchr));
+					startchr = endchr + 1;
+				} else if (endchr == instr.length - 1 && bracketDepth == 0){
+					exprs.push(instr.substring(startchr, endchr + 1));
+					startchr = endchr + 1;
+				}
+			}
+			return exprs;
+		}
+		function getParamNamesArray(func){
+			var params = getExpressions(getParams(func));
+			var paramNames = params.map(function(x){
+				if (x.includes("=")){
+					return x.substring(0, x.indexOf("="));
+				} else {
+					return x;
+				}
+			});
+			return paramNames;
+		}
+		getDefaultsArray = function(func){
+			var params = getExpressions(getParams(func));
+			var defaultExps = params.map(function(x){
+				if (x.includes("=")){
+					return x.substring(x.indexOf("=") + 1, x.length);
+				} else {
+					return "";
+				}
+			});
+			return defaultExps;
+		}
+		
+		function getParamNames(func){
+			argstring = getParams(func);
 			fargs = argstring === "" ? [] : argstring.split(",");
 			return fargs;
 		}
@@ -529,6 +363,7 @@
 	<div id="inputdiv">
 		<input id="maininput" type="text"></input>
 	</div>
+	<div id="objectdiv"></div>
 	<div id="buttondiv"></div>
 	</body>
 </html>

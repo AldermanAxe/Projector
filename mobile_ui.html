@@ -82,7 +82,7 @@
 	</style>
 	<script>
 		//get input object string definition
-		projstr = `{test:function(){return function(what){return "ok " + what;};}}`;
+		projstr = `{create:function(javascript){proj = eval("proj = "+javascript+"; addfun(); addobj(); proj=proj;"); return "created " + proj.toString();}}`;
 	</script>
 </head>
 <body>
@@ -92,6 +92,7 @@
 		bod = document.body;
 		bdiv = document.getElementById("buttondiv");
 		odiv = document.getElementById("objectdiv");
+		disp = document.getElementById('displaydiv');
 		lineNum = 0;
 		
 		//Add Text Input behavior
@@ -128,6 +129,7 @@
 		
 		//Add Callback write to output
 		proj._callback = mInputCallback;
+		
 		
 		function mInputCallback(result){
 			if (typeof result == "function"){
@@ -190,37 +192,52 @@
 		};
 
 		//Add object buttons
-		for (var k in proj) {
-			if (proj.hasOwnProperty(k)) {
-				if (typeof proj[k] != "function" && k.substring(0,1)!= "_"){
-					b = document.createElement("button");
-					b.className = "objButton";
-					b.innerText = k;
-					b.onclick = eval(`x = function(){
-						runFun(function(){return JSON.stringify(proj['` + k + `']);});
-					}`);
-					odiv.appendChild(b);
-				}
+		addobj  = function(objs){
+			if (typeof objs == 'undefined'){
+				objs = proj;
 			}
-		};
-
+			odiv.innerHTML = "";
+			for (var k in objs) {
+				if (objs.hasOwnProperty(k)) {
+					if (typeof objs[k] != "function" && k.substring(0,1)!= "_"){
+						b = document.createElement("button");
+						b.className = "objButton";
+						b.innerText = k;
+						b.onclick = eval(`x = function(){
+							runFun(function(){return JSON.stringify(objs['` + k + `']);});
+						}`);
+						odiv.appendChild(b);
+					}
+				}
+			};
+		}
+		addobj();
+		
 		//Add function buttons
-		for (var k in proj) {
-			if (proj.hasOwnProperty(k)) {
-				if (typeof proj[k] == "function" && k.substring(0,1)!= "_"){
-					b = document.createElement("button");
-					b.className = "funcButton";
-					b.innerText = k;
-					b.onclick = eval(`x = function(){
-						buttonFun = proj['` + k + `'];
-						paramNames = getParamNames(buttonFun); //prompt for parameters
-						args = [];
-						runFun(proj['` + k + `'], paramNames, args);
-					}`);
-					bdiv.appendChild(b);
-				}
+		addfun = function(funs){
+			if (typeof funs == 'undefined'){
+				funs = proj;
 			}
+			bdiv.innerHTML = "";
+			for (var k in funs) {
+				if (funs.hasOwnProperty(k)) {
+					if (typeof funs[k] == "function" && k.substring(0,1)!= "_"){
+						b = document.createElement("button");
+						b.className = "funcButton";
+						b.innerText = k;
+						b.onclick = eval(`x = function(){
+							buttonFun = funs['` + k + `'];
+							paramNames = getParamNames(buttonFun); //prompt for parameters
+							args = [];
+							runFun(funs['` + k + `'], paramNames, args);
+						}`);
+						bdiv.appendChild(b);
+					}
+				}
+			};
 		};
+		
+		addfun();
 
 		function genvar(invars){ 
 			//function to generate a new variable not yet used and not in the invars list (invar can be undefined or empty)
@@ -261,6 +278,7 @@
 				g_args = args;
 				g_paramNames = paramNames;
 				label = paramNames[args.length];
+//				console.log("returned: " + defaults[args.length]);
 				defVal = defaults[args.length] == "" ? "" : eval("("+defaults[args.length]+")");
 				prompt = label + ": " + defVal;
 				mInput.value = prompt;
@@ -302,27 +320,35 @@
 			return argstring;
 		}
 		
-		//Doesn't work for commas in quotes not in parentheses
+		//Commas seem to work. Quotes still don't
 		function getExpressions(instr){
 			exprs = [];
 
 			bracketDepth = 0;
 			startchr = 0;
+			quotesymbol = 0;
 			for (var endchr = 0; endchr < instr.length; endchr++){		
-				if (instr[endchr] == "[" || instr[endchr] == "(" || instr[endchr] == "{"){
+				
+				if (quotesymbol == 0 && (instr[endchr] == '"' || instr[endchr] == "'")){
+					quotesymbol = instr[endchr];
+				} else if (quotesymbol != 0 && (instr[endchr] == quotesymbol)){
+					quotesymbol = 0;
+				} else if (instr[endchr] == "[" || instr[endchr] == "(" || instr[endchr] == "{"){
 					bracketDepth++;
 				} else if (instr[endchr] == "]" || instr[endchr] == ")" || instr[endchr] == "}"){
 					bracketDepth--;
-				} else if (instr[endchr] == "," && bracketDepth == 0){
+				};
+				
+				if (instr[endchr] == "," && bracketDepth == 0 && quotesymbol == ""){
 					exprs.push(instr.substring(startchr, endchr));
 					startchr = endchr + 1;
-				} else if (endchr == instr.length - 1 && bracketDepth == 0){
+				} else if (endchr == instr.length - 1 && bracketDepth == 0 && quotesymbol == "" ){
 					exprs.push(instr.substring(startchr, endchr + 1));
 					startchr = endchr + 1;
 				}
 			}
 			return exprs;
-		}
+		};
 		function getParamNamesArray(func){
 			var params = getExpressions(getParams(func));
 			var paramNames = params.map(function(x){

@@ -1,0 +1,268 @@
+﻿proj = {
+"add":function (text_to_add){ //=proj.root==143?'2017-01-01':0
+					text_to_add = text_to_add || "";
+					this.maxrow++;
+					this[this.maxrow] = {"id":this.maxrow, "value": typeof text_to_add == "undefined" ? "" : text_to_add, "childs":[]};
+					this[this.root]["childs"].push(this.maxrow);
+					return("added " + this.maxrow);
+				},
+"list":function (){
+					that = this;
+					str = "---" + this[this.root].value + " <a onclick=\"proj.hist.pop(); proj._callback(proj.goto(" + (this.hist[this.hist.length - 2] || 0) + "));  proj.hist.pop();\" style='color:brown;'>[]</a>" + "---<br/>";
+					listarr = this[this.root]["childs"];
+					listarr.sort(function(a,b){
+						return that[a].value > that[b].value ? 1 : that[a].value == that[b].value ? 0 : -1;						
+					});
+					var arrayLength = listarr.length;
+					for (var i = 0; i < arrayLength; i++) {
+						var element = listarr[i];
+						if (typeof this[element] == "object"){
+							str += ""
+								+ String("00000" + element).slice(-1 * this.maxrow.toString().length) + ": " + this[element].value
+								+ (
+									this[element].hasOwnProperty("childs") && this[element].childs.length > 0 ? 
+										" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:brown;'>[]</a>" 
+										: " <a onclick=proj._callback(proj.get(" + element + ")) style='color:green;'><></a>" 
+								) 
+								+" <a onclick='proj._callback(function(newtext=\"" + this[element].value + "\"){return proj.chg(" + element + ", newtext);})' style='color:blue;'>[.]</a> " 
+								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
+								+ "<br/>";	
+						} else {
+							str += "" + element + ":" + this[element] + "<br/>";
+						}
+					};
+					str = str.substring(0, str.length - 5);
+					return str;
+				},
+"save":function (){
+					that = this;
+					return that.savefile();
+				},
+"rem":function (id){
+					children = this[this.root]["childs"];
+					var index = children.indexOf(parseInt(id));
+					if (index > -1) {
+						delete this[this.root]["childs"].splice(index,1);
+					} else {
+						return("index " + id + " not found")
+					}					
+					//delete this[id];//need a way to delete from the object if it is not a child of anything. Or perhaps keep them and just add a cleanup function.
+					index = children.indexOf(parseInt(id));
+					if (index > -1) {
+						return("failed to remove " + id);
+					} else {
+						return("index " + id + " removed");
+					}
+					
+					return("remove attempted");
+				},
+"chg":function (id, new_value){
+					proj[id]["value"] = new_value;
+					return(id + " changed to " + new_value);
+				},
+"home":function (){
+					proj.hist = [];
+					return(proj.goto(0));
+				},
+"move":function (id_to_move, move_to_target_id){
+					var result = this.addchildto(id_to_move, move_to_target_id);
+					result += "<br/>" + this.rem(id_to_move);
+					return(result);
+				},
+"goto":function (id){
+					proj.root = id;
+					proj._callback(proj.list());
+					proj.hist.push(id);
+					return("root set to:" + id);
+				},
+"listdetail":function (){
+					str = "";
+					for (element of this[this.root]["childs"]) {
+						if (typeof this[element] == "object"){
+							str += JSON.stringify(this[element]) 
+								+ (
+									this[element].hasOwnProperty("childs") ? 
+										this[element].childs.length > 0 ? 
+											" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:blue;'>[=]</a> " 
+											: "" 
+									: ""
+								) 
+								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
+								+ "<br/>";	
+						} else {
+							str += "" + element + ":" + this[element] + "<br/>";
+						}
+					};
+					str = str.substring(0, str.length - 5);
+					return str;
+				},
+"addkey":function (id, key, value){
+					this[id][key] = value;
+					return("added " + JSON.stringify(this[id]));
+				},
+"addfunction":function (key, function_expression){
+					this[key] = eval("x=" + function_expression);
+					return("added " + key + ": " + this[key].toString());
+				},
+"remfunction":function (key){
+					delete this[key];
+					return("removed " + key);
+				},
+"addreps":function (){
+					that = this;
+					var result = "";
+					that[90].childs.forEach(function(rep){
+						nextdate = new Date(that[rep].next);
+						if (nextdate < new Date()){
+							that.addchildto(rep, 0);
+							nextdate.setDate(nextdate.getDate() + (that[rep].repdays || 0));
+							that[rep].next = nextdate.toString();
+							result += "added rep task " + JSON.stringify(that[rep]) + "<br/>";
+						}
+					});
+					return(result);
+				},
+"loadData":function (load_name){
+					that = this;
+					that._callback("async request sent...");
+					name = load_name || "proj2";
+					$.ajax({
+						url: "../JsonFiles/proj_data_" + name + ".json"
+						,cache: false
+						,type: "get"
+						,dataType: "text"
+						,error: function(e, f) {
+							that._callback("...load failed!");
+						}
+						,success: function(in_data) {
+							that._callback("updating data");
+							proj2 = proj;
+							proj = eval(in_data);
+							for (var property in proj2) {
+								if (proj2.hasOwnProperty(property)){
+									if (typeof proj2[property] != "function"){
+										delete proj2[property];	
+									};
+								}
+							};
+							for (var property in proj) {
+								if (proj.hasOwnProperty(property)){
+									if (typeof proj[property] != "function"){
+										proj2[property] = proj[property];	
+									};
+								}
+							};
+							proj = proj2;
+							that._callback("...load succeeded<br/>" + that.addreps());  	//bad code to get addreps working around all of the callbacks
+						}							
+					});
+					return "load attempted";
+				},
+"load":function (load_name){
+					that = this;
+					that._callback("async request sent...");
+					name = load_name || "proj2";
+					$.ajax({
+						url: "../JsonFiles/proj_data_" + name + ".json"
+						,cache: false
+						,type: "get"
+						,dataType: "text"
+						,error: function(e, f) {
+							that._callback("...load failed!");
+						}
+						,success: function(in_data) {
+							proj = eval(in_data);
+							that._callback("...load succeeded");
+						}							
+					});
+					return "load attempted";
+				},
+"savefile":function (save_name){
+					that = this;
+					name = save_name || "proj2";
+
+					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
+						that._callback("...save done: " + msg);
+					}).fail(function(xhr, status, error) {
+						that._callback("...save failed");
+					});
+
+					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()});
+
+					return "save attempted";
+				},
+"listall":function (){
+					str = "";
+					for (var property in this) {
+						if (this.hasOwnProperty(property) && property > -1){
+							if (typeof this[property] == "function"){
+								;
+							}
+							else if (typeof this[property] == "object"){
+								str += "\"" + property + "\":" + JSON.stringify(this[property]) + "<br/>";	
+							} else {
+								str += "\"" + property + "\":" + this[property] + "<br/>";
+							}
+						}
+					};
+					str = str.substring(0, str.length - 2);
+					str += "";
+					return str;
+				},
+"get":function (id){return(JSON.stringify(this[id]))},
+"addchild":function (id){
+					return(this.addchildto(id, this.root));
+				},
+"addchildto":function (id_to_add, add_to_id){
+					this[add_to_id]["childs"].push(parseInt(id_to_add));
+					return("added " + id_to_add + " to " + add_to_id);
+				},
+"loadlocal":function (load_name){
+					localstring = localStorage.getItem(load_name || "proj2");
+					if (localstring == null) {
+						return "local file " + (load_name || "proj2") + " not found";						
+					} else {
+						eval("proj = " + localstring);
+						return "loaded local " + (load_name || "proj2");
+					};
+				},
+"savelocal":function (save_name){
+					localStorage.setItem(save_name || "proj2", ""+this)
+					return "saved local " + (save_name || "proj2");
+				},
+"toString":function (){
+					str = "proj = {";
+					for (var property in this) {
+						if (this.hasOwnProperty(property)){
+							if (typeof this[property] == "object"){
+								str += "\"" + property + "\":" + JSON.stringify(this[property]) + ",\n";	
+							} else {
+								str += "\"" + property + "\":" + this[property] + ",\n";
+							}
+						}
+					};
+					str = str.substring(0, str.length - 2);
+					str += "};";
+					str += "proj.init();";
+					str += "proj = proj;";
+					return str;
+				},
+"_callback":function mInputCallback(result){
+			if (typeof result == "function"){
+				runFun(result);
+			} else {
+				disp = document.getElementById('displaydiv');
+				disp.innerHTML += "[Result]<br/>" + result + '<br/><br/>';			
+				disp.scrollTop = disp.scrollHeight;
+			};
+		},
+"init":function (){
+					//in order to only run once, only load data if initrun is undefined, and then define initrun
+					if (typeof initrun == "undefined"){
+						this.loadData();
+					};
+					initrun = true;
+				},
+"maxrow":547,
+"root":82,
+"hist":[0,117,82]};proj.init();proj = proj;

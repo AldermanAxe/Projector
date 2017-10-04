@@ -1,0 +1,63 @@
+﻿{"requests":["stocks","http://fudzilla.com/","http://wccftech.com/","https://www.tweaktown.com/","https://www.anandtech.com/","https://semiaccurate.com/"],
+"get_page":function (page_address){ 
+		that = this; 
+		name = page_address; 
+		console.log(name);
+		$.post( "../proj/seek.aspx", {
+			pagename: name 
+		}).done(function(msg){ 
+			that._callback("...get done: " + msg); 
+		}).fail(function(xhr, status, error) { 
+			that._callback("...get failed"); 
+		}); 
+
+		return "get attempted"; 
+},
+"display_dashboard":function (){
+	return "no datasources yet";
+},
+"request_data":function (what_do_you_want){
+	this.requests.push(what_do_you_want);
+	return "ok, noted";
+},
+"save":function (){ 
+		that = this; 
+		name = "dashboard"; 
+		$.post( "../proj/proj_data.aspx", {
+			codename: name, 
+			data: this.toString()
+		}).done(function(msg){ 
+			that._callback("...save done: " + msg); 
+		}).fail(function(xhr, status, error) { 
+			that._callback("...save failed"); 
+		}); 
+		$.post( "../proj/proj_backup.aspx", {
+			codename: "dashboard", 
+			data: this.toString()
+		}); 
+		return "save attempted"; 
+},
+"toString":function (){
+		str = "{";
+		for (var property in this) {
+			if (this.hasOwnProperty(property)){
+				if (typeof this[property] == "object"){
+					str += "\"" + property + "\":" + JSON.stringify(this[property]) + ",\n";	
+				} else {
+					str += "\"" + property + "\":" + this[property] + ",\n";
+				}
+			}
+		};
+		str = str.substring(0, str.length - 2);
+		str += "}";
+		return str;
+	},
+"_callback":function mInputCallback(result){
+			if (typeof result == "function"){
+				runFun(result);
+			} else {
+				disp = document.getElementById('displaydiv');
+				disp.innerHTML += "[Result]<br/>" + result + '<br/><br/>';			
+				disp.scrollTop = disp.scrollHeight;
+			};
+		}}

@@ -1,5 +1,5 @@
-﻿proj = {
-"add":function (text_to_add){ //=proj.root==143?'2017-01-01':0
+﻿proj = {"0":{"id":0,"value":"firstroot","childs":[]},
+"add":function (text_to_add=proj[proj.root].value=="events"?((new Date()).toISOString().substring(0,10)) + " ":""){ //some stuff to automatically enter the date when adding an event
 					text_to_add = text_to_add || "";
 					this.maxrow++;
 					this[this.maxrow] = {"id":this.maxrow, "value": typeof text_to_add == "undefined" ? "" : text_to_add, "childs":[]};
@@ -24,7 +24,7 @@
 										" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:brown;'>[]</a>" 
 										: " <a onclick=proj._callback(proj.get(" + element + ")) style='color:green;'><></a>" 
 								) 
-								+" <a onclick='proj._callback(function(newtext=\"" + this[element].value + "\"){return proj.chg(" + element + ", newtext);})' style='color:blue;'>[.]</a> " 
+								+" <a onclick='proj._callback(function(newtext=\"" + this[element].value.replace(/'/g, "\\x27").replace(/"/g, '\\\"') + "\"){return proj.chg(" + element + ", newtext);})' style='color:blue;'>[.]</a> " 
 								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
 								+ "<br/>";	
 						} else {
@@ -96,10 +96,6 @@
 					str = str.substring(0, str.length - 5);
 					return str;
 				},
-"addkey":function (id, key, value){
-					this[id][key] = value;
-					return("added " + JSON.stringify(this[id]));
-				},
 "addfunction":function (key, function_expression){
 					this[key] = eval("x=" + function_expression);
 					return("added " + key + ": " + this[key].toString());
@@ -125,7 +121,7 @@
 "loadData":function (load_name){
 					that = this;
 					that._callback("async request sent...");
-					name = load_name || "proj2";
+					name = load_name || "ur";
 					$.ajax({
 						url: "../JsonFiles/proj_data_" + name + ".json"
 						,cache: false
@@ -161,7 +157,7 @@
 "load":function (load_name){
 					that = this;
 					that._callback("async request sent...");
-					name = load_name || "proj2";
+					name = load_name || "ur";
 					$.ajax({
 						url: "../JsonFiles/proj_data_" + name + ".json"
 						,cache: false
@@ -179,7 +175,7 @@
 				},
 "savefile":function (save_name){
 					that = this;
-					name = save_name || "proj2";
+					name = save_name || "ur";
 
 					$.post( "../proj/proj_data.aspx", {codename: name, data: this.toString()}).done(function(msg){  
 						that._callback("...save done: " + msg);
@@ -187,7 +183,7 @@
 						that._callback("...save failed");
 					});
 
-					$.post( "../proj/proj_backup.aspx", {codename: name || "proj2", data: this.toString()});
+					$.post( "../proj/proj_backup.aspx", {codename: name || "ur", data: this.toString()});
 
 					return "save attempted";
 				},
@@ -218,17 +214,17 @@
 					return("added " + id_to_add + " to " + add_to_id);
 				},
 "loadlocal":function (load_name){
-					localstring = localStorage.getItem(load_name || "proj2");
+					localstring = localStorage.getItem(load_name || "ur");
 					if (localstring == null) {
-						return "local file " + (load_name || "proj2") + " not found";						
+						return "local file " + (load_name || "ur") + " not found";						
 					} else {
 						eval("proj = " + localstring);
-						return "loaded local " + (load_name || "proj2");
+						return "loaded local " + (load_name || "ur");
 					};
 				},
 "savelocal":function (save_name){
-					localStorage.setItem(save_name || "proj2", ""+this)
-					return "saved local " + (save_name || "proj2");
+					localStorage.setItem(save_name || "ur", ""+this)
+					return "saved local " + (save_name || "ur");
 				},
 "toString":function (){
 					str = "proj = {";
@@ -263,6 +259,6 @@
 					};
 					initrun = true;
 				},
-"maxrow":547,
-"root":82,
-"hist":[0,117,82]};proj.init();proj = proj;
+"maxrow":582,
+"root":0,
+"hist":[0]};proj.init();proj = proj;

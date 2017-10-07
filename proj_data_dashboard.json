@@ -1,26 +1,4 @@
-﻿{"requests":["stocks","http://fudzilla.com/","http://wccftech.com/","https://www.tweaktown.com/","https://www.anandtech.com/","https://semiaccurate.com/"],
-"get_page":function (page_address){ 
-		that = this; 
-		name = page_address; 
-		console.log(name);
-		$.post( "../proj/seek.aspx", {
-			pagename: name 
-		}).done(function(msg){ 
-			that._callback("...get done: " + msg); 
-		}).fail(function(xhr, status, error) { 
-			that._callback("...get failed"); 
-		}); 
-
-		return "get attempted"; 
-},
-"display_dashboard":function (){
-	return "no datasources yet";
-},
-"request_data":function (what_do_you_want){
-	this.requests.push(what_do_you_want);
-	return "ok, noted";
-},
-"save":function (){ 
+﻿{"save":function (){ 
 		that = this; 
 		name = "dashboard"; 
 		$.post( "../proj/proj_data.aspx", {
@@ -37,6 +15,35 @@
 		}); 
 		return "save attempted"; 
 },
+"get_page":function (page_address){ 
+		that = this; 
+		name = page_address; 
+		console.log(name);
+		$.post( "../proj/seek.aspx", {
+			pagename: name 
+		}).done(function(msg){ 
+			that._callback(page_address + "<br/><div style='overflow:scroll;width:80%;height:100px;border-color: white;border-style: solid;'>" + escapeHTML(msg) + "</div>");  //escapeHTML(msg) + "</div>"); 
+		}).fail(function(xhr, status, error) { 
+			that._callback("...get failed"); 
+		}); 
+
+		return "get attempted"; 
+		
+		function escapeHTML( string )
+		{
+			var pre = document.createElement('pre');
+			var text = document.createTextNode( string );
+			pre.appendChild(text);
+			return pre.innerHTML;
+		}
+},
+"addobject":function (name, def){
+	that = this;
+	that[name] = eval("("+def+")");
+	addfun(); 
+	addobj();
+	return that[name];
+},
 "toString":function (){
 		str = "{";
 		for (var property in this) {
@@ -49,9 +56,14 @@
 			}
 		};
 		str = str.substring(0, str.length - 2);
-		str += "}";
+		str += "};proj.init();proj=proj;";
 		return str;
 	},
+"init":function (){
+	for (let page of this.rssfeeds) {
+		this.get_page(page);
+	};
+},
 "_callback":function mInputCallback(result){
 			if (typeof result == "function"){
 				runFun(result);
@@ -60,4 +72,5 @@
 				disp.innerHTML += "[Result]<br/>" + result + '<br/><br/>';			
 				disp.scrollTop = disp.scrollHeight;
 			};
-		}}
+		},
+"rssfeeds":["https://www.tweaktown.com/news-feed/","https://semiaccurate.com/feed/","https://www.anandtech.com","http://fudzilla.com","http://wccftech.com/","https://weather.gc.ca/rss/city/on-143_e.xml"]};proj.init();proj=proj;

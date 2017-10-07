@@ -54,6 +54,15 @@
 			color: white;
 			overflow-y: scroll;
 			overflow-x: hidden;
+			/*for word wrap*/
+			white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+			white-space: -webkit-pre-wrap; /*Chrome & Safari */ 
+			white-space: -pre-wrap;      /* Opera 4-6 */
+			white-space: -o-pre-wrap;    /* Opera 7 */
+			white-space: pre-wrap;       /* css-3 */
+			word-wrap: break-word;       /* Internet Explorer 5.5+ */
+			word-break: break-all;
+			white-space: normal;
 		}
 		#objectdiv {
 			white-space:nowrap;
@@ -227,7 +236,7 @@
 						b.innerText = k;
 						b.onclick = eval(`x = function(){
 							buttonFun = funs['` + k + `'];
-							paramNames = getParamNames(buttonFun); //prompt for parameters
+							paramNames = getParamNamesArray(buttonFun); //prompt for parameters
 							args = [];
 							runFun(funs['` + k + `'], paramNames, args);
 						}`);
@@ -310,9 +319,9 @@
 				if (fstring[i] === ")" && bracketDepth === 0) {
 					lastBracket = i;
 					break;
-				} else if (fstring === ")" && bracketDepth !== 0) {
+				} else if (fstring[i] === ")" && bracketDepth !== 0) {
 					bracketDepth--;
-				} else if (fstring === "(") {
+				} else if (fstring[i] === "(") {
 					bracketDepth++;
 				}
 			}
@@ -321,7 +330,7 @@
 		}
 		
 		//Commas seem to work. Quotes still don't
-		function getExpressions(instr){
+		var getExpressions = function(instr){
 			exprs = [];
 
 			bracketDepth = 0;

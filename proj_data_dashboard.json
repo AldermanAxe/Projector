@@ -17,25 +17,34 @@
 },
 "get_page":function (page_address){ 
 		that = this; 
-		name = page_address; 
-		console.log(name);
-		$.post( "../proj/seek.aspx", {
-			pagename: name 
-		}).done(function(msg){ 
-			that._callback(page_address + "<br/><div style='overflow:scroll;width:80%;height:100px;border-color: white;border-style: solid;'>" + escapeHTML(msg) + "</div>");  //escapeHTML(msg) + "</div>"); 
-		}).fail(function(xhr, status, error) { 
-			that._callback("...get failed"); 
-		}); 
-
+		if (typeof page_address == 'object'){
+			pages = page_address;
+			name = pages[0].site; 
+			reader = that[pages[0].reader];
+			style = pages[0].style;
+//			that._callback(name);
+			$.post( "../proj/seek.aspx", {
+				pagename: name 
+			}).done(function(msg){
+//				that._callback("<div style='" + style + "'>" + reader(msg) + "</div>");  //escapeHTML(msg) + "</div>"); 
+				that._callback(reader(msg));  //escapeHTML(msg) + "</div>"); 
+				if (page_address.length > 1){
+					that.get_page(page_address.slice(1,page_address.length));
+				}
+			}).fail(function(xhr, status, error) { 
+				that._callback("...get failed"); 
+			}); 
+		} else {
+			name = page_address; 
+			$.post( "../proj/seek.aspx", {
+				pagename: name 
+			}).done(function(msg){ 
+				that._callback("<div style='overflow-y:scroll;height:300px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;'>" + that.escapeHTML(msg) + "</div>");  //escapeHTML(msg) + "</div>"); 
+			}).fail(function(xhr, status, error) { 
+				that._callback("...get failed"); 
+			}); 
+		};
 		return "get attempted"; 
-		
-		function escapeHTML( string )
-		{
-			var pre = document.createElement('pre');
-			var text = document.createTextNode( string );
-			pre.appendChild(text);
-			return pre.innerHTML;
-		}
 },
 "addobject":function (name, def){
 	that = this;
@@ -49,7 +58,7 @@
 		for (var property in this) {
 			if (this.hasOwnProperty(property)){
 				if (typeof this[property] == "object"){
-					str += "\"" + property + "\":" + JSON.stringify(this[property]) + ",\n";	
+					str += "\"" + property + "\":" + JSON.stringify(this[property], null, 2) + ",\n";	
 				} else {
 					str += "\"" + property + "\":" + this[property] + ",\n";
 				}
@@ -60,17 +69,121 @@
 		return str;
 	},
 "init":function (){
-	for (let page of this.rssfeeds) {
-		this.get_page(page);
-	};
+	this.get_page(this.rssfeeds);
 },
 "_callback":function mInputCallback(result){
 			if (typeof result == "function"){
 				runFun(result);
 			} else {
 				disp = document.getElementById('displaydiv');
-				disp.innerHTML += "[Result]<br/>" + result + '<br/><br/>';			
+				disp.innerHTML += "" + result;			
 				disp.scrollTop = disp.scrollHeight;
 			};
 		},
-"rssfeeds":["https://www.tweaktown.com/news-feed/","https://semiaccurate.com/feed/","https://www.anandtech.com","http://fudzilla.com","http://wccftech.com/","https://weather.gc.ca/rss/city/on-143_e.xml"]};proj.init();proj=proj;
+"escapeHTML":function (string)
+		{
+			var pre = document.createElement('pre');
+			var text = document.createTextNode( string );
+			pre.appendChild(text);
+			return pre.innerHTML;
+		},
+"rssfeeds":[
+/*
+  {
+    "site": "http://fudzilla.com",
+    "reader": "htmlreader",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  },
+ */
+  {
+    "site": "https://www.tweaktown.com/news-feed/",
+    "reader": "readXmlItems",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  },
+  {
+    "site": "https://semiaccurate.com/feed/",
+    "reader": "readXmlItems",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  },
+  {
+    "site": "https://www.anandtech.com/rss/",
+    "reader": "readXmlItems4",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  },
+  {
+    "site": "http://feeds2.feedburner.com/Wccftechcom",
+    "reader": "readXmlItems",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  },
+  {
+    "site": "http://www.nasdaq.com/aspxcontent/NasdaqRSS.aspx?data=uvup",
+    "reader": "readXmlItems3",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  },
+
+  {
+    "site": "http://feeds.reuters.com/Reuters/worldNews",
+    "reader": "readXmlItems2",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  },
+  {
+    "site": "https://weather.gc.ca/rss/city/on-143_e.xml",
+    "reader": "readXmlEntries",
+    "style": "overflow-y:scroll;height:500px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;"
+  }
+],
+"htmlreader":function (x){return proj.escapeHTML(x);},
+"readXmlEntries":function (text){
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(text,"text/xml");
+	entries = xmlDoc.getElementsByTagName("entry");
+	results = "";
+	for (var e of entries){
+		results = results + "&ensp;&#x0393;&ensp;" + e.childNodes[1].textContent + "<br/>"
+	}
+	return results;
+},
+"readXmlItems":function (text){
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(text,"text/xml");
+	entries = xmlDoc.getElementsByTagName("item");
+	results = "";
+	for (var e of entries){
+		results = results + "&ensp;&#x0393;&ensp;" + e.childNodes[1].textContent + " <a href='" + e.childNodes[3].textContent + "' target='_blank'>[link]</a><br/>"
+	}
+	return results;
+},
+"readXmlItems2":function (text){
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(text,"text/xml");
+	entries = xmlDoc.getElementsByTagName("item");
+	results = "";
+	for (var e of entries){
+		results = results + "&ensp;&#x0393;&ensp;" + e.childNodes[1].textContent + " <a href='" + e.childNodes[5].textContent + "' target='_blank'>[link]</a><br/>"
+	}
+	return results;
+},
+"readXmlItems3":function (text){
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(text,"text/xml");
+	entries = xmlDoc.getElementsByTagName("item");
+	results = "";
+	for (var e of entries){
+		results = results + "&ensp;&#x0393;&ensp;" + e.childNodes[4].textContent + e.childNodes[2].textContent + "<br/>"
+	}
+	return results;
+},
+"readXmlItems4":function (text){
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(text,"text/xml");
+	entries = xmlDoc.getElementsByTagName("item");
+	results = "";
+	for (var e of entries){
+		results = results + "&ensp;&#x0393;&ensp;" + e.childNodes[1].textContent + " <a href='" + e.childNodes[7].textContent + "' target='_blank'>[link]</a><br/>"
+	}
+	return results;
+},
+"requests":[
+  "stocks",
+  "arts and cultue"
+]};proj.init();proj=proj;

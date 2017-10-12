@@ -1,10 +1,10 @@
-﻿proj = {"0":{"id":0,"value":"firstroot","childs":[]},
+﻿proj = {
 "add":function (text_to_add=proj[proj.root].value=="events"?((new Date()).toISOString().substring(0,10)) + " ":""){ //some stuff to automatically enter the date when adding an event
 					text_to_add = text_to_add || "";
 					this.maxrow++;
 					this[this.maxrow] = {"id":this.maxrow, "value": typeof text_to_add == "undefined" ? "" : text_to_add, "childs":[]};
 					this[this.root]["childs"].push(this.maxrow);
-					return("added " + this.maxrow);
+					return(this.maxrow);
 				},
 "list":function (){
 					that = this;
@@ -75,26 +75,16 @@
 					proj.hist.push(id);
 					return("root set to:" + id);
 				},
-"listdetail":function (){
-					str = "";
-					for (element of this[this.root]["childs"]) {
-						if (typeof this[element] == "object"){
-							str += JSON.stringify(this[element]) 
-								+ (
-									this[element].hasOwnProperty("childs") ? 
-										this[element].childs.length > 0 ? 
-											" <a onclick=proj._callback(proj.goto(" + element + ")) style='color:blue;'>[=]</a> " 
-											: "" 
-									: ""
-								) 
-								+" <a onclick=proj._callback(proj.rem(" + element + ")) style='color:red;'>[X]</a> " 
-								+ "<br/>";	
-						} else {
-							str += "" + element + ":" + this[element] + "<br/>";
-						}
-					};
-					str = str.substring(0, str.length - 5);
-					return str;
+"addrep":function (description, next, repdays){
+					that = this;
+					var num = that.add(description);
+					that[num].next = next;
+					that[num].repdays = parseInt(repdays); 
+					return(that.get(num));
+				},
+"addkey":function (id, key, value){
+					this[id][key] = value;
+					return("added " + JSON.stringify(this[id]));
 				},
 "addfunction":function (key, function_expression){
 					this[key] = eval("x=" + function_expression);
@@ -150,6 +140,9 @@
 							};
 							proj = proj2;
 							that._callback("...load succeeded<br/>" + that.addreps());  	//bad code to get addreps working around all of the callbacks
+							if (that.list){
+								proj._callback(that.list());
+							}
 						}							
 					});
 					return "load attempted";
@@ -259,6 +252,6 @@
 					};
 					initrun = true;
 				},
-"maxrow":582,
+"maxrow":619,
 "root":0,
 "hist":[0]};proj.init();proj = proj;

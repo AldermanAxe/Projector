@@ -14,9 +14,14 @@
 		    font-size: 30px;
 			font-family: "Lucida Console", Monaco, monospace;
 		}
+		table{
+		    font-size: 30px;
+			background-color: grey;
+			font-family: "Lucida Console", Monaco, monospace;
+		}
 		a{
 			color: blue;
-			text-decoration: none;
+/*			text-decoration: none;*/
 			cursor: pointer; 
 			cursor: hand;
 		}
@@ -137,7 +142,9 @@
 		
 		
 		//Add Callback write to output
-		proj._callback = mInputCallback;
+		if (!proj.hasOwnProperty("_callback")){
+			proj._callback = mInputCallback;
+		}
 		
 		
 		function mInputCallback(result){

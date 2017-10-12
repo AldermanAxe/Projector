@@ -13,7 +13,7 @@
 			req.open("get", Request.Form("pagename").toString(), false);
 			req.send();
 			var res = req.responseText;  
-			Response.Write("success " + res);			
+			Response.Write("" + res);			
 		} catch(err) {
 			Response.Write("failed " + err);			
 		};

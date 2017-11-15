@@ -43,11 +43,15 @@
 				padding:0 0 0 0;
 				margin:0 0 0 0;
 			}
+			#gobutton{
+				width:20%;
+			}
 			#inputdiv{
 				height: 10%;
 				overflow:scroll;
 				background-color: black;
 				color: white;
+				width: 100%;
 				overflow-y: scroll;
 				overflow-x: hidden;
 			}
@@ -93,14 +97,89 @@
 				font-size: 30px;
 			}
 		</style>
-		<script>
-			//Sets default object string definition
-			projstr = `{create:function(javascript){proj = eval("proj = "+javascript+"; addfun(); addobj(); proj=proj;"); return "created " + proj.toString();}}`;
-		</script>
 	</head>
 	<body>
 		<script>
 			document.body.onload = function(){
+				//Sets default object string definition
+				/***<DEFAULT OBJECT>***/
+				projstr = `{
+					addobject:function (name, def){
+						that = this;
+						that[name] = eval("("+def+")");
+						addfun(); 
+						addobj();
+						return that[name];
+					},
+					remobject:function (name){
+						that = this;
+						delete that[name];
+						addfun(); 
+						addobj();
+					},
+					renameobject:function (oldname, newname){
+						that = this;
+						that[newname] = that[oldname];
+						delete that[oldname];
+						addfun(); 
+						addobj();
+					},
+					saveserver:function (save_name){
+						that = this;
+						name = save_name;
+						$.post( "../proj/proj_data.aspx", {codename: name, data: this._toString()}).done(function(msg){  
+							that._callback("...save done: " + msg);
+						}).fail(function(xhr, status, error) {
+							that._callback("...save failed");
+						});
+
+						$.post( "../proj/proj_backup.aspx", {codename: name, data: this.toString()});
+
+						return "save attempted";
+					},
+					_toString:function(){
+						str = "proj = {";
+						for (var property in this) {
+							if (this.hasOwnProperty(property)){
+								if (typeof this[property] == "object"){
+									str += '"' + property + '":' + JSON.stringify(this[property]) + ',\\n';	
+								} else if (typeof this[property] == "function") {
+									str += '"' + property + '":' + this[property] + ',\\n';
+								} else {
+									str += '"' + property + '":"' + this[property] + '",\\n';
+								}
+							}
+						}
+						str = str.substring(0, str.length - 2);
+						str += "};";
+						str += "proj._init();";
+						str += "proj = proj;";
+						return str;
+					},
+					_init:function(){
+					},
+					download:function(filename="projector.html") {
+						document.getElementById('displaydiv').innerHTML = '';		
+						let text = $('html').html();
+						let startnum = text.indexOf("/***<DEFAULT" + " OBJECT>***/") + ("/***<DEFAULT" + " OBJECT>***/").length + 1;
+						let endnum = text.indexOf("/***</DEFAULT" + " OBJECT>***/");
+						text = "<html><body>" + text.substring(0, startnum) + "projstr = \`" + proj._toString().split("\\\\").join("\\\\\\\\").split("\`").join("\\\\\`") + "\`" + text.substring(endnum, text.length) + "</html>";				
+						let pom = document.createElement('a');
+						pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+						pom.setAttribute('download', filename);
+						if (document.createEvent) {
+							var event = document.createEvent('MouseEvents');
+							event.initEvent('click', true, true);
+							pom.dispatchEvent(event);
+						}
+						else {
+							pom.click();
+						}
+						return("downloaded");
+					}
+				}`;
+				/***</DEFAULT OBJECT>***/			
+				
 				let bdiv = document.getElementById("buttondiv");
 				let odiv = document.getElementById("objectdiv");
 				let ddiv = document.getElementById('displaydiv');
@@ -113,6 +192,9 @@
 				let g_args = [];
 				let g_paramNames = [];
 
+				//Initialize
+				document.getElementById("displaydiv").innerHTML += 'Activated Web UI<br/><br/>';
+				
 				//Puts the curser in the text input
 				mInput.focus();
 
@@ -129,7 +211,7 @@
 					let request = new XMLHttpRequest();
 					request.open('GET', "../JsonFiles/proj_data_" + param + ".json?rand=" + Date.now(), false);  // `false` makes the request synchronous
 					request.send(null);
-					if (request.status === 200) {
+					if (request.status == 200) {
 						proj = eval("proj = " + request.responseText);
 					} else {
 						alert("source " + param + " failed");
@@ -146,10 +228,8 @@
 					proj._callback = mInputCallback;
 				}
 
-				//Adds object buttons
+				//Adds object and function buttons
 				addobj();
-
-				//Adds function buttons
 				addfun();
 
 		//Functions
@@ -186,7 +266,7 @@
 										if(command.includes(" ")){
 											command = command.replace(" ", "(") + ")";
 										} else {
-											command = command + "()";
+											command += "()";
 										}
 									}
 									output = eval("proj." + command);
@@ -299,12 +379,8 @@
 						i;
 					for (i = 0; i < sURLVariables.length; i++) {
 						sParameterName = sURLVariables[i].split('=');
-						if (sParameterName[0] === sParam) return sParameterName[1] === undefined ? true : sParameterName[1];
+						if (sParameterName[0] == sParam) return sParameterName[1] == undefined ? true : sParameterName[1];
 					}
-				};
-				function sleep(ms) {
-					//Pauses briefly
-					return new Promise(resolve => setTimeout(resolve, ms));
 				};
 				function getParams(func){
 					//Returns parameters from a function
@@ -313,12 +389,12 @@
 					lastBracket = 0; 
 					bracketDepth = 0;
 					for (var i = firstBracket + 1; i < fstring.length; i++){		
-						if (fstring[i] === ")" && bracketDepth === 0) {
+						if (fstring[i] == ")" && bracketDepth == 0) {
 							lastBracket = i;
 							break;
-						} else if (fstring[i] === ")" && bracketDepth !== 0) {
+						} else if (fstring[i] == ")" && bracketDepth != 0) {
 							bracketDepth--;
-						} else if (fstring[i] === "(") {
+						} else if (fstring[i] == "(") {
 							bracketDepth++;
 						}
 					}
@@ -386,7 +462,7 @@
 				};
 			};
 		</script>
-		<div id="displaydiv">Activated Web UI<br/><br/></div>
+		<div id="displaydiv"></div>
 		<div id="inputdiv">
 			<input id="maininput" type="text"></input>
 		</div>

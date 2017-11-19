@@ -32,28 +32,34 @@
 				width: 0px;
 				background: transparent; /* make scrollbar transparent */
 			}
-			#maininput{
-				background-color:black;
-				height:100%;
-				color:white;
-				display:block;
-				font-size: 30px;
-				top:0;
-				width:100%;
-				padding:0 0 0 0;
-				margin:0 0 0 0;
-			}
-			#gobutton{
-				width:20%;
-			}
 			#inputdiv{
 				height: 10%;
 				overflow:scroll;
 				background-color: black;
 				color: white;
 				width: 100%;
-				overflow-y: scroll;
+				overflow-y: hidden;
 				overflow-x: hidden;
+			}
+			#maininput{
+				background-color:black;
+				height:100%;
+				color:white;
+				display:inline;
+				font-size: 30px;
+				top:0;
+				width:90%;
+				padding:0 0 0 0;
+				margin:0 0 0 0;
+			}
+			#gobutton{
+				font-size: 30px;
+				float:right;
+				display:inline;
+				height:100%;
+				width:10%;
+				border-color: white;
+				border-width: 2px;
 			}
 			#displaydiv {
 				height: 70%;
@@ -223,6 +229,11 @@
 					proj = eval("proj = " + projstr);
 				};
 
+				//Adds Go Button Behavior
+				document.getElementById("gobutton").onclick = function(){
+					onkeypress({keyCode:13});
+				};
+				
 				//Adds Callback write to output if it doesn't exist
 				if (!proj.hasOwnProperty("_callback")){
 					proj._callback = mInputCallback;
@@ -249,6 +260,9 @@
 						if (inputMode.selected == inputMode.text){
 							if (inKey.keyCode == 13) { //when 'enter' is pressed
 								command = mInput.value;
+								if (command == ""){
+									throw "nothing entered";
+								};
 								if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
 								cmdHistPos = 0;
 								//check for strings beginning with '=' and treat them as an eval
@@ -465,6 +479,7 @@
 		<div id="displaydiv"></div>
 		<div id="inputdiv">
 			<input id="maininput" type="text"></input>
+			<button id="gobutton">&#9166;</button>
 		</div>
 		<div id="objectdiv"></div>
 		<div id="buttondiv"></div>

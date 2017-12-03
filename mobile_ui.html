@@ -130,6 +130,21 @@
 						addfun(); 
 						addobj();
 					},
+					loadlocal:function (load_name){
+						localstring = localStorage.getItem(load_name);
+						if (localstring == null) {
+							return "local file " + load_name + " not found";						
+						} else {
+							eval("proj = " + localstring);
+							addfun(); 
+							addobj();
+							return "loaded local " + load_name;
+						};
+					},
+					savelocal:function (save_name){
+						localStorage.setItem(save_name,this._toString())
+						return "saved local " + save_name;
+					},
 					saveserver:function (save_name){
 						that = this;
 						name = save_name;
@@ -244,12 +259,12 @@
 				addfun();
 
 		//Functions
-				function mInputCallback(result){
+				function mInputCallback(result, element){
 					//A default callback function to display results to the display div
 					if (typeof result == "function"){
 						runFun(result);
 					} else {
-						ddiv = document.getElementById('displaydiv');
+						ddiv = document.getElementById(element || 'displaydiv');
 						ddiv.innerHTML += "[Result]<br/>" + result + '<br/><br/>';			
 						ddiv.scrollTop = ddiv.scrollHeight;
 					};
@@ -262,7 +277,7 @@
 								command = mInput.value;
 								if (command == ""){
 									throw "nothing entered";
-								};
+ 								};
 								if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
 								cmdHistPos = 0;
 								//check for strings beginning with '=' and treat them as an eval

@@ -181,7 +181,7 @@
 					},
 					download:function(filename="projector.html") {
 						document.getElementById('displaydiv').innerHTML = '';		
-						let text = $('html').html();
+						let text = document.getElementsByTagName('html')[0].innerHTML;
 						let startnum = text.indexOf("/***<DEFAULT" + " OBJECT>***/") + ("/***<DEFAULT" + " OBJECT>***/").length + 1;
 						let endnum = text.indexOf("/***</DEFAULT" + " OBJECT>***/");
 						text = "<html><body>" + text.substring(0, startnum) + "projstr = \`" + proj._toString().split("\\\\").join("\\\\\\\\").split("\`").join("\\\\\`") + "\`" + text.substring(endnum, text.length) + "</html>";				
@@ -494,7 +494,7 @@
 		<div id="displaydiv"></div>
 		<div id="inputdiv">
 			<input id="maininput" type="text"></input>
-			<button id="gobutton">&#9166;</button>
+			<button id="gobutton">Enter</button>
 		</div>
 		<div id="objectdiv"></div>
 		<div id="buttondiv"></div>

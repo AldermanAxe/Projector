@@ -1,5 +1,9 @@
 A tool to record, process, and share information. 
 
+Democratization of information and automation.
+
+Predicated on the continued advancement of web functionality, peer to peer communication, and web APIs
+
 A sort of project organizer, note keeper, scheduler.
 
 The program is implemented as an HTML file with javascript, to allow it to be run from any machine with a modern web browser, whether it is connected to the internet or not.

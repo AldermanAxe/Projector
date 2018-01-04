@@ -2,13 +2,14 @@
 <%
 	if (Request.Form("pagename") !== ""){
 		try {
+/*		for monitoring traffic, but disabled because it locks the file and does not allow 2 simultaneous requests
 			var fso;
 			var f;
 			fso = new ActiveXObject("Scripting.FileSystemObject");
 			f = fso.OpenTextFile("C:\\inetpub\\wwwroot\\proj_log.txt", 8, true, -1);
 			f.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + ": " + Request.ServerVariables("REMOTE_ADDR") + " : " + Request.Form("pagename").toString());
 			f.Close();
-		
+*/		
 			var req =  new ActiveXObject("MSXML2.ServerXMLHTTP");
 			req.open("get", Request.Form("pagename").toString(), false);
 			req.send();

@@ -1,0 +1,90 @@
+﻿{	"feeds":[
+		{name:"reddit cryptocurrency",address:"https://www.reddit.com/r/CryptoCurrency.rss",alias:'rc'},
+		{name:"twitter cryptocurrent", address:"http://twitrss.me/twitter_user_to_rss/?user=cryptocurrent",alias:'tc'}
+	],
+	"sort priority":[{keyword:"ether",points:"+1000"},{keyword:"bitcoin",points:"+100"}],
+	"style":"#displaydiv {height:70%;color:black; background: linear-gradient(to right, white, thistle);} "
+			+"#maininput {color:black; background-color: white}"
+			+"#inputdiv {height:10%;border-top:2px solid black}"
+			+"#objectdiv {height:10%;padding:10 10 0 10;}"
+			+"#buttondiv {height:10%;padding:0 0 0 10}",
+	"load feeds":function(){
+		that = this;
+		doDisplay("",null,1)
+		this.feeds.forEach(function(feed){
+			that._get_feed(feed.alias, feed.address);
+		})
+	},
+	"add feed":function(name="cryptocurrency news", address="https://cryptocurrencynews.com/feed/", alias="cn"){
+		this.feeds.push({"name":name, "address":address, "alias":alias});
+		this["load feeds"]();
+	},
+	"sort":function(){
+		return "sort function is under construction";
+	},
+	"_init":function (){
+		//set up style white background
+		var sheet = document.createElement('style')
+		sheet.innerHTML = this.style;
+			;
+		document.body.appendChild(sheet);
+		//get the feeds
+		that = this;
+		this.feeds.forEach(function(feed){
+			that._get_feed(feed.alias, feed.address);
+		})
+	},
+	"_add_panel":function (title){
+		doDisplay("<div style='overflow-y:scroll;background-color:white;overflow: auto;display:inline-block;border-color:black;border-style:dashed;width:97%;padding:10px 2px 10px 2px;margin:5px 5px 5px 5px;'>"
+			+ "<div style='background-color:aliceblue;float:left;display:block;border-color:black;border-style:solid;border-radius:50%;height:75px;width:100px;text-align:center;border-style:dashed;margin:5px 10px 10px 5px;padding:45px 10px 10px 5px;'>"
+			+ title + "</div><span id='" + title + "'>initialized...</span></div><br/><br/>", "displaydiv"
+		);
+	},
+	"_get_feed":function (page_alias, page_address){ 
+		//saves the project object to the server
+		let that = this;
+		let xhr = new XMLHttpRequest();
+		xhr.open("POST", '../proj/seek.aspx', true);
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.onreadystatechange = function() {//Call a function when the state changes.
+			if(xhr.readyState == XMLHttpRequest.DONE) {
+				if (xhr.status == 200){
+					that._readRss(page_alias, xhr.responseText);
+				} else {
+					doDisplay(page_alias + " failed");
+				}
+			}
+		}
+		xhr.send("pagename=" + encodeURIComponent(page_address)); 
+		return("...loading..."); 
+	},
+	"_readRss":function (page_alias, text){
+		let parser = new DOMParser();
+		let xmlDoc = parser.parseFromString(text,"text/xml");
+		let entries = [].slice.call(xmlDoc.getElementsByTagName("entry")).concat([].slice.call(xmlDoc.getElementsByTagName("item")));	
+		let results = "";
+		let moreresults = "";
+		let addcount = 0;
+		let linkNodes = [];
+		for (let e = 0; e < entries.length; e++){
+			let childNodes = [].slice.call(entries[e].childNodes);
+			let textNode = "";
+			let linkNode = "";
+			for (let c = 0; c < childNodes.length; c++){
+				if (childNodes[c].nodeName == "title"){
+					textNode = textNode + childNodes[c].textContent;
+				}
+				if (childNodes[c].nodeName == "link"){
+					linkNode = linkNode + childNodes[c].textContent;
+					if (childNodes[c].hasAttribute("href")){
+						linkNode = linkNode + childNodes[c].getAttribute("href");
+					}
+					linkNodes.push(linkNode);
+				}
+			}
+			this._add_panel(page_alias + "-" + e);
+			newcontents = "<div><span>" + textNode + " <a href='" + linkNode + "' target='_blank'>[link]</a></span><a style='color:red;' onclick='this.style.display=\"none\";this.previousSibling.style.display=\"none\";this.nextSibling.style.display=\"none\"'>[X]</a><span><br/></span></div>";
+			doDisplay(newcontents, page_alias + "-" + e,1);
+		}
+	}
+}; proj._init(); proj = proj;

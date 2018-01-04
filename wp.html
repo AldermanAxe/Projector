@@ -110,7 +110,7 @@
 						addobj();
 						return oldname + " > " + newname
 					},
-					load:function (load_name="default"){
+					load_local:function (load_name="default"){
 						localstring = localStorage.getItem(load_name);
 						if (localstring == null) {
 							return "local file " + load_name + " not found";						
@@ -121,7 +121,7 @@
 							return "loaded local " + load_name;
 						};
 					},
-					save:function (save_name="default"){
+					save_local:function (save_name="default"){
 						localStorage.setItem(save_name,this._toString())
 						return "saved local " + save_name;
 					},
@@ -148,12 +148,18 @@
 						xhr2.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString())); 
 						return "save attempted";
 					},
+					load_js:function (javascript_object_string="{}"){
+						proj = eval("("+javascript_object_string+")");
+						addfun(); 
+						addobj();
+						return "loaded js: " + javascript_object_string;
+					},
 					download:function(filename="newwp.html") {
 						document.getElementById('displaydiv').innerHTML = '';		
 						let text = document.getElementsByTagName('html')[0].innerHTML;
 						let startnum = text.indexOf("/***<DEFAULT" + " OBJECT>***/") + ("/***<DEFAULT" + " OBJECT>***/").length + 1;
 						let endnum = text.indexOf("/***</DEFAULT" + " OBJECT>***/");
-						text = "<html><body>" + text.substring(0, startnum) + "projStr = \`" + proj._toString().split("\\\\").join("\\\\\\\\").split("\`").join("\\\\\`") + "\`" + text.substring(endnum, text.length) + "</html>";				
+						text = "<html><body>" + text.substring(0, startnum) + "projStr = \`" + this._toString().split("\\\\").join("\\\\\\\\").split("\`").join("\\\\\`") + "\`" + text.substring(endnum, text.length) + "</html>";				
 						let pom = document.createElement('a');
 						pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
 						pom.setAttribute('download', filename);
@@ -191,9 +197,10 @@
 				}`;
 				/***</DEFAULT OBJECT>***/			
 				
+				//Sets up variables for objects
 				let bdiv = document.getElementById("buttondiv");
 				let odiv = document.getElementById("objectdiv");
-				let ddiv = document.getElementById('displaydiv');
+				let ddiv = document.getElementById("displaydiv");
 				let mInput = document.getElementById("maininput");
 				let cmdHist = []; //variables for text input behavior
 				let cmdHistPos = 0;
@@ -202,41 +209,56 @@
 				let g_args = [];
 				let g_paramNames = [];
 
-				//Creates proj objects from the server file indicated in get parameter
+				//Sends an initialization message
+				ddiv.innerHTML += '<br/>Activated Web Platform<br/><br/>';
+				
+				//Initializes Page Setup, Adds Input area Keypress and Enter Button Behavior
+				if (isMobile()) {ddiv.style.fontSize = "30px";}; //Changes font size for mobile
+				mInput.focus();	//Puts the cursor in the text input
+				document.onkeydown = onkeypress;
+				document.getElementById("gobutton").onclick = function(){onkeypress({keyCode:13});};
+					
+				//Creates main 'proj' object from the server file indicated in get parameter
 				if (getUrlParameter("source")){//Uses servers source for object
 					let param = getUrlParameter("source").replace("%3d", "=");
 					let request = new XMLHttpRequest();
-					request.open('GET', "../JsonFiles/proj_data_" + param + ".json?rand=" + Date.now(), false);  // `false` makes the request synchronous
-					request.send(null);
-					if (request.status == 200) {
-						proj = eval("proj = " + request.responseText);
-					} else {
-						alert("source " + param + " failed");
+					request.open("GET", "../JsonFiles/proj_data_" + param + ".json?rand=" + Date.now());  // `false` makes the request synchronous
+					request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");	
+					request.onreadystatechange = function() {//Call a function when the state changes.
+						if(request.readyState == XMLHttpRequest.DONE) {
+							if (request.status == 200){
+								proj = eval("proj = " + request.responseText);
+								addobj(); //Adds object and function buttons
+								addfun();
+							} else {
+								doDisplay(param + " failed");
+							}
+						}
 					}
+					request.send(null);
 				} else if (getUrlParameter("object")){//Uses object in get parameter
 					let param = getUrlParameter("object").replace("%3d", "=");
 					proj = eval("proj = " + param);
+					addobj(); //Adds object and function buttons
+					addfun();
 				} else {//Otherwise uses default object
 					proj = eval("proj = " + projStr);
+					addobj(); //Adds object and function buttons
+					addfun();
 				};
-				
-				//Initializes Page Setup, Adds Input area Keypress and Enter Button Behavior
-				if (isMobile()) {ddiv.style.fontSize = "15px";}; //Changes font size for mobile
-				mInput.focus();	//Puts the curser in the text input
-				document.onkeydown = onkeypress;
-				document.getElementById("gobutton").onclick = function(){onkeypress({keyCode:13});};
-				addobj(); //Adds object and function buttons
-				addfun();
-				ddiv.innerHTML += 'Activated Web Platform<br/><br/>'; //Sends an initialization message
-				
+
 				//Utility Functions for page Setup and Behavior
-				function doDisplay(result, element){
+				function doDisplay(result, element, replace){
+				//displays result in displaydiv, or element if provided. Clears the element if replace indicated.
 					if (typeof result != "undefined"){
 						//A default callback function to display results to the display div
 						if (typeof result == "function"){
 							runFun(result);
 						} else {
 							ddiv = document.getElementById(element || 'displaydiv');
+							if (replace){
+								ddiv.innerHTML = "";
+							};
 							if (element){
 								ddiv.innerHTML += result;			
 							} else {
@@ -264,8 +286,7 @@
 									mInput.value = "";
 								} else if (proj.hasOwnProperty(command)){
 									runFun(eval("proj." + command));
-														} else {
-									
+								} else {
 									//convert input with spaces to function call syntax
 									if (command.substring(command.length - 1) != ")")
 									{

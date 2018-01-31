@@ -53,7 +53,7 @@
 				font-size: 30px;
 				float:right;
 				display:inline;
-				height:100%;
+				height:99%;
 				width:10%;
 				border-color: white;
 				border-width: 2px;
@@ -76,10 +76,28 @@
 				white-space: normal;
 			}
 			.objButton, .funcButton{
-				height: 90%;
+				height: 85%;
 				padding: 5px 15px 5px 15px;
-				margin: 1px 5px 1px 5px;
+				margin: 10px 5px 1px 5px;
 				font-size: 30px;
+			}
+			.scrollButtonRight{
+				height: 9%;
+				padding: 5px 15px 5px 15px;
+				margin: 1px 0px 1px 0px;
+				font-size: 30px;
+				position:absolute;
+				right:0px;
+				background-color: white;
+			}
+			.scrollButtonLeft{
+				height: 9%;
+				padding: 5px 15px 5px 15px;
+				margin: 1px 0px 1px 0px;
+				font-size: 30px;
+				position:absolute;
+				left:0px;
+				background-color: white;
 			}
 		</style>
 	</head>
@@ -222,8 +240,6 @@ _toString:function(){
 	}
 	str = str.substring(0, str.length - 2);
 	str += "};";
-	str += "proj._init();";
-	str += "proj = proj;";
 	return str;
 },
 _init:function(){
@@ -265,6 +281,7 @@ _init:function(){
 								proj = eval("proj = " + request.responseText);
 								addobj(); //Adds object and function buttons
 								addfun();
+								doInit();
 							} else {
 								doDisplay(param + " failed");
 							}
@@ -276,12 +293,19 @@ _init:function(){
 					proj = eval("proj = " + param);
 					addobj(); //Adds object and function buttons
 					addfun();
+					doInit();
 				} else {//Otherwise uses default object
 					proj = eval("proj = " + projStr);
 					addobj(); //Adds object and function buttons
 					addfun();
+					doInit();
 				};
 
+				//Runs initialization code from the javascript object
+				function doInit(){
+					if(proj.hasOwnProperty("init")){proj.init()};
+					if(proj.hasOwnProperty("_init")){proj._init()};
+				}
 				//Utility Functions for page Setup and Behavior
 				function doDisplay(result, element, replace, doAppend){
 				//displays result in displaydiv, or element if provided. Clears the element if replace indicated.
@@ -376,16 +400,60 @@ _init:function(){
 					for (var k in objs) {
 						if (objs.hasOwnProperty(k)) {
 							if (typeof objs[k] != "function" && k.substring(0,1)!= "_"){
-								b = document.createElement("button");
+								let b = document.createElement("button");
 								b.className = "objButton";
 								b.innerText = k;
 								b.onclick = eval(`x = function(){
-									runFun(function(){return JSON.stringify(objs['` + k + `']);});
+									runFun(function(){return '<pre>' + JSON.stringify(objs['` + k + `'], null, 5) + '</pre>';});
 								}`);
 								odiv.appendChild(b);
 							}
 						}
 					};
+					let b1 = document.createElement("button");
+					b1.className = "scrollButtonRight";
+					b1.id = "objectScrollButtonRight";
+					b1.innerText = ">";
+					b1.onclick = eval(`x = function(){
+						let odiv = document.getElementById('objectdiv'); 
+						if (odiv.scrollWidth - (odiv.clientWidth + odiv.scrollLeft) < 200){
+							odiv.scrollLeft = odiv.scrollWidth - odiv.clientWidth;							
+						} else {
+							odiv.scrollBy(200, 0);
+						};
+					}`);
+					odiv.appendChild(b1);
+					if (odiv.scrollWidth <= odiv.clientWidth){
+						b1.style.visibility = 'hidden';
+					};
+					let b2 = document.createElement("button");
+					b2.className = "scrollButtonLeft";
+					b2.id = "objectScrollButtonLeft";
+					b2.id = "objectScrollButtonLeft";
+					b2.innerText = "<";
+					b2.onclick = eval(`x = function(){
+						let odiv = document.getElementById('objectdiv'); 
+						if (odiv.scrollLeft < 200){
+							odiv.scrollLeft = 0;
+						} else {
+							odiv.scrollBy(-200, 0);
+						};
+					}`);
+					odiv.appendChild(b2);
+					b2.style.visibility = 'hidden';
+					//adds behavior to make the scroll buttons disappear when needed
+					odiv.onscroll = function(){
+						if (odiv.scrollLeft == 0){
+							document.getElementById('objectScrollButtonLeft').style.visibility = "hidden";							
+						} else {
+							document.getElementById('objectScrollButtonLeft').style.visibility = "visible";
+						}
+						if (odiv.scrollLeft + odiv.clientWidth >= odiv.scrollWidth){
+							document.getElementById('objectScrollButtonRight').style.visibility = "hidden";							
+						} else {
+							document.getElementById('objectScrollButtonRight').style.visibility = "visible";
+						}
+					}
 				};
 				function addfun(funs){
 					//Adds function buttons. Ignore hidden functions beginning with '_'
@@ -396,7 +464,7 @@ _init:function(){
 					for (var k in funs) {
 						if (funs.hasOwnProperty(k)) {
 							if (typeof funs[k] == "function" && k.substring(0,1)!= "_"){
-								b = document.createElement("button");
+								let b = document.createElement("button");
 								b.className = "funcButton";
 								b.innerText = k;
 								b.onclick = eval(`x = function(){
@@ -409,6 +477,49 @@ _init:function(){
 							}
 						}
 					};
+					let b1 = document.createElement("button");
+					b1.className = "scrollButtonRight";
+					b1.id = "buttonScrollButtonRight";
+					b1.innerText = ">";
+					b1.onclick = eval(`x = function(){
+						let bdiv = document.getElementById('buttondiv'); 
+						if (bdiv.scrollWidth - (bdiv.clientWidth + bdiv.scrollLeft) < 200){
+							bdiv.scrollLeft = bdiv.scrollWidth - bdiv.clientWidth;							
+						} else {
+							bdiv.scrollBy(200, 0);
+						};
+					}`);
+					bdiv.appendChild(b1);
+					if (bdiv.scrollWidth <= bdiv.clientWidth){
+						b1.style.visibility = 'hidden';
+					};
+					let b2 = document.createElement("button");
+					b2.className = "scrollButtonLeft";
+					b2.id = "buttonScrollButtonLeft";
+					b2.innerText = "<";
+					b2.onclick = eval(`x = function(){
+						let bdiv = document.getElementById('buttondiv'); 
+						if (bdiv.scrollLeft < 200){
+							bdiv.scrollLeft = 0;
+						} else {
+							bdiv.scrollBy(-200, 0);
+						};
+					}`);
+					bdiv.appendChild(b2);
+					b2.style.visibility = 'hidden';
+					//adds behavior to make the scroll buttons disappear when needed
+					bdiv.onscroll = function(){
+						if (bdiv.scrollLeft == 0){
+							document.getElementById('buttonScrollButtonLeft').style.visibility = "hidden";							
+						} else {
+							document.getElementById('buttonScrollButtonLeft').style.visibility = "visible";
+						}
+						if (bdiv.scrollLeft + bdiv.clientWidth >= bdiv.scrollWidth){
+							document.getElementById('buttonScrollButtonRight').style.visibility = "hidden";							
+						} else {
+							document.getElementById('buttonScrollButtonRight').style.visibility = "visible";
+						}
+					}
 				};
 				function runFun(callback, paramNames, args, defaults){
 					//This is some complex business to run a function one argument at a time. prompting with the default values is the tricky part

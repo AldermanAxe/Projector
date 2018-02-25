@@ -30,13 +30,21 @@
 				background: transparent; /* make scrollbar transparent */
 			}
 			#inputdiv{
-				height: 10%;
+				height: 8%;
 				overflow:scroll;
 				background-color: black;
 				color: white;
 				width: 100%;
 				overflow-y: hidden;
 				overflow-x: hidden;
+			}
+			#minbutton{
+				width: 100%;
+				height: 100%;
+				font-size: 40px;
+			}
+			#mindiv{
+				height: 4%;
 			}
 			#maininput{
 				background-color:black;
@@ -59,7 +67,7 @@
 				border-width: 2px;
 			}
 			#displaydiv {
-				height: 70%;
+				height: 66%;
 				overflow:scroll;
 				background-color: black;
 				color: white;
@@ -99,16 +107,37 @@
 				left:0px;
 				background-color: white;
 			}
+			#fullsvg{
+				position: fixed;
+				top: 2%;
+				right: 30px;
+			}
+			#fullscreenbutton {opacity: 0}
+			#fullscreenbackground {opacity: 0.7}
+			.fullscreenline {opacity: 0.5}
 		</style>
 	</head>
 	<body>
+		<svg id='fullsvg' width='100' height='100'>
+			<g id="fullbutton">
+					<rect id="fullscreenbackground" rx="20" ry="20" width="100" height="100" fill="grey"></rect>
+					<line class="fullscreenline" y1="60" x1="60" y2="80" x2="80" stroke-width="10" stroke="white"></line>
+					<line class="fullscreenline" y1="40" x1="40" y2="20" x2="20" stroke-width="10" stroke="white"></line>
+					<line class="fullscreenline" y1="40" x1="60" y2="20" x2="80" stroke-width="10" stroke="white"></line>
+					<line class="fullscreenline" y1="60" x1="40" y2="80" x2="20" stroke-width="10" stroke="white"></line>
+					<rect id="fullscreenbutton" rx="20" ry="20" width="100" height="100"></rect>
+			</g>
+		</svg>
 		<div id="displaydiv"></div>
-		<div id="inputdiv">
-			<input id="maininput" type="text"></input>
-			<button id="gobutton">Enter</button>
-		</div>
-		<div id="objectdiv"></div>
-		<div id="buttondiv"></div>
+		<div id="mindiv"><button id="minbutton">&#9660;</button></div>
+		<span id="inputspan">
+			<div id="inputdiv">
+				<input id="maininput" type="text"></input>
+				<button id="gobutton">Enter</button>
+			</div>
+			<div id="objectdiv"></div>
+			<div id="buttondiv"></div>
+		</span>
 		<script>
 			document.body.onload = function(){
 				//Sets default object string definition. The tags around the code are necessary to replace the string on download
@@ -270,6 +299,7 @@ _init:function(){
 /***</DEFAULT OBJECT>***/			
 				
 				//Sets up variables for objects
+				let body = document.body;
 				let bdiv = document.getElementById("buttondiv");
 				let odiv = document.getElementById("objectdiv");
 				let ddiv = document.getElementById("displaydiv");
@@ -289,7 +319,23 @@ _init:function(){
 				mInput.focus();	//Puts the cursor in the text input
 				document.onkeydown = onkeypress;
 				document.getElementById("gobutton").onclick = function(){mInput.focus();onkeypress({keyCode:13});};
-					
+				document.getElementById("fullbutton").onclick = toggleFullScreen;
+				document.getElementById("minbutton").onclick = togglemin;
+				
+				function togglemin(){
+					let minbutton = document.getElementById("minbutton");
+					console.log(minbutton.innerText);
+					if (minbutton.innerText = '' || minbutton.innerText != "\u25B2"){
+						document.getElementById("inputspan").style.display = "none";
+						document.getElementById("displaydiv").style.height = "96%";
+						minbutton.innerText = "\u25B2";
+					} else {
+						document.getElementById("inputspan").style.display = "inherit";
+						document.getElementById("displaydiv").style.height = "66%";
+						minbutton.innerText = "\u25BC";
+					}
+				};
+
 				//Creates main 'proj' object from the server file indicated in get parameter
 				if (getUrlParameter("source")){//Uses servers source for object
 					let save_name = getUrlParameter("source").replace("%3d", "=");
@@ -326,6 +372,9 @@ _init:function(){
 					addobj();
 					addfun();
 				};
+				
+				//Utility Functions
+
 				//Runs initialization code from the javascript object
 				function doInit(){
 					if(proj.hasOwnProperty("init")){proj.init()};
@@ -669,6 +718,17 @@ _init:function(){
 					})(navigator.userAgent||navigator.vendor||window.opera);
 					return check;
 				};
+				function toggleFullScreen(){
+					let doc = window.document;
+					let docEl = doc.documentElement;
+					let requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+					let cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+					if (doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement){
+							cancelFullScreen.call(doc);
+					} else {
+							requestFullScreen.call(docEl);
+					};
+				}
 			};
 		</script>
 	</body>

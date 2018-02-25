@@ -22,12 +22,9 @@
 			name = pages[0].site; 
 			reader = that[pages[0].reader];
 			style = pages[0].style;
-//			that._callback(name);
-			$.post( "../proj/seek.aspx", {
-				pagename: name 
+			$.post( "http://rest-api-dev.us-east-1.elasticbeanstalk.com/v1/rss/?" + name, {
 			}).done(function(msg){
-//				that._callback("<div style='" + style + "'>" + reader(msg) + "</div>");  //escapeHTML(msg) + "</div>"); 
-				that._callback(reader(msg));  //escapeHTML(msg) + "</div>"); 
+				that._callback(reader(msg));
 				if (page_address.length > 1){
 					that.get_page(page_address.slice(1,page_address.length));
 				}
@@ -36,8 +33,7 @@
 			}); 
 		} else {
 			name = page_address; 
-			$.post( "../proj/seek.aspx", {
-				pagename: name 
+			$.post( "http://rest-api-dev.us-east-1.elasticbeanstalk.com/v1/rss/?" + name, {
 			}).done(function(msg){ 
 				that._callback("<div style='overflow-y:scroll;height:300px;width:90%;border-color: white;border-style: solid;margin: 0px 50px 0px 50px;'>" + that.escapeHTML(msg) + "</div>");  //escapeHTML(msg) + "</div>"); 
 			}).fail(function(xhr, status, error) { 

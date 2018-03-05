@@ -1,5 +1,4 @@
-<html>
-	<head>
+<html><body><style type="text/css" id="night-mode-pro-style"></style><link type="text/css" rel="stylesheet" id="night-mode-pro-link"><head>
 		<style>
 			body{
 				overflow:hidden;
@@ -119,7 +118,7 @@
 		</style>
 	</head>
 	<body>
-		<svg id='fullsvg' width='100' height='100'>
+		<svg id="fullsvg" width="100" height="100">
 			<g id="fullbutton">
 					<rect id="fullscreenbackground" rx="20" ry="20" width="100" height="100" fill="grey"></rect>
 					<line class="fullscreenline" y1="60" x1="60" y2="80" x2="80" stroke-width="10" stroke="white"></line>
@@ -129,135 +128,164 @@
 					<rect id="fullscreenbutton" rx="20" ry="20" width="100" height="100"></rect>
 			</g>
 		</svg>
-		<div id="displaydiv"></div>
-		<div id="mindiv"><button id="minbutton">&#9660;</button></div>
-		<span id="inputspan">
+		<div id="displaydiv" style="height: 66%;"></div>
+		<div id="mindiv"><button id="minbutton">▼</button></div>
+		<span id="inputspan" style="display: inherit;">
 			<div id="inputdiv">
-				<input id="maininput" type="text"></input>
+				<input id="maininput" type="text">
 				<button id="gobutton">Enter</button>
 			</div>
-			<div id="objectdiv"></div>
-			<div id="buttondiv"></div>
+			<div id="objectdiv"><button class="objButton">feeds</button><button class="objButton">sort order</button><button class="objButton">style</button><button class="scrollButtonRight" id="objectScrollButtonRight" style="visibility: hidden;">&gt;</button><button class="scrollButtonLeft" id="objectScrollButtonLeft" style="visibility: hidden;">&lt;</button></div>
+			<div id="buttondiv"><button class="funcButton">load feeds</button><button class="funcButton">edit</button><button class="funcButton">save to server</button><button class="funcButton">download</button><button class="scrollButtonRight" id="buttonScrollButtonRight" style="visibility: hidden;">&gt;</button><button class="scrollButtonLeft" id="buttonScrollButtonLeft" style="visibility: hidden;">&lt;</button></div>
 		</span>
 		<script>
 			document.body.onload = function(){
 				//Sets default object string definition. The tags around the code are necessary to replace the string on download
 /***<DEFAULT OBJECT>***/
-projStr = `{
+projStr = `proj = {"feeds":[{"name":"reddit cryptocurrency","address":"https://www.reddit.com/r/CryptoCurrency.rss","alias":"Rd"},{"name":"twitter cryptocurrency","address":"http://twitrss.me/twitter_user_to_rss/?user=cryptocurrent","alias":"Tw"},{"name":"cryptocurrency news","address":"https://cryptocurrencynews.com/feed/","alias":"Cn"}],
+"sort order":[{"keyword":"ether","points":"+100"},{"keyword":"cardano","points":"+200"},{"keyword":"bitcoin","points":"+100"},{"keyword":"iota","points":"+200"}],
+"style":"#displaydiv {height:70%;color:black; background: linear-gradient(to right, white, thistle);} #maininput {color:black; background-color: white}#inputdiv {height:10%;border-top:2px solid black}#objectdiv {height:10%;padding:10 10 0 10;}#buttondiv {height:10%;padding:0 0 0 10}",
+"load feeds":function (){
+		that = this;
+		doDisplay("<br/>Activated Web Platform<br/><br/><br/><span id='newsspan'></span>", "displaydiv", 1);
+		this.feeds.forEach(function(feed){
+			that._get_feed(feed.alias, feed.address);
+		});
+	},
+"edit":function (name="sort order"){
+	addfun({save:function(){this._add(name, document.getElementById('editarea').value); doDisplay("edited")},cancel:function(){doDisplay("",null,1);addobj();addfun();}});
+	addobj({});
+	doDisplay("<textarea style='color:black;background-color:white' id='editarea' maxlength=10000/>", "displaydiv", 1);
+	document.getElementById('editarea').value = JSON.stringify(this[name], null, 5);
+},
+"save to server":function (save_name="dash_"){
+		//saves the project object to the server
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", '../proj/proj_data.aspx', true);
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.onreadystatechange = function() {//Call a function when the state changes.
+			if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+				doDisplay("save: " + xhr.responseText);
+			}
+		}
+		xhr.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString())); 
+		
+		var xhr2 = new XMLHttpRequest();
+		xhr2.open("POST", "../proj/proj_backup.aspx", true);
+		xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr2.onreadystatechange = function() {//Call a function when the state changes.
+			if(xhr2.readyState == XMLHttpRequest.DONE && xhr2.status == 200) {
+				doDisplay("backedup" + xhr2.responseText);
+			}
+		}
+		xhr2.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString())); 
+		let newloc = window.location.href.substring(0, window.location.href.indexOf(".html")+5) + "?source=" + save_name
+		window.location.href = newloc;
+		return "save attempted: " + newloc;
+	},
+"_init":function (){
+		//set up style white background
+		var sheet = document.createElement('style')
+		sheet.innerHTML = this.style;
+			;
+		document.body.appendChild(sheet);
+		//get the feeds
+		that = this;
+		this["load feeds"]();
+		document.getElementById("minbutton").click();
+	},
+"_get_feed":function (page_alias, page_address){ 
+		let that = this;
+		let xhr = new XMLHttpRequest();
+		xhr.open("GET", "http://rest-api-dev.us-east-1.elasticbeanstalk.com/v1/rss/?" + page_address, true);
+//		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.onreadystatechange = function() {//Call a function when the state changes.
+			if(xhr.readyState == XMLHttpRequest.DONE) {
+				if (xhr.status == 200){
+					that._readRss(page_alias, xhr.responseText);
+				} else {
+					doDisplay(page_alias + " failed");
+				}
+			}
+		}
+		xhr.send(); 
+		return("...loading..."); 
+	},
+"_readRss":function (page_alias, text){
+		let parser = new DOMParser();
+		let xmlDoc = parser.parseFromString(text,"text/xml");
+		let entries = [].slice.call(xmlDoc.getElementsByTagName("entry")).concat([].slice.call(xmlDoc.getElementsByTagName("item")));	
+		let results = "";
+		let moreresults = "";
+		let addcount = 0;
+		let linkNodes = [];
+		for (let e = 0; e < entries.length; e++){
+			let childNodes = [].slice.call(entries[e].childNodes);
+			let textNode = "";
+			let linkNode = "";
+			for (let c = 0; c < childNodes.length; c++){
+				if (childNodes[c].nodeName == "title"){
+					textNode = textNode + childNodes[c].textContent;
+				}
+				if (childNodes[c].nodeName == "link"){
+					linkNode = linkNode + childNodes[c].textContent;
+					if (childNodes[c].hasAttribute("href")){
+						linkNode = linkNode + childNodes[c].getAttribute("href");
+					}
+					linkNodes.push(linkNode);
+				}
+			}
+			//adds rank calculation based on sort additions
+			let rank = 0;
+			for (let r = 0; r < this["sort order"].length; r++){
+				if (textNode.toUpperCase().indexOf(this["sort order"][r]["keyword"].toUpperCase()) >= 0){
+					rank= rank + eval(this["sort order"][r]["points"]);
+				}
+			};
 
-add:function (name, def){
+			textNode = "(" + rank + "pts) " + textNode;
+			let title = page_alias + "-" + e;
+			this._addPanel(rank, textNode, title, linkNode)
+		}
+	},
+"_addPanel":function (rank, textNode, title, linkNode){
+		let newDivStr = "<div data-rank='" + rank + "'"
+			+ "style='overflow-y:scroll;"
+			+ "background-color:white;overflow: auto;display:inline-block;border-color:black;border-style:dashed;width:97%;padding:10px 2px 10px 2px;margin:5px 5px 5px 5px;'>"
+			+ "<div style='background-color:aliceblue;float:left;display:block;border-color:black;border-style:solid;border-radius:50%;height:75px;width:100px;text-align:center;border-style:dashed;margin:5px 10px 10px 5px;padding:45px 10px 10px 5px;'>"
+			+ title + "</div><span id='" + title + "'>"  + "<div><span>"
+			+ textNode	+ " <a href='" + linkNode + "' target='_blank'>" + "[link]</a><a style='color:red' onclick='this.parentNode.parentNode.parentNode.parentNode.style.display = \\"none\\"'>[x]</a>" 
+			+ "</span></div>" + "</span></div><br/><br/>";
+		let newsspan = document.getElementById("newsspan");
+		let newses = newsspan.children
+		let nlen = newses.length
+		if (nlen == 0){
+			doDisplay(newDivStr, "newsspan", 0)
+		} else {
+			for (n = 0; n < nlen; n++){
+				if (newses[n].tagName == "DIV" && newses[n].getAttribute("data-rank") <= rank){
+					let newBr1 = document.createElement("BR");
+					let newBr2 = document.createElement("BR");
+					let div = document.createElement('div');
+					div.innerHTML = newDivStr.trim();
+					let newDiv = div.firstChild; 
+					newsspan.insertBefore(newBr1,newses[n]);
+					newsspan.insertBefore(newBr2,newBr1);
+					newsspan.insertBefore(newDiv,newBr2);
+
+					break;
+				}
+			}
+		}
+	},
+"_add":function (name, def){
 	that = this;
 	that[name] = eval("("+def+")");
 	addfun(); 
 	addobj();
 	return that[name];
 },
-remove:function (name){
-	that = this;
-	delete that[name];
-	addfun(); 
-	addobj();
-	return name;
-},
-rename:function (oldname, newname){
-	that = this;
-	that[newname] = that[oldname];
-	delete that[oldname];
-	addfun(); 
-	addobj();
-	return oldname + " > " + newname
-},
-"edit":function (name){
-	addfun({
-		save:function(){
-			doDisplay(this.add(name, document.getElementById('editarea').value));
-			doDisplay("edited " + name,null,1);addobj();
-		},
-		cancel:function(){
-			doDisplay("",null,1);addobj();
-			addfun();
-		}
-	});
-	doDisplay("<textarea id='editarea' maxlength=10000/>", null, 1);
-	if (typeof this[name] == 'function'){
-		document.getElementById('editarea').value = this[name].toString();
-	} else {
-		document.getElementById('editarea').value = JSON.stringify(this[name]);
-	};
-},
-load_local:function (load_name="default"){
-	localstring = localStorage.getItem(load_name);
-	if (localstring == null) {
-		return "local file " + load_name + " not found";						
-	} else {
-		eval("proj = " + localstring);
-		addfun(); 
-		addobj();
-		return "loaded local " + load_name;
-	};
-},
-save_local:function (save_name="default"){
-	localStorage.setItem(save_name,this._toString())
-	return "saved local " + save_name;
-},
-save_server:function (save_name=getUrlParameter("source")||""){
-	//saves the project object to the server
-	let that = this;
-	var xhr2 = new XMLHttpRequest();
-	xhr2.open("POST", "../proj/proj_backup.aspx", true);
-	xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhr2.onreadystatechange = function() {//Call a function when the state changes.
-		if(xhr2.readyState == XMLHttpRequest.DONE && xhr2.status == 200) {
-			doDisplay("backedup" + xhr2.responseText);
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST", '../proj/proj_data.aspx', true);
-			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xhr.onreadystatechange = function() {//Call a function when the state changes.
-				if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-					doDisplay("saved: " + xhr.responseText);
-					let newloc = window.location.href.substring(0, window.location.href.indexOf(".html")+5) + "?source=" + save_name
-					window.location.href = newloc;
-				} else if (xhr.readyState == XMLHttpRequest.DONE && xhr.status !== 0) {
-					doDisplay("save failed: " + xhr.responseText);			
-				}
-			}
-			xhr.send("codename=" + save_name + "&data=" + encodeURIComponent(that._toString())); 
-		} else if (xhr2.readyState == XMLHttpRequest.DONE && xhr2.status !== 0) {
-			doDisplay("save failed: " + xhr.responseText);			
-		}
-	};
-	xhr2.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString())); 
-
-	return "save attempted";
-},
-safesave:function (save_name=getUrlParameter("source")||""){
-	let that = this;
-	let request = new XMLHttpRequest();
-	request.open("GET", "../JsonFiles/proj_data_" + save_name + ".json?rand=" + Date.now());
-	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");	
-	request.onreadystatechange = function() {//Call a function when the state changes.
-		if(request.readyState == XMLHttpRequest.DONE) {
-			if (request.status == 200){
-				oldProjStr = request.responseText
-				if (projStr == oldProjStr){
-					that.save_server(save_name);
-				} else {
-					doDisplay("Cannot Save. Conflicting Change Detected.");
-				}
-			} else {
-				doDisplay(param + " failed");
-			}
-		}
-	}
-	request.send(null);
-},
-load_js:function (javascript_object_string="{do:'nothing'}"){
-	proj = eval("("+javascript_object_string+")");
-	addfun(); 
-	addobj();
-	return "loaded js: " + javascript_object_string;
-},
-download:function(filename="newwp.html") {
+"download":function (filename="dashboard.html") {
 	document.getElementById('displaydiv').innerHTML = '';		
 	let text = document.getElementsByTagName('html')[0].innerHTML;
 	let startnum = text.indexOf("/***<DEFAULT" + " OBJECT>***/") + ("/***<DEFAULT" + " OBJECT>***/").length + 1;
@@ -276,28 +304,24 @@ download:function(filename="newwp.html") {
 	}
 	return("downloaded");
 },
-_toString:function(){
-	str = "proj = {";
-	for (var property in this) {
-		if (this.hasOwnProperty(property)){
-			if (typeof this[property] == "object"){
-				str += '"' + property + '":' + JSON.stringify(this[property]) + ',\\n';	
-			} else if (typeof this[property] == "function") {
-				str += '"' + property + '":' + this[property] + ',\\n';
-			} else {
-				str += '"' + property + '":"' + this[property] + '",\\n';
+"_toString":function (){
+		str = "proj = {";
+		for (var property in this) {
+			if (this.hasOwnProperty(property)){
+				if (typeof this[property] == "object"){
+					str += '"' + property + '":' + JSON.stringify(this[property]) + ',\\n';	
+				} else if (typeof this[property] == "function") {
+					str += '"' + property + '":' + this[property] + ',\\n';
+				} else {
+					str += '"' + property + '":"' + this[property] + '",\\n';
+				}
 			}
 		}
-	}
-	str = str.substring(0, str.length - 2);
-	str += "};";
-	return str;
-},
-_init:function(){
-}
-
-}`;
-/***</DEFAULT OBJECT>***/			
+		str = str.substring(0, str.length - 2);
+		str += "};";
+		str += "proj = proj;";
+		return str;
+	}};proj = proj;`/***</DEFAULT OBJECT>***/			
 				
 				//Sets up variables for objects
 				let body = document.body;
@@ -730,5 +754,6 @@ _init:function(){
 				};
 			};
 		</script>
-	</body>
-</html>
+	
+
+<style>#displaydiv {height:70%;color:black; background: linear-gradient(to right, white, thistle);} #maininput {color:black; background-color: white}#inputdiv {height:10%;border-top:2px solid black}#objectdiv {height:10%;padding:10 10 0 10;}#buttondiv {height:10%;padding:0 0 0 10}</style></body></html>

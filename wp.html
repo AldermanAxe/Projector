@@ -1,14 +1,18 @@
 <html>
 	<head>
 		<style>
+
 			body{
 				overflow:hidden;
 				overflow-x:hidden;
-				font-size: 30px;
+				font-size:2vmin;
 				font-family: "Lucida Console", Monaco, monospace;
+				width: 100%;
+				padding: 0 0 0 0;
+				margin: 0 0 0 0;
 			}
 			textarea{
-				font-size: 30px;
+				font-size: 4vmax;
 				font-family: "Lucida Console", Monaco, monospace;
 				width:100%;
 				height:80%;
@@ -41,7 +45,7 @@
 			#minbutton{
 				width: 100%;
 				height: 100%;
-				font-size: 30px;
+				font-size:2vmin;
 				background-color: white;
 			}
 			#mindiv{
@@ -52,14 +56,14 @@
 				height:100%;
 				color:white;
 				display:inline;
-				font-size: 30px;
+				font-size:2vmax;
 				top:0;
 				width:90%;
 				padding:0 0 0 0;
 				margin:0 0 0 0;
 			}
 			#gobutton{
-				font-size: 30px;
+				font-size:2vmax;
 				float:right;
 				display:inline;
 				height:99%;
@@ -85,33 +89,29 @@
 				white-space: normal;
 			}
 			.objButton, .funcButton{
-				height: 85%;
+				height: 80%;
 				padding: 5px 15px 5px 15px;
 				margin: 10px 5px 1px 5px;
-				font-size: 30px;
+				font-size:2vmax;
+			}
+			.scrollButton{
+				height: 10%;
+				padding: 5px 15px 5px 15px;
+				margin: 0px 0px 0px 0px;
+				font-size:2vmin;
+				position:absolute;
+				background-color: white;
 			}
 			.scrollButtonRight{
-				height: 9%;
-				padding: 5px 15px 5px 15px;
-				margin: 1px 0px 1px 0px;
-				font-size: 30px;
-				position:absolute;
 				right:0px;
-				background-color: white;
 			}
 			.scrollButtonLeft{
-				height: 9%;
-				padding: 5px 15px 5px 15px;
-				margin: 1px 0px 1px 0px;
-				font-size: 30px;
-				position:absolute;
 				left:0px;
-				background-color: white;
 			}
 			#fullsvg{
 				position: fixed;
 				top: 2%;
-				right: 30px;
+				right: 2%;
 			}
 			#fullscreenbutton {opacity: 0}
 			#fullscreenbackground {opacity: 0.7}
@@ -119,14 +119,14 @@
 		</style>
 	</head>
 	<body>
-		<svg id='fullsvg' width='100' height='100'>
+		<svg id='fullsvg' width='10vmin' height='10vmin'>
 			<g id="fullbutton">
-					<rect id="fullscreenbackground" rx="20" ry="20" width="100" height="100" fill="grey"></rect>
-					<line class="fullscreenline" y1="60" x1="60" y2="80" x2="80" stroke-width="10" stroke="white"></line>
-					<line class="fullscreenline" y1="40" x1="40" y2="20" x2="20" stroke-width="10" stroke="white"></line>
-					<line class="fullscreenline" y1="40" x1="60" y2="20" x2="80" stroke-width="10" stroke="white"></line>
-					<line class="fullscreenline" y1="60" x1="40" y2="80" x2="20" stroke-width="10" stroke="white"></line>
-					<rect id="fullscreenbutton" rx="20" ry="20" width="100" height="100"></rect>
+					<rect id="fullscreenbackground" rx="30%" ry="30%" width="100%" height="100%" fill="grey"></rect>
+					<line class="fullscreenline" y1="60%" x1="60%" y2="80%" x2="80%" stroke-width="10%" stroke="white"></line>
+					<line class="fullscreenline" y1="40%" x1="40%" y2="20%" x2="20%" stroke-width="10%" stroke="white"></line>
+					<line class="fullscreenline" y1="40%" x1="60%" y2="20%" x2="80%" stroke-width="10%" stroke="white"></line>
+					<line class="fullscreenline" y1="60%" x1="40%" y2="80%" x2="20%" stroke-width="10%" stroke="white"></line>
+					<rect id="fullscreenbutton" rx="30%" ry="30%" width="100%" height="100%"></rect>
 			</g>
 		</svg>
 		<div id="displaydiv"></div>
@@ -285,7 +285,7 @@ _toString:function(){
 			} else if (typeof this[property] == "function") {
 				str += '"' + property + '":' + this[property] + ',\\n';
 			} else {
-				str += '"' + property + '":"' + this[property] + '",\\n';
+				str += '"' + property + '":\`' + this[property] + '\`,\\n';
 			}
 		}
 	}
@@ -316,7 +316,7 @@ _init:function(){
 				ddiv.innerHTML += '<br/>Activated Web Platform<br/><br/>';
 				
 				//Initializes Page Setup, Adds Input area Keypress and Enter Button Behavior
-				if (isMobile()) {ddiv.style.fontSize = "30px";}; //Changes font size for mobile
+//				if (isMobile()) {ddiv.style.fontSize = "2vw";}; //Changes font size for mobile
 				mInput.focus();	//Puts the cursor in the text input
 				document.onkeydown = onkeypress;
 				document.getElementById("gobutton").onclick = function(){mInput.focus();onkeypress({keyCode:13});};
@@ -327,7 +327,7 @@ _init:function(){
 				if (getUrlParameter("source")){//Uses servers source for object
 					let save_name = getUrlParameter("source").replace("%3d", "=");
 					let request = new XMLHttpRequest();
-					request.open("GET", "../JsonFiles/proj_data_" + save_name + ".json?rand=" + Date.now());  // `false` makes the request synchronous
+					request.open("GET", "../JsonFiles/proj_data_" + save_name + ".json?rand=" + Date.now());
 					request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");	
 					request.onreadystatechange = function() {//Call a function when the state changes.
 						if(request.readyState == XMLHttpRequest.DONE) {
@@ -356,8 +356,8 @@ _init:function(){
 					doInit();
 				};
 				window.onresize = function(event) {
-					addobj();
-					addfun();
+//					addobj();
+//					addfun();
 				};
 				
 				//Utility Functions
@@ -464,15 +464,21 @@ _init:function(){
 								let b = document.createElement("button");
 								b.className = "objButton";
 								b.innerText = k;
-								b.onclick = eval(`x = function(){
-									runFun(function(){return '<pre>' + JSON.stringify(objs['` + k + `'], null, 5) + '</pre>';});
-								}`);
+								if (typeof objs[k] != "string") {
+									b.onclick = eval(`x = function(){
+										runFun(function(){return '<pre>' + JSON.stringify(objs['` + k + `'], null, 5) + '</pre>';});
+									}`);
+								} else {
+									b.onclick = eval(`x = function(){
+										runFun(function(){return '<pre>' + objs['` + k + `'] + '</pre>';});
+									}`);									
+								}
 								odiv.appendChild(b);
 							}
 						}
 					};
 					let b1 = document.createElement("button");
-					b1.className = "scrollButtonRight";
+					b1.className = "scrollButtonRight scrollButton";
 					b1.id = "objectScrollButtonRight";
 					b1.innerText = ">";
 					b1.onclick = eval(`x = function(){
@@ -488,7 +494,7 @@ _init:function(){
 						b1.style.visibility = 'hidden';
 					};
 					let b2 = document.createElement("button");
-					b2.className = "scrollButtonLeft";
+					b2.className = "scrollButtonLeft scrollButton";
 					b2.id = "objectScrollButtonLeft";
 					b2.id = "objectScrollButtonLeft";
 					b2.innerText = "<";
@@ -539,7 +545,7 @@ _init:function(){
 						}
 					};
 					let b1 = document.createElement("button");
-					b1.className = "scrollButtonRight";
+					b1.className = "scrollButtonRight scrollButton";
 					b1.id = "buttonScrollButtonRight";
 					b1.innerText = ">";
 					b1.onclick = eval(`x = function(){
@@ -555,7 +561,7 @@ _init:function(){
 						b1.style.visibility = 'hidden';
 					};
 					let b2 = document.createElement("button");
-					b2.className = "scrollButtonLeft";
+					b2.className = "scrollButtonLeft scrollButton";
 					b2.id = "buttonScrollButtonLeft";
 					b2.innerText = "<";
 					b2.onclick = eval(`x = function(){

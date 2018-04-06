@@ -1,57 +1,72 @@
 <html>
 	<head>
 		<meta name="theme-color" content="black">
+		<title>Gamma Web Platform</title>
+		<link href="data:image/png;base64,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" rel="icon" type="image/x-icon" /> 
 		<style>
 			body{
 				overflow:hidden;
 				overflow-x:hidden;
-				font-size:2vmin;
+				font-size:3vmin;
 				font-family: "Lucida Console", Monaco, monospace;
 				width: 100%;
 				padding: 0 0 0 0;
-				margin: 0 0 0 0;}
+				margin: 0 0 0 0;
+				}
 			textarea{
 				width:100%;
 				height:80%;
 				background-color:black;
-				color:white;}
-			input, textarea, select, button, table{
-				font-size:3.5vmin;}
+				color:white;
+				}
+			input, textarea, select, button{
+				font-size:3vmin;
+				}
 			a{
-				cursor: hand;}
+				cursor: hand;
+				}
 			input[type=checkbox]{/* Double-sized Checkboxes */
 				-ms-transform: scale(2); /* IE */
 				-moz-transform: scale(2); /* FF */
 				-webkit-transform: scale(2); /* Safari and Chrome */
 				-o-transform: scale(2); /* Opera */
-				padding: 10px;}
+				padding: 10px;
+				}
 			.objButton, .funcButton{
 				height: 80%;
 				padding: 5px 15px 5px 15px;
-				margin: 10px 5px 1px 5px;}
+				margin: 10px 5px 1px 5px;
+				}
 			.scrollButton{
 				height: 10%;
 				padding: 5px 15px 5px 15px;
 				margin: 0px -3px 0px -3px;
 				position:absolute;
-				background-color: white;}
+				background-color: white;
+				}
 			.scrollButtonRight{
-				right:0px;}
+				right:0px;
+				}
 			.scrollButtonLeft{
-				left:0px;}
+				left:0px;
+				}
 			.fullscreenline {
-				opacity: 0.5}
+				opacity: 0.5
+				}
 			.editarea {
 				color:black;
-				background-color:white}
+				background-color:white
+				}
 			#objectdiv, #buttondiv{
 				white-space:nowrap;
 				overflow:scroll;
 				width:100%;
-				height: 10%;}
+				height: 10%;
+				}
 			#objectdiv::-webkit-scrollbar, #buttondiv::-webkit-scrollbar{
 				width: 0px;
-				background: transparent; /* make scrollbar transparent */}
+				background: transparent; /* make scrollbar transparent */
+				}
 			#inputdiv{
 				height: 8%;
 				overflow:scroll;
@@ -59,14 +74,19 @@
 				color: white;
 				width: 100%;
 				overflow-y: hidden;
-				overflow-x: hidden;}
+				overflow-x: hidden;
+				}
 			#minbutton{
 				width: 100%;
 				height: 100%;
-				background-color: white;}
+				background-color: white;
+				}
 			#mindiv{
+				border-right-style: none;
+				border-left-style: none;
 				width: 100%;
-				height: 4%;}
+				height: 4%;
+				}
 			#maininput{
 				background-color:black;
 				height:100%;
@@ -75,14 +95,16 @@
 				top:0;
 				width:90%;
 				padding:0 0 0 0;
-				margin:0 0 0 0;}
+				margin:0 0 0 0;
+				}
 			#gobutton{
 				float:right;
 				display:inline;
 				height:99%;
 				width:10%;
 				border-color: white;
-				border-width: 2px;}
+				border-width: 2px;
+				}
 			#displaydiv {
 				height: 66%;
 				overflow:scroll;
@@ -90,81 +112,84 @@
 				color: white;
 				overflow-y: scroll;
 				overflow-x: hidden;
-				/*for word wrap*/
-				white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
-				white-space: -webkit-pre-wrap; /*Chrome & Safari */
-				white-space: -pre-wrap;      /* Opera 4-6 */
-				white-space: -o-pre-wrap;    /* Opera 7 */
-				white-space: pre-wrap;       /* css-3 */
-				word-wrap: break-word;       /* Internet Explorer 5.5+ */
-				word-break: break-all;
-				white-space: normal;}
+				word-wrap: normal;       /* Internet Explorer 5.5+ */
+				}
 			#fullsvg{
 				z-index: 100;
 				position: fixed;
 				top: 0%;
-				right: 0%;}
+				right: 0%;
+				}
 			#fullscreenbutton {
-				opacity: 0}
+				opacity: 0
+				}
 			#fullscreenbackground {
-				opacity: 0.7}
-		</style>
-	</head>
+				opacity: 0.7
+				}
+			</style>
+		</head>
 	<body>
 		<svg id='fullsvg' width='10vmin' height='10vmin'>
 			<g id="fullbutton">
-					<rect id="fullscreenbackground" rx="30%" ry="30%" width="100%" height="100%" fill="grey"></rect>
-					<line class="fullscreenline" y1="20%" x1="20%" y2="20%" x2="40%" stroke-width="10%" stroke="white"></line>
-					<line class="fullscreenline" y1="20%" x1="60%" y2="20%" x2="80%" stroke-width="10%" stroke="white"></line>
-					<line class="fullscreenline" y1="20%" x1="80%" y2="40%" x2="80%" stroke-width="10%" stroke="white"></line>
-					<line class="fullscreenline" y1="80%" x1="60%" y2="80%" x2="80%" stroke-width="10%" stroke="white"></line>
-					<line class="fullscreenline" y1="60%" x1="80%" y2="80%" x2="80%" stroke-width="10%" stroke="white"></line>
-					<line class="fullscreenline" y1="80%" x1="40%" y2="80%" x2="20%" stroke-width="10%" stroke="white"></line>
-					<line class="fullscreenline" y1="80%" x1="20%" y2="60%" x2="20%" stroke-width="10%" stroke="white"></line>
-					<line class="fullscreenline" y1="40%" x1="20%" y2="20%" x2="20%" stroke-width="10%" stroke="white"></line>
-					<rect id="fullscreenbutton" rx="30%" ry="30%" width="100%" height="100%"></rect>
-			</g>
-		</svg>
+				<rect id="fullscreenbackground" rx="30%" ry="30%" width="100%" height="100%" fill="grey"></rect>
+				<line class="fullscreenline" y1="20%" x1="15%" y2="20%" x2="40%" stroke-width="10%" stroke="white"></line>
+				<line class="fullscreenline" y1="20%" x1="60%" y2="20%" x2="85%" stroke-width="10%" stroke="white"></line>
+				<line class="fullscreenline" y1="25%" x1="80%" y2="40%" x2="80%" stroke-width="10%" stroke="white"></line>
+				<line class="fullscreenline" y1="80%" x1="60%" y2="80%" x2="85%" stroke-width="10%" stroke="white"></line>
+				<line class="fullscreenline" y1="60%" x1="80%" y2="75%" x2="80%" stroke-width="10%" stroke="white"></line>
+				<line class="fullscreenline" y1="80%" x1="40%" y2="80%" x2="15%" stroke-width="10%" stroke="white"></line>
+				<line class="fullscreenline" y1="75%" x1="20%" y2="60%" x2="20%" stroke-width="10%" stroke="white"></line>
+				<line class="fullscreenline" y1="40%" x1="20%" y2="25%" x2="20%" stroke-width="10%" stroke="white"></line>
+				<rect id="fullscreenbutton" rx="30%" ry="30%" width="100%" height="100%"></rect>
+				</g>
+			</svg>
 		<div id="displaydiv"></div>
 		<div id="mindiv"><button id="minbutton">&#9660;</button></div>
 		<span id="inputspan">
 			<div id="inputdiv">
 				<input id="maininput" type="text"></input>
 				<button id="gobutton">Enter</button>
-			</div>
+				</div>
 			<div id="objectdiv"></div>
 			<div id="buttondiv"></div>
-		</span>
+			</span>
 <script>
 document.body.onload = function(){
 //Sets default object string definition. The comment tags around the code are necessary to replace the string on download				
 /***<DEFAULT OBJECT>***/
-	projStr = `{
+projStr = `{
 	add:function (name, def){
 		that = this;
 		that[name] = eval("("+def+")");
 		addfun();
 		addobj();
-		return that[name];},
+		return that[name];
+		},
 	remove:function (name){
 		that = this;
 		delete that[name];
 		addfun();
 		addobj();
-		return name;},
+		return name;
+		},
 	rename:function (oldname, newname){
 		that = this;
 		that[newname] = that[oldname];
 		delete that[oldname];
 		addfun();
 		addobj();
-		return oldname + " > " + newname},
+		return oldname + " > " + newname
+		},
 	edit:function (name){
 		addfun({
 			save:function(){
-				doDisplay(this.add(name, document.getElementById('editarea').value));
-				doDisplay("edited " + name,null,1);addobj();
+				if (typeof this[name] == 'string') {
+				doDisplay(this._add(name, "\`" + document.getElementById('editarea').value + "\`"));
+				} else {
+					doDisplay(this._add(name, document.getElementById('editarea').value));
+				};
 			},
+			
 			cancel:function(){
 				doDisplay("",null,1);addobj();
 				addfun();
@@ -172,9 +197,12 @@ document.body.onload = function(){
 		doDisplay("<textarea class='editarea' id='editarea' maxlength=10000/>", null, 1);
 		if (typeof this[name] == 'function'){
 			document.getElementById('editarea').value = this[name].toString();
+		} else if (typeof this[name] == 'string'){
+			document.getElementById('editarea').value = this[name];	
 		} else {
-			document.getElementById('editarea').value = JSON.stringify(this[name]);
-		};},
+			document.getElementById('editarea').value = JSON.stringify(this[name], null, "\t");
+			};
+		},
 	load_local:function (load_name="default"){
 		localstring = localStorage.getItem(load_name);
 		if (localstring == null) {
@@ -184,10 +212,12 @@ document.body.onload = function(){
 			addfun();
 			addobj();
 			return "loaded local " + load_name;
-		};},
+			};
+		},
 	save_local:function (save_name="default"){
 		localStorage.setItem(save_name,this._toString())
-		return "saved local " + save_name;},
+		return "saved local " + save_name;
+		},
 	save_server:function (save_name=getUrlParameter("source")||""){
 		//saves the project object to the server
 		let that = this;
@@ -207,15 +237,16 @@ document.body.onload = function(){
 						window.location.href = newloc;
 					} else if (xhr.readyState == XMLHttpRequest.DONE && xhr.status !== 0) {
 						doDisplay("save failed: " + xhr.responseText);
+						}
 					}
-				}
 				xhr.send("codename=" + save_name + "&data=" + encodeURIComponent(that._toString()));
 			} else if (xhr2.readyState == XMLHttpRequest.DONE && xhr2.status !== 0) {
 				doDisplay("save failed: " + xhr.responseText);
-			}
-		};
+				}
+			};
 		xhr2.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString()));
-		return "save attempted";},
+		return "save attempted";
+		},
 	safesave:function (save_name=getUrlParameter("source")||""){
 		let that = this;
 		let request = new XMLHttpRequest();
@@ -232,15 +263,17 @@ document.body.onload = function(){
 					}
 				} else {
 					doDisplay(param + " failed");
+					}
 				}
 			}
-		}
-		request.send(null);},
+		request.send(null);
+		},
 	load_js:function (javascript_object_string="{do:'nothing'}"){
 		proj = eval("("+javascript_object_string+")");
 		addfun();
 		addobj();
-		return "loaded js: " + javascript_object_string;},
+		return "loaded js: " + javascript_object_string;
+		},
 	download:function(filename="newwp.html") {
 		document.getElementById('displaydiv').innerHTML = '';
 		let text = document.getElementsByTagName('html')[0].innerHTML;
@@ -254,11 +287,11 @@ document.body.onload = function(){
 			var event = document.createEvent('MouseEvents');
 			event.initEvent('click', true, true);
 			pom.dispatchEvent(event);
-		}
-		else {
+		} else {
 			pom.click();
-		}
-		return("downloaded");},
+			}
+		return("downloaded");
+		},
 	_toString:function(){
 		str = "proj = {\\n";
 		for (var property in this) {
@@ -275,13 +308,15 @@ document.body.onload = function(){
 					str += '"' + property + '":\`' + this[property] + '\`,\\n';
 				} else {
 					str += '"' + property + '":' + this[property] + ',\\n';
+					}
 				}
 			}
-		}
 		str = str.substring(0, str.length - 2);
 		str += "\\n};";
-		return str;},
-	_init:function(){}}`;
+		return str;
+		},
+	_init:function(){}
+	}`;
 /***</DEFAULT OBJECT>***/
 //Sets up global Variables required for some functions
 	let cmdHist = []; //variables for text input behavior
@@ -292,7 +327,7 @@ document.body.onload = function(){
 	let g_paramNames = [];
 //Initializes Page Setup
 	//Sends an initialization message
-	document.getElementById("displaydiv").innerHTML += '<br/>Activated Web Platform<br/><br/>';
+	document.getElementById("displaydiv").innerHTML += '<br/>Activated Web Platform<br/>';
 	document.getElementById("maininput").focus();	//Puts the cursor in the text input
 	document.onkeydown = onkeypress;
 	document.getElementById("gobutton").onclick = function(){document.getElementById("maininput").focus();onkeypress({keyCode:13});};
@@ -301,7 +336,7 @@ document.body.onload = function(){
 	window.onresize = function(event) { //temorarily disabled as it interferes with editing on mobile
 		//	addobj();
 		//	addfun();
-	};
+		};
 //Creates Main App Object
 	if (getUrlParameter("source")){//Uses servers source for object
 		let save_name = getUrlParameter("source").replace("%3d", "=");
@@ -318,9 +353,9 @@ document.body.onload = function(){
 					doInit();
 				} else {
 					doDisplay(param + " failed");
+					}
 				}
 			}
-		}
 		request.send(null);
 	} else if (getUrlParameter("object")){//Uses object in get parameter
 		projStr = getUrlParameter("object").replace("%3d", "=");
@@ -333,7 +368,7 @@ document.body.onload = function(){
 		addobj(); //Adds object and function buttons
 		addfun();
 		doInit();
-	};
+		};
 
 //Utility Functions
 	function doInit(){
@@ -350,7 +385,7 @@ document.body.onload = function(){
 				let ddiv = document.getElementById(element || 'displaydiv');
 				if (replace){
 					ddiv.innerHTML = "";
-				};
+					};
 				if (element){
 					if (doAppend){
 						let span = document.createElement('span');
@@ -358,13 +393,14 @@ document.body.onload = function(){
 						ddiv.appendChild(span);
 					} else {
 						ddiv.innerHTML += result;
-					}
+						}
 				} else {
-					ddiv.innerHTML += "[Result]<br/>" + result + '<br/><br/>';
+					ddiv.innerHTML += "" + result + '<br/><br/>';
 					ddiv.scrollTop = ddiv.scrollHeight;
+					};
 				};
 			};
-		};};
+		};
 	function onkeypress(inKey){
 		//An activity to take place on a key press in the input div
 		try {
@@ -374,7 +410,7 @@ document.body.onload = function(){
 					command = mInput.value;
 					if (command == ""){
 						throw "nothing entered";
-					};
+						};
 					if (command != cmdHist[cmdHist.length - 1]) cmdHist.push(command);
 					cmdHistPos = 0;
 					//check for strings beginning with '=' and treat them as an eval
@@ -389,21 +425,20 @@ document.body.onload = function(){
 							doDisplay(JSON.stringify(proj[command]));
 						} else {
 							doDisplay(proj[command].toString());
-						};
+							};
 					} else {
 						//convert input with spaces to function call syntax
-						if (command.substring(command.length - 1) != ")")
-						{
+						if (command.substring(command.length - 1) != ")"){
 							if(command.includes(" ")){
 								command = command.replace(" ", "(") + ")";
 							} else {
 								command += "()";
+								}
 							}
-						}
 						output = eval("proj." + command);
 						doDisplay(output);
 						mInput.value = "";
-					};
+						};
 					mInput.focus();
 				} else if  (inKey.keyCode == 38  && document.activeElement === mInput){ //up arrow to get prior commands
 					mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
@@ -413,22 +448,23 @@ document.body.onload = function(){
 					if (cmdHistPos >= 0 ) cmdHistPos--;
 					mInput.value = cmdHist[cmdHist.length - 1 - cmdHistPos];
 					mInput.focus();
-				};
+					};
 			} else if (inputMode.selected == inputMode.parameters){
 				if (inKey.keyCode == 13  && document.activeElement === mInput) { //when 'enter' is pressed
 					addval = mInput.value.substring(g_paramNames[g_args.length].length + 2 ,mInput.value.length);
 					runFun(g_parameterCallback, g_paramNames, g_args.concat([addval]));
+					};
 				};
-			};
 		} catch(e) {
 			doDisplay(e.toString());
-		}};
+			}
+		};
 	function addobj(objs){
 		//Adds object buttons. Ignore hidden objects beginning with '_'
 		let odiv = document.getElementById("objectdiv");
 		if (typeof objs == 'undefined'){
 			objs = proj;
-		}
+			}
 		odiv.innerHTML = "";
 		for (var k in objs) {
 			if (objs.hasOwnProperty(k)) {
@@ -439,16 +475,16 @@ document.body.onload = function(){
 					if (typeof objs[k] != "string") {
 						b.onclick = eval(`x = function(){
 							runFun(function(){return '<pre>' + JSON.stringify(objs['` + k + `'], null, 5) + '</pre>';});
-						}`);
+							}`);
 					} else {
 						b.onclick = eval(`x = function(){
 							runFun(function(){return '<pre>' + objs['` + k + `'] + '</pre>';});
-						}`);
-					}
+							}`);
+						}
 					odiv.appendChild(b);
+					}
 				}
-			}
-		};
+			};
 		let b1 = document.createElement("button");
 		b1.className = "scrollButtonRight scrollButton";
 		b1.id = "objectScrollButtonRight";
@@ -459,12 +495,12 @@ document.body.onload = function(){
 				odiv.scrollLeft = odiv.scrollWidth - odiv.clientWidth;
 			} else {
 				odiv.scrollBy(200, 0);
-			};
-		}`);
+				};
+			}`);
 		odiv.appendChild(b1);
 		if (odiv.scrollWidth <= odiv.clientWidth){
 			b1.style.visibility = 'hidden';
-		};
+			};
 		let b2 = document.createElement("button");
 		b2.className = "scrollButtonLeft scrollButton";
 		b2.id = "objectScrollButtonLeft";
@@ -476,8 +512,8 @@ document.body.onload = function(){
 				odiv.scrollLeft = 0;
 			} else {
 				odiv.scrollBy(-200, 0);
-			};
-		}`);
+				};
+			}`);
 		odiv.appendChild(b2);
 		b2.style.visibility = 'hidden';
 		//adds behavior to make the scroll buttons disappear when needed
@@ -486,19 +522,20 @@ document.body.onload = function(){
 				document.getElementById('objectScrollButtonLeft').style.visibility = "hidden";
 			} else {
 				document.getElementById('objectScrollButtonLeft').style.visibility = "visible";
-			}
+				}
 			if (odiv.scrollLeft + odiv.clientWidth >= odiv.scrollWidth){
 				document.getElementById('objectScrollButtonRight').style.visibility = "hidden";
 			} else {
 				document.getElementById('objectScrollButtonRight').style.visibility = "visible";
+				}
 			}
-		}};
+		};
 	function addfun(funs){
 		//Adds function buttons. Ignore hidden functions beginning with '_'
 		let bdiv = document.getElementById("buttondiv");
 		if (typeof funs == 'undefined'){
 			funs = proj;
-		}
+			}
 		bdiv.innerHTML = "";
 		for (var k in funs) {
 			if (funs.hasOwnProperty(k)) {
@@ -511,11 +548,11 @@ document.body.onload = function(){
 						paramNames = getFunctionParameterNames(buttonFun); //prompt for parameters
 						args = [];
 						runFun(funs['` + k + `'], paramNames, args);
-					}`);
+						}`);
 					bdiv.appendChild(b);
+					}
 				}
-			}
-		};
+			};
 		let b1 = document.createElement("button");
 		b1.className = "scrollButtonRight scrollButton";
 		b1.id = "buttonScrollButtonRight";
@@ -526,12 +563,12 @@ document.body.onload = function(){
 				bdiv.scrollLeft = bdiv.scrollWidth - bdiv.clientWidth;
 			} else {
 				bdiv.scrollBy(200, 0);
-			};
-		}`);
+				};
+			}`);
 		bdiv.appendChild(b1);
 		if (bdiv.scrollWidth <= bdiv.clientWidth){
 			b1.style.visibility = 'hidden';
-		};
+			};
 		let b2 = document.createElement("button");
 		b2.className = "scrollButtonLeft scrollButton";
 		b2.id = "buttonScrollButtonLeft";
@@ -542,8 +579,8 @@ document.body.onload = function(){
 				bdiv.scrollLeft = 0;
 			} else {
 				bdiv.scrollBy(-200, 0);
-			};
-		}`);
+				};
+			}`);
 		bdiv.appendChild(b2);
 		b2.style.visibility = 'hidden';
 		//adds behavior to make the scroll buttons disappear when needed
@@ -552,12 +589,12 @@ document.body.onload = function(){
 				document.getElementById('buttonScrollButtonLeft').style.visibility = "hidden";
 			} else {
 				document.getElementById('buttonScrollButtonLeft').style.visibility = "visible";
-			}
+				}
 			if (bdiv.scrollLeft + bdiv.clientWidth >= bdiv.scrollWidth){
 				document.getElementById('buttonScrollButtonRight').style.visibility = "hidden";
 			} else {
 				document.getElementById('buttonScrollButtonRight').style.visibility = "visible";
-			}
+				}
 		}};
 	function runFun(callback, paramNames, args, defaults){
 		//This is some complex business to run a function one argument at a time. prompting with the default values is the tricky part
@@ -566,11 +603,11 @@ document.body.onload = function(){
 		//so, still waiting on this
 		if (typeof defaults == 'undefined'){
 			defaults = getFunctionParameterDefaults(callback);
-		}
+			}
 		if (typeof paramNames == 'undefined'){
 			paramNames = getFunctionParameterNames(callback);
 			args = [];
-		};
+			};
 		let mInput = document.getElementById("maininput");
 		if (paramNames.length == args.length){
 			var output = callback.apply(proj, args);
@@ -583,7 +620,7 @@ document.body.onload = function(){
 				mInput.blur();
 			} else {
 				mInput.focus();
-			};
+				};
 		} else {
 			g_parameterCallback = callback;
 			g_args = args;
@@ -594,7 +631,8 @@ document.body.onload = function(){
 			mInput.value = prompt;
 			mInput.focus();
 			inputMode.selected = inputMode.parameters;
-		};};
+			};
+		};
 	function getUrlParameter(sParam) {
 		//Gets parameters provided to the URL as GET parameters (?x=y)
 		var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -604,7 +642,8 @@ document.body.onload = function(){
 		for (i = 0; i < sURLVariables.length; i++) {
 			sParameterName = sURLVariables[i].split('=');
 			if (sParameterName[0] == sParam) return sParameterName[1] == undefined ? true : sParameterName[1];
-		}};
+			}
+		};
 	function getFunctionParameters(func){
 		//Returns parameters from a function
 		fstring = func.toString();
@@ -619,10 +658,11 @@ document.body.onload = function(){
 				bracketDepth--;
 			} else if (fstring[i] == "(") {
 				bracketDepth++;
+				}
 			}
-		}
 		argstring = fstring.substring(firstBracket + 1, lastBracket);
-		return argstring};
+		return argstring
+		};
 	function getFunctionParameterNames(func){
 		//Returns the parameter names from a function
 		var params = getExpressions(getFunctionParameters(func));
@@ -631,9 +671,10 @@ document.body.onload = function(){
 				return x.substring(0, x.indexOf("="));
 			} else {
 				return x;
-			}
-		});
-		return paramNames;};
+				}
+			});
+		return paramNames;
+		};
 	function getFunctionParameterDefaults(func){
 		//Returns array of default values from a function
 		var params = getExpressions(getFunctionParameters(func));
@@ -642,9 +683,10 @@ document.body.onload = function(){
 				return x.substring(x.indexOf("=") + 1, x.length);
 			} else {
 				return "";
-			}
-		});
-		return defaultExps;};
+				}
+			});
+		return defaultExps;
+		};
 	function getExpressions(inStr){
 		//Returns separate javascript expressions from a string of javascript code
 		exprs = [];
@@ -660,23 +702,25 @@ document.body.onload = function(){
 				bracketDepth++;
 			} else if (inStr[endchr] == "]" || inStr[endchr] == ")" || inStr[endchr] == "}"){
 				bracketDepth--;
-			};
+				};
 			if (inStr[endchr] == "," && bracketDepth == 0 && quotesymbol == ""){
 				exprs.push(inStr.substring(startchr, endchr));
 				startchr = endchr + 1;
 			} else if (endchr == inStr.length - 1 && bracketDepth == 0 && quotesymbol == "" ){
 				exprs.push(inStr.substring(startchr, endchr + 1));
 				startchr = endchr + 1;
-			};
-		}
-		return exprs;};
+				};
+			}
+		return exprs;
+		};
 	function isMobile() {
 		//Returns true if page is being viewed on a mobile device, based on the aspect ratio being portrait
 		let check = false;
 		(function(a){
 			if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;
-		})(navigator.userAgent||navigator.vendor||window.opera);
-		return check;};
+			})(navigator.userAgent||navigator.vendor||window.opera);
+		return check;
+		};
 	function toggleFullScreen(){
 		let doc = window.document;
 		let docEl = doc.documentElement;
@@ -686,7 +730,8 @@ document.body.onload = function(){
 				cancelFullScreen.call(doc);
 		} else {
 				requestFullScreen.call(docEl);
-		};}
+			};
+		}
 	function togglemin(){
 		let minbutton = document.getElementById("minbutton");
 		if (minbutton.innerText = '' || minbutton.innerText != "\u25B2"){
@@ -697,7 +742,9 @@ document.body.onload = function(){
 			document.getElementById("inputspan").style.display = "inherit";
 			document.getElementById("displaydiv").style.height = "66%";
 			minbutton.innerText = "\u25BC";
-		}};};
+			}
+		};
+	};
 </script>
-	</body>
-</html>
+		</body>
+	</html>

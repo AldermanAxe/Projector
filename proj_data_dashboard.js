@@ -62,7 +62,7 @@
 		},
 	{
 		"name":`Toronto Star`,
-		"address":`http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml`,
+		"address":`http://www.thestar.com/content/thestar/feed.RSSManagerServlet.topstories.rss`,
 		"alias":`TS`,
 		"titleColor":`lightblue`,
 		"isActive":`true`,
@@ -95,7 +95,319 @@
 		"titleColor":`red`,
 		"isActive":`true`,
 		},
+	{
+		"name":`Twitter Global Toronto News`,
+		"address":`http://twitrss.me/twitter_user_to_rss/?user=globalnewsto`,
+		"alias":`tg`,
+		"titleColor":`lightred`,
+		"isActive":`true`,
+		},
+	{
+		"name":`michigan news`,
+		"address":`http://feeds.feedburner.com/umns-videospodcastsslideshows`,
+		"alias":`mn`,
+		"titleColor":`blue`,
+		"isActive":`true`,
+		},
+	{
+		"name":`PhysOrg`,
+		"address":`https://phys.org/rss-feed/`,
+		"alias":`PO`,
+		"titleColor":`blue`,
+		"isActive":`true`,
+		},
+	{
+		"name":`Reuters Top News`,
+		"address":`http://feeds.reuters.com/reuters/topNews`,
+		"alias":`RT`,
+		"titleColor":`orange`,
+		"isActive":`true`,
+		},
 	],
+"styleTemplates":{
+	"Default":`
+		:root {
+			--main-bg-color1:#8DB6CD;
+			--main-bg-color2:white;
+			--main-font-family:Arial Narrow;
+			/*space for more stuff*/}
+		body{
+			font-family:var(--main-font-family);
+			}
+		table{
+			font-size:5vmin;
+			width:100%;}
+		td {
+			vertical-align: top;}
+		select {
+			font-size:5vmin
+			}
+		input[type=checkbox] {
+			transform: scale(5);
+			margin: 0 0 0 2vmin;
+			}
+		#displaydiv {
+			font-size:5vmin;
+			height:70%;
+			color:black;
+			background:linear-gradient(to right, var(--main-bg-color1), var(--main-bg-color2));
+			}
+		#divButton {
+			font-size:5vmin;
+			}
+		#maininput {
+			color:black;
+			background-color: white;}
+		#inputdiv {
+			height:10%;
+			border-top:2px solid black}
+		#objectdiv, #buttondiv {
+			height:10%;
+			padding:0 0 0 0;}
+		.panel {
+			opacity: 1;
+			-webkit-transition: opacity 250ms linear;
+			transition: opacity 250ms linear;
+			box-shadow: 5px 5px #777777;
+			font-size: 4vmin;
+			z-index: 1;
+			overflow-y:scroll;
+			background-color:white;
+			overflow: auto;
+			display:inline-block;
+			border-color:lightgrey;
+			border-style:solid;
+			width:90%;
+			padding:2px 2px 2px 2px;
+			margin:0px 0px 10px 0px;
+			left:5%;
+			right:5%;
+			position:relative}
+		.panelTextTd {
+			font-size: 3vmin;
+			padding: 2vmin 0 0 0;
+			cursor:hand;
+			padding:2vmin 0 0 2vmin;
+			}
+		.panelSpan{
+			cursor:hand;
+			}
+		.panelImg{
+			width:25vmin;
+			height:15vmin;
+			}
+		.footerTd {
+			padding: 0px 10px 0px 10px;
+			font-size: 3vmin;
+			width: 30%;
+			white-space:nowrap;
+			overflow:hidden;
+			}
+		.footerTdRight {
+			text-align:right;
+			}
+		.panellink{
+			color:red;}
+		.editarea {
+			font-size:1vmax;
+			color:black;
+			background-color:white}
+		.tdCheckBox{
+			vertical-align: middle;
+			}
+		.rankdiv{
+			background-color:whitesmoke;
+			position: static;
+			font-size:4vmin;
+			height: 4vmin;
+			padding: 10px 0px 0px 0px;
+			margin: 0px 0px 0px 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px}
+		.xbutton{
+			right: 0vmin;
+			font-size: 7vmin;
+			color: grey;
+			margin 0px 0px 5px 5px;
+			width: 100%;
+			background-color: white;
+			border-style: none;
+			height: 100%;
+			bottom: 0px;
+			top: 0px;}
+		.xbutton:hover {
+			color: red;
+			}
+		.buttontd{
+			text-align:center;
+			border-style:none;
+			border-width: 2px;
+			width:5%;
+			height:100%}
+		.titleTd{
+			width:25vmin;
+			cursor:hand;
+			}
+		.titlediv{
+			font-size: 4vmin;
+			color: white;
+			background-color:aliceblue;
+			float:left;
+			display:block;
+			border-color:black;
+			border-style:solid;
+			border-radius:50%;
+			width:7vmin;
+			height:4vmin;
+			text-align:center;
+			margin:5px 10px 10px 5px;
+			padding:2vmin 1vmin 3vmin 1vmin;
+			float:none;
+			margin:auto;
+		}`,
+	"Feedlyish":`
+		:root {
+			--main-bg-color1:lightgrey;
+			--main-bg-color2:lightgrey;
+			--main-font-family:Arial Narrow;
+			/*space for more stuff*/}
+		body{
+			font-family:var(--main-font-family);
+			}
+		table{
+			font-size:5vmin;
+			width:100%;}
+		td {
+			vertical-align: top;}
+		select {
+			font-size:5vmin
+			}
+		input[type=checkbox] {
+			transform: scale(5);
+			margin: 0 0 0 2vmin;
+			}
+		#displaydiv {
+			font-size:5vmin;
+			height:70%;
+			color:black;
+			background:linear-gradient(to right, var(--main-bg-color1), var(--main-bg-color2));
+			}
+		#divButton {
+			font-size:5vmin;
+			}
+		#maininput {
+			color:black;
+			background-color: white;}
+		#inputdiv {
+			height:10%;
+			border-top:2px solid black}
+		#objectdiv, #buttondiv {
+			height:10%;
+			padding:0 0 0 0;}
+		.panel {
+			opacity: 1;
+			-webkit-transition: opacity 250ms linear;
+			transition: opacity 250ms linear;
+			box-shadow: 5px 5px #777777;
+			font-size: 4vmin;
+			z-index: 1;
+			overflow-y:scroll;
+			background-color:white;
+			overflow: auto;
+			display:inline-block;
+			border-color:lightgrey;
+			border-style:solid;
+			width:100%;
+			padding:2px 2px 2px 2px;
+			margin:0px 0px 0px 0px;
+			left:0%;
+			right:0%;
+			position:relative}
+		.panelTextTd {
+			font-size: 3vmin;
+			padding: 2vmin 0 0 0;
+			cursor:hand;
+			padding:2vmin 0 0 2vmin;
+			}
+		.panelSpan{
+			cursor:hand;
+			}
+		.panelImg{
+			width:25vmin;
+			height:15vmin;
+			}
+		.footerTd {
+			padding: 0px 10px 0px 10px;
+			font-size: 3vmin;
+			width: 30%;
+			white-space:nowrap;
+			overflow:hidden;
+			}
+		.footerTdRight {
+			text-align:right;
+			}
+		.panellink{
+			color:red;}
+		.editarea {
+			font-size:1vmax;
+			color:black;
+			background-color:white}
+		.tdCheckBox{
+			vertical-align: middle;
+			}
+		.rankdiv{
+			background-color:whitesmoke;
+			position: static;
+			font-size:4vmin;
+			height: 4vmin;
+			padding: 10px 0px 0px 0px;
+			margin: 0px 0px 0px 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px}
+		.xbutton{
+			right: 0vmin;
+			font-size: 7vmin;
+			color: grey;
+			margin 0px 0px 5px 5px;
+			width: 100%;
+			background-color: white;
+			border-style: none;
+			height: 100%;
+			bottom: 0px;
+			top: 0px;}
+		.xbutton:hover {
+			color: red;
+			}
+		.buttontd{
+			text-align:center;
+			border-style:none;
+			border-width: 2px;
+			width:5%;
+			height:100%}
+		.titleTd{
+			width:25vmin;
+			cursor:hand;
+			}
+		.titlediv{
+			font-size: 4vmin;
+			color: white;
+			background-color:aliceblue;
+			float:left;
+			display:block;
+			border-color:black;
+			border-style:solid;
+			border-radius:50%;
+			width:7vmin;
+			height:4vmin;
+			text-align:center;
+			margin:5px 10px 10px 5px;
+			padding:2vmin 1vmin 3vmin 1vmin;
+			float:none;
+			margin:auto;
+	}`,
+	},
 "style":`
 	:root {
 		--main-bg-color1:#8DB6CD;
@@ -122,12 +434,12 @@
 		height:70%;
 		color:black;
 		background:linear-gradient(to right, var(--main-bg-color1), var(--main-bg-color2));
-		} 
+		}
 	#divButton {
 		font-size:5vmin;
 		}
 	#maininput {
-		color:black; 
+		color:black;
 		background-color: white;}
 	#inputdiv {
 		height:10%;
@@ -171,10 +483,12 @@
 		padding: 0px 10px 0px 10px;
 		font-size: 3vmin;
 		width: 30%;
+		white-space:nowrap;
+		overflow:hidden;
 		}
 	.footerTdRight {
 		text-align:right;
-		}	
+		}
 	.panellink{
 		color:red;}
 	.editarea {
@@ -186,13 +500,13 @@
 		}
 	.rankdiv{
 		background-color:whitesmoke;
-		position: static; 
+		position: static;
 		font-size:4vmin;
 		height: 4vmin;
 		padding: 10px 0px 0px 0px;
 		margin: 0px 0px 0px 0px;
 		bottom: 0px;
-		left: 0px; 
+		left: 0px;
 		right: 0px}
 	.xbutton{
 		right: 0vmin;
@@ -202,10 +516,10 @@
 		width: 100%;
 		background-color: white;
 		border-style: none;
-		height: 100%;	
+		height: 100%;
 		bottom: 0px;
 		top: 0px;}
-	.xbutton:hover { 
+	.xbutton:hover {
 		color: red;
 		}
 	.buttontd{
@@ -234,7 +548,7 @@
 		padding:2vmin 1vmin 3vmin 1vmin;
 		float:none;
 		margin:auto;
-		}`,
+	}`,
 "usesAWS":`true`,
 "load feeds":function (){
 	that = this;
@@ -253,9 +567,9 @@
 				+ "for (f in proj.feeds){"
 					+ "if (proj.feeds[f]['alias'] == '" + that.feeds[f]['alias'] + "'){"
 						+ "proj.feeds[f]['isActive'] = (this.checked ? true : false);"
-						+ "}}\"" 
-			+ (that.feeds[f].isActive == "true"? " checked" : "") 
-			+ " /><td/><td>" + that.feeds[f].name 
+						+ "}}\""
+			+ (that.feeds[f].isActive == "true"? " checked" : "")
+			+ " /><td/><td>" + that.feeds[f].name
 			+ "(" + that.feeds[f].alias + ")</td><tr/>";
 		}
 	feedstr += "<tr><td/><td/><td><button class='divButton' onclick='proj._show_add();'>Add an RSS Feed</button></td></tr></table>";
@@ -275,7 +589,16 @@
 	let bgcolor1 = style.getPropertyValue('--main-bg-color1');
 	let bgcolor2 = style.getPropertyValue('--main-bg-color2');
 	let ftfam = style.getPropertyValue('--main-font-family');
+	let templateOptionHTML = "<option value='' selected>None</option>";
+	for (var x in this.styleTemplates){
+		if (this.styleTemplates.hasOwnProperty(x)){
+			templateOptionHTML += "<option value='" + x + "'>" + x + "</option>";
+		}
+	}
+
 	htmlStyleSelect = ""
+		+ "Select Template:<select onchange='proj._changeStyleTemplate(this.value)'>" + templateOptionHTML + "</select>"
+		+ "<br/><br/>Or<br/><br/>"
 		+ "Select main color 1:<select id='backgroundColorSelect1' onchange='proj._changeBackground1(this.value)'>"
 			+ "<option value='thistle' " + (bgcolor1=="thistle"?"selected":"") + ">thistle</option>"
 			+ "<option value='white' " + (bgcolor1=="white"?"selected":"") + ">white</option>"
@@ -301,10 +624,10 @@
 		+ "<option value='Times New Roman' " + (ftfam=="Times New Roman"?"selected":"") + ">Times New Roman</option>"
 		+ "<option value='Arial Narrow' " + (ftfam=="Arial Narrow"?"selected":"") + ">Arial Narrow</option>"
 		+ "<option value='Arial' " + (ftfam=="Arial"?"selected":"") + ">Arial</option>"
-		+ "<option value='Papyrus' " + (ftfam=="Papyrus"?"selected":"") + ">Papyrus</option>"		
-		+ "<option value='Calibri' " + (ftfam=="Calibri"?"selected":"") + ">Calibri</option>"		
-		+ "<option value='Courier' " + (ftfam=="Courier"?"selected":"") + ">Courier</option>"		
-		+ "<option value='Verdana' " + (ftfam=="Verdana"?"selected":"") + ">Verdana</option>"		
+		+ "<option value='Papyrus' " + (ftfam=="Papyrus"?"selected":"") + ">Papyrus</option>"
+		+ "<option value='Calibri' " + (ftfam=="Calibri"?"selected":"") + ">Calibri</option>"
+		+ "<option value='Courier' " + (ftfam=="Courier"?"selected":"") + ">Courier</option>"
+		+ "<option value='Verdana' " + (ftfam=="Verdana"?"selected":"") + ">Verdana</option>"
 		+ "</select>"
 		+ "<br/> or enter a font:<input type='text' onblur='proj._changeFont(this.value)'/><button>Go</button>";
 	doDisplay(htmlStyleSelect, null, 1);
@@ -340,7 +663,7 @@
 			doDisplay("save: " + xhr.responseText);
 			}
 		}
-	xhr.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString())); 
+	xhr.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString()));
 	var xhr2 = new XMLHttpRequest();
 	xhr2.open("POST", "../proj/proj_backup.aspx", true);
 	xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -349,29 +672,29 @@
 			doDisplay("backedup" + xhr2.responseText);
 			}
 		}
-	xhr2.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString())); 
+	xhr2.send("codename=" + save_name + "&data=" + encodeURIComponent(this._toString()));
 	let newloc = window.location.href.substring(0, window.location.href.indexOf(".html")+5) + "?source=" + save_name
 	window.location.href = newloc;
 	return "save attempted: " + newloc;
 	},
 "download":function (filename="dashboard.html") {
-	document.getElementById('displaydiv').innerHTML = '';		
-	let text = document.getElementsByTagName('html')[0].innerHTML;
-	let startnum = text.indexOf("/***<DEFAULT" + " OBJECT>***/") + ("/***<DEFAULT" + " OBJECT>***/").length + 1;
-	let endnum = text.indexOf("/***</DEFAULT" + " OBJECT>***/");
-	text = "<html><body>" + text.substring(0, startnum) + "projStr = `" + this._toString().split("\\").join("\\\\").split("`").join("\\`") + "`" + text.substring(endnum, text.length) + "</html>";				
-	let pom = document.createElement('a');
-	pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-	pom.setAttribute('download', filename);
-	if (document.createEvent) {
-		var event = document.createEvent('MouseEvents');
-		event.initEvent('click', true, true);
-		pom.dispatchEvent(event);
-	} else {
-		pom.click();
-		}
-	return("downloaded");
-	},
+    document.getElementById('displaydiv').innerHTML = '';
+    let text = document.getElementsByTagName('html')[0].innerHTML;
+    let startnum = text.indexOf("/***<DEFAULT" + " OBJECT>***/") + ("/***<DEFAULT" + " OBJECT>***/").length + 1;
+    let endnum = text.indexOf("/***</DEFAULT" + " OBJECT>***/");
+    text = "<html>" + text.substring(0, startnum) + "proj = " + this._toString() + text.substring(endnum, text.length) + "</html>";
+    let pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    } else {
+        pom.click();
+        }
+    return("downloaded");
+    },
 "_init":function (){
 	that = this;
 	document.title = "Gamma News Reader";
@@ -384,7 +707,7 @@
 	this["load feeds"]();
 	document.getElementById("minbutton").click();
 	},
-"_get_feed":function (page_alias, page_address, titleColor, name){ 
+"_get_feed":function (page_alias, page_address, titleColor, name){
 	let that = this;
 	let xhr = new XMLHttpRequest();
 	if (that.usesAWS == 'true'){
@@ -392,7 +715,7 @@
 		xhr.onreadystatechange = function() {//Call a function when the state changes.
 			if(xhr.readyState == XMLHttpRequest.DONE) {
 				if (xhr.status == 200){
-					that._readRss(page_alias, xhr.responseText, titleColor, name);} 
+					that._readRss(page_alias, xhr.responseText, titleColor, name);}
 				else {
 					doDisplay(page_alias + " failed");
 					}
@@ -405,7 +728,7 @@
 		xhr.onreadystatechange = function() {//Call a function when the state changes.
 			if(xhr.readyState == XMLHttpRequest.DONE) {
 				if (xhr.status == 200){
-					that._readRss(page_alias, xhr.responseText, titleColor, name);} 
+					that._readRss(page_alias, xhr.responseText, titleColor, name);}
 				else {
 					doDisplay(page_alias + " failed");}}}
 		xhr.send("pagename=" + encodeURIComponent(page_address));
@@ -415,7 +738,7 @@
 "_readRss":function (page_alias, text, titleColor, name){
 	let parser = new DOMParser();
 	let xmlDoc = parser.parseFromString(text,"text/xml");
-	let entries = [].slice.call(xmlDoc.getElementsByTagName("entry")).concat([].slice.call(xmlDoc.getElementsByTagName("item")));	
+	let entries = [].slice.call(xmlDoc.getElementsByTagName("entry")).concat([].slice.call(xmlDoc.getElementsByTagName("item")));
 	let results = "";
 	let moreresults = "";
 	let addcount = 0;
@@ -439,7 +762,7 @@
 		for (let c = 0; c < childNodes.length; c++){
 			if( childNodes[c].textContent.includes(".jpg")){
 				let txt = childNodes[c].textContent;
-				txt = txt.substring(0, txt.indexOf(".jpg") + 4); 
+				txt = txt.substring(0, txt.indexOf(".jpg") + 4);
 				txt = txt.substring(Math.max(txt.lastIndexOf("\"") + 1, txt.lastIndexOf("\'") + 1), txt.length);
 				img = txt;
 				};
@@ -459,7 +782,7 @@
 					isNew = false;
 					};
 				};
-			if (childNodes[c].nodeName == "pubDate" || childNodes[c].nodeName == "updated"){
+			if (childNodes[c].nodeName == "pubDate" || childNodes[c].nodeName == "updated" || childNodes[c].nodeName == "dc:date"){
 				entryDate = childNodes[c].textContent;
 				minutesBack = Math.ceil(((new Date()) - (new Date(entryDate)))/(1000*60));
 				hoursBack = Math.ceil(minutesBack/60);
@@ -468,19 +791,19 @@
 			};
 		//adds rank calculation based on sort additions
 		let itemObj = {};
-		itemObj.text = textNode; 
+		itemObj.text = textNode;
 		itemObj.sourceAlias = page_alias;
 		itemObj.sourceOrder = e;
 		itemObj.daysAgo = daysBack;
 		itemObj.hoursAgo = hoursBack;
 		itemObj.minutesAgo = minutesBack;
-		let pointObj = this._pointsFunction(itemObj); 
+		let pointObj = this._pointsFunction(itemObj);
 		let rank = pointObj.points;
 		let pointDisp = pointObj.display;
 		//create panel elements
 		let title = page_alias;
 		let panelName = page_alias + "-" + e;
-		let footer = "<table cellspacing='0' cellpadding='0'><tr>" 
+		let footer = "<table cellspacing='0' cellpadding='0'><tr>"
 			+ "<td class='footerTd'>"
 				+ (minutesBack < 60 ? minutesBack + " minutes ago" : hoursBack < 24 ? hoursBack + " hours ago" : daysBack + " days ago")
 				//+ (function(x){return x.getMonth() + "/" + x.getDate() + "/" + x.getFullYear() + " " + x.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) })(new Date(entryDate))
@@ -488,7 +811,7 @@
 			+ "<td class='footerTd'>"
 				+ name
 				+ "</td>"
-			+ "<td class='footerTd footerTdRight'>" 
+			+ "<td class='footerTd footerTdRight'>"
 				+ pointDisp
 				+ "</td></tr></table>";
 		if (isNew){
@@ -505,15 +828,15 @@
 		+ "<div data-rank='" + rank + "' class='panel'>"
 			+ "<table cellspacing='0' cellpadding='0'><tr>"
 				+ "<td class='titleTd' onclick='window.open(\"" + linkNode + "\");'>"
-					+ (img == ""  
+					+ (img == ""
 						? "<div class='titlediv' style='background-color:" + titleColor + ";color:" + titleTextColor + "'>"
-							+ title 
-							+ "</div>" 
+							+ title
+							+ "</div>"
 						: "<img class='panelImg' src='" + img + "'>"
 						)
 					+ "</td>"
 				+"<td class='panelTextTd' onclick='window.open(\"" + linkNode + "\");'>"
-				+ "<span id='" + panelName + " class='panelSpan'>"  
+				+ "<span id='" + panelName + " class='panelSpan'>"
 					+ "<div><span>"
 						+ textNode	+ "</span></div></span></td>"
 				+ "<td class=buttontd>"
@@ -521,8 +844,8 @@
 						+ "that = this;"
 						+ "this.parentNode.parentNode.parentNode.parentNode.parentNode.addEventListener(\"transitionend\", function(event) {"
 							+ "that.parentNode.parentNode.parentNode.parentNode.parentNode.style.display = \"none\";"
-							+ "let priorLinks = JSON.parse(localStorage.getItem(\"priorLinks\"));"							
-							+ "priorLinks.push(that.getAttribute(\"data-link\"));"							
+							+ "let priorLinks = JSON.parse(localStorage.getItem(\"priorLinks\"));"
+							+ "priorLinks.push(that.getAttribute(\"data-link\"));"
 							+ "localStorage.setItem(\"priorLinks\",JSON.stringify(priorLinks));"
 						+ "}, false)' style='cursor:hand;'>"
 					+ "&#215;</button></td></tr>"
@@ -532,19 +855,19 @@
 	let newses = newsspan.children;
 	let nlen = newses.length;
 	if (nlen == 0){
-		doDisplay(newDivStr, "newsspan", 0)} 
+		doDisplay(newDivStr, "newsspan", 0)}
 	else {
 		for (n = 0; n < nlen; n++){
 			if (newses[n].tagName == "DIV" && newses[n].getAttribute("data-rank") <= rank){
 				let div = document.createElement('div');
 				div.innerHTML = newDivStr.trim();
-				let newDiv = div.firstChild; 
+				let newDiv = div.firstChild;
 				newsspan.insertBefore(newDiv,newses[n]);
 				break;}
 			else if (n == nlen-1){
 				let div = document.createElement('div');
 				div.innerHTML = newDivStr.trim();
-				let newDiv = div.firstChild; 
+				let newDiv = div.firstChild;
 				newsspan.insertBefore(newDiv,null);
 				break;
 				}
@@ -572,13 +895,17 @@
 	points += (item.daysAgo <= 1 ? 1 : 0);
 	points += (item.hoursAgo <= 1 ? 1 : 0);
 	points += (item.sourceOrder <= 3 ? 3 - item.sourceOrder : 0);
-	return {"points":points,"display":"☆".repeat(points)};
+	return {"points":points,"display":"<span style='color:yellow;text-shadow: 2px 2px #000000;'>" + "★".repeat(points) + "</span>"};
 	},
 "_pointsFunction_bydate":function (item){
 	let points = 0;
 	points = -1*item.minutesAgo;
 	return {"points":points,"display":""};
 	},
+"_changeStyleTemplate":function (templateName){
+	this.style = this.styleTemplates[templateName];
+	this._init();
+},
 "_changeBackground1":function (color){
 	let bg1 = this.style.substring(this.style.indexOf("--main-bg-color1:"), this.style.length);
 	bg1 = bg1.substring(0, bg1.indexOf(";"));
@@ -616,7 +943,7 @@
 	if (typeof this[name] == 'function'){
 		document.getElementById('editarea').value = this[name].toString();
 	} else if (typeof this[name] == 'string'){
-		document.getElementById('editarea').value = this[name];		
+		document.getElementById('editarea').value = this[name];
 	} else {
 		document.getElementById('editarea').value = JSON.stringify(this[name], null, '\t');
 		};
@@ -624,7 +951,7 @@
 "_add":function (name, def){
 	that = this;
 	that[name] = eval("("+def+")");
-	addfun(); 
+	addfun();
 	addobj();
 	return that[name];
 	},
@@ -639,7 +966,7 @@
         if (this.hasOwnProperty(property)){
             if (typeof this[property] == "object"){
                 let jstr = arguments.callee.apply(this[property],[level + 1]);
-                str += "\t".repeat(level) + (isArray ? "" : '"' + property + '":') + jstr + ',\n';	
+                str += "\t".repeat(level) + (isArray ? "" : '"' + property + '":') + jstr + ',\n';
             } else if (typeof this[property] == "function") {
                 str += "\t".repeat(level) + '"' + property + '":' + this[property] + ',\n';
             } else {
@@ -651,5 +978,6 @@
 		str = str.substring(0, str.length - 1);
 		};
 	str += "\n" + "\t".repeat(level) + (isArray ? "]" : "}");
-	return str;},
+	return str;
+},
 }

@@ -17,7 +17,7 @@
 			// Create the file, and obtain a file object for the file.
 			var savedate = new Date();
 			var strsavedate = savedate.getTime();
-			var filename = "C:\\inetpub\\wwwroot\\JsonFiles\\backup\\proj_data_" + Request.Form("codename").toString() + "_" + strsavedate + ".json";
+			var filename = "C:\\inetpub\\wwwroot\\JsFiles\\backup\\proj_data_" + Request.Form("codename").toString() + "_" + strsavedate + ".js";
 			var tss = fso.CreateTextFile(filename);
 			tss.close();
 			var fileObj = fso.GetFile(filename);

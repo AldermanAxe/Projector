@@ -7,7 +7,7 @@
 			var f2;
 			fso = new ActiveXObject("Scripting.FileSystemObject");
 
-//			f2 = fso.CreateTextFile("C:\\inetpub\\wwwroot\\JsonFiles\\proj_data_" + Request.Form("codename").toString() + ".json", true, true);
+//			f2 = fso.CreateTextFile("C:\\inetpub\\wwwroot\\JsFiles\\proj_data_" + Request.Form("codename").toString() + ".js", true, true);
 //			f2.Write(Request.Form("data").toString());
 //			f2.Close();
 
@@ -17,7 +17,7 @@ fsT.Type = 2;
 fsT.Charset = "utf-8";
 fsT.Open();
 fsT.WriteText(Request.Form("data").toString());
-fsT.SaveToFile("C:\\inetpub\\wwwroot\\JsonFiles\\proj_data_" + Request.Form("codename").toString() + ".json", 2);
+fsT.SaveToFile("C:\\inetpub\\wwwroot\\JsFiles\\proj_data_" + Request.Form("codename").toString() + ".js", 2);
 
 			f = fso.OpenTextFile("C:\\inetpub\\wwwroot\\proj_data_log.txt", 8, true, -1);
 			f.Write("\r\n\r\n\r\n" + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + "\r\n\r\n");
